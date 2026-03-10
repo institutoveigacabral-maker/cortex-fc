@@ -8,6 +8,19 @@ import {
 } from "./schema";
 
 // ============================================
+// HELPERS
+// ============================================
+
+/**
+ * Strip sensitive fields (passwordHash, email, etc.) from an analyst relation,
+ * returning only the fields that are safe to expose via the API.
+ */
+function sanitizeAnalyst(analyst: { id: string; name: string; [key: string]: unknown } | null | undefined) {
+  if (!analyst) return null;
+  return { id: analyst.id, name: analyst.name };
+}
+
+// ============================================
 // PLAYERS
 // ============================================
 
@@ -54,7 +67,15 @@ export async function getPlayerById(id: string) {
     },
   });
 
-  return player ?? null;
+  if (!player) return null;
+
+  return {
+    ...player,
+    analyses: player.analyses.map((a) => ({
+      ...a,
+      analyst: sanitizeAnalyst(a.analyst),
+    })),
+  };
 }
 
 /**
@@ -92,7 +113,7 @@ export async function getPlayersByIds(ids: string[]) {
  * Get all neural analyses with player and club data
  */
 export async function getAnalyses() {
-  return db.query.neuralAnalyses.findMany({
+  const results = await db.query.neuralAnalyses.findMany({
     with: {
       player: {
         with: {
@@ -104,6 +125,8 @@ export async function getAnalyses() {
     },
     orderBy: [desc(neuralAnalyses.createdAt)],
   });
+
+  return results.map((r) => ({ ...r, analyst: sanitizeAnalyst(r.analyst) }));
 }
 
 /**
@@ -123,7 +146,9 @@ export async function getAnalysisById(id: string) {
     },
   });
 
-  return analysis ?? null;
+  if (!analysis) return null;
+
+  return { ...analysis, analyst: sanitizeAnalyst(analysis.analyst) };
 }
 
 /**

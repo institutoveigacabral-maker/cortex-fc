@@ -15,8 +15,6 @@ import {
   Trash2,
   Check,
   Crown,
-  Eye,
-  EyeOff,
   Save,
   Sparkles,
 } from "lucide-react"
@@ -28,8 +26,6 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 
 export default function SettingsPage() {
-  const [showApiFootball, setShowApiFootball] = useState(false)
-  const [showAnthropic, setShowAnthropic] = useState(false)
   const [claudeModel, setClaudeModel] = useState("claude-sonnet-4-20250514")
   const [maxTokens, setMaxTokens] = useState(4096)
   const [temperature, setTemperature] = useState(0.7)
@@ -157,27 +153,18 @@ export default function SettingsPage() {
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Input
-                    type={showApiFootball ? "text" : "password"}
-                    value="sk-football-a1b2c3d4e5f6g7h8i9j0"
+                    type="password"
+                    value=""
+                    placeholder="Insira sua chave API"
                     readOnly
                     className="bg-zinc-800/40 border-zinc-700/40 text-zinc-300 text-sm font-mono pr-10 rounded-lg"
                   />
-                  <button
-                    onClick={() => setShowApiFootball(!showApiFootball)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
-                  >
-                    {showApiFootball ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
                 </div>
                 <Button
                   size="sm"
                   className="bg-zinc-800/60 hover:bg-zinc-700 text-zinc-300 border border-zinc-700/40 text-xs rounded-lg"
                 >
-                  Atualizar
+                  Configurar
                 </Button>
               </div>
             </div>
@@ -189,27 +176,18 @@ export default function SettingsPage() {
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Input
-                    type={showAnthropic ? "text" : "password"}
-                    value="sk-ant-api03-xxxxxxxxxxxxxxxxxxxx"
+                    type="password"
+                    value=""
+                    placeholder="Insira sua chave API"
                     readOnly
                     className="bg-zinc-800/40 border-zinc-700/40 text-zinc-300 text-sm font-mono pr-10 rounded-lg"
                   />
-                  <button
-                    onClick={() => setShowAnthropic(!showAnthropic)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
-                  >
-                    {showAnthropic ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
                 </div>
                 <Button
                   size="sm"
                   className="bg-zinc-800/60 hover:bg-zinc-700 text-zinc-300 border border-zinc-700/40 text-xs rounded-lg"
                 >
-                  Atualizar
+                  Configurar
                 </Button>
               </div>
             </div>

@@ -85,7 +85,7 @@ const faqs = [
   {
     question: "Os dados são seguros?",
     answer:
-      "Absolutamente. Utilizamos criptografia end-to-end, servidores na Europa e somos totalmente LGPD compliant. Seus dados de scouting são seu ativo mais valioso — tratamos com esse nível de seriedade.",
+      "Utilizamos criptografia SSL/TLS em todas as conexões, banco de dados isolado por cliente e seguimos as melhores práticas de segurança de dados. Estamos em processo de adequação completa à LGPD.",
   },
   {
     question: "Quanto tempo para configurar?",

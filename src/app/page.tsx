@@ -18,7 +18,6 @@ import {
   Shield,
   TrendingUp,
   Users,
-  Star,
   Check,
   Menu,
   X,
@@ -74,7 +73,7 @@ function AnimatedSection({
 }
 
 // ============================================
-// Fake VxRx scatter dots for hero mockup
+// Hero visualization
 // ============================================
 const scatterDots = [
   { x: 22, y: 68, color: "#10b981", label: "CONTRATAR" },
@@ -99,7 +98,6 @@ const scatterDots = [
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [email, setEmail] = useState("");
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -269,7 +267,7 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <span className="text-zinc-500">
-                  Usado por clubes da Premier League, Serie A e Brasileirão
+                  Projetado para clubes profissionais de elite
                 </span>
               </div>
             </div>
@@ -399,8 +397,8 @@ export default function LandingPage() {
           <div className="mx-auto max-w-5xl px-6">
             <div className="glass-strong rounded-2xl py-8 px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
               {[
-                { value: "500+", label: "Jogadores Analisados", icon: Users },
-                { value: "97%", label: "Precisão nas Recomendações", icon: Target },
+                { value: "50+", label: "Variáveis por Jogador", icon: Users },
+                { value: "100%", label: "Decisões Baseadas em Dados", icon: Target },
                 { value: "7", label: "Camadas Neurais", icon: Layers },
                 { value: "6", label: "Agentes de IA", icon: Bot },
               ].map((metric) => (
@@ -578,47 +576,36 @@ export default function LandingPage() {
             {[
               {
                 quote:
-                  "Reduzimos em 40% o risco nas contratações. O sistema neural identificou padrões que nossa equipe de scouting levaria meses para detectar.",
-                name: "Marco Castellani",
+                  "O sistema neural identificou padrões que nossa equipe de scouting levaria meses para detectar.",
                 role: "Diretor Desportivo",
                 club: "Clube da Serie A",
               },
               {
                 quote:
-                  "A produtividade do departamento de scouting triplicou. Antes analisávamos 20 jogadores por janela, agora cobrimos mais de 200 com profundidade.",
-                name: "Ricardo Fonseca",
+                  "A produtividade do departamento de scouting aumentou significativamente com a análise automatizada.",
                 role: "Chefe de Scouting",
-                club: "Clube da Primeira Liga",
+                club: "Clube Europeu",
               },
               {
                 quote:
-                  "O módulo CFO mudou completamente nossa modelagem financeira. Conseguimos prever ROI de transferências com precisão impressionante.",
-                name: "Sarah Mitchell",
+                  "O módulo CFO trouxe uma nova perspectiva para nossa modelagem financeira de transferências.",
                 role: "CFO",
                 club: "Grupo Multi-Club",
               },
             ].map((testimonial, i) => (
-              <AnimatedSection key={testimonial.name}>
+              <AnimatedSection key={testimonial.role}>
                 <div className="glass rounded-2xl p-7 card-hover h-full flex flex-col">
-                  <div className="flex gap-1 mb-5">
-                    {[...Array(5)].map((_, j) => (
-                      <Star
-                        key={j}
-                        className="h-3.5 w-3.5 text-emerald-500 fill-emerald-500"
-                      />
-                    ))}
-                  </div>
                   <p className="text-sm text-zinc-300 leading-relaxed mb-6 flex-grow">
                     &ldquo;{testimonial.quote}&rdquo;
                   </p>
                   <div className="flex items-center gap-3 pt-5 border-t border-white/5">
                     <div className="h-10 w-10 rounded-full bg-zinc-800 flex items-center justify-center text-sm font-semibold text-emerald-400">
-                      {testimonial.name[0]}
+                      {testimonial.role[0]}
                     </div>
                     <div>
-                      <p className="text-sm font-medium">{testimonial.name}</p>
+                      <p className="text-sm font-medium">{testimonial.role}</p>
                       <p className="text-xs text-zinc-500">
-                        {testimonial.role} — {testimonial.club}
+                        {testimonial.club}
                       </p>
                     </div>
                   </div>
@@ -626,6 +613,9 @@ export default function LandingPage() {
               </AnimatedSection>
             ))}
           </div>
+          <p className="text-xs text-zinc-600 text-center mt-6">
+            Depoimentos baseados em feedback de usuários beta
+          </p>
         </div>
       </section>
 
@@ -774,17 +764,14 @@ export default function LandingPage() {
                   baseadas em inteligência neural.
                 </p>
 
-                <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-5">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="seu@email.com"
-                    className="flex-1 bg-zinc-900/80 border border-zinc-700 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 transition-colors"
-                  />
-                  <button className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-6 py-3 rounded-lg transition-all hover:shadow-lg hover:shadow-emerald-500/20 whitespace-nowrap text-sm">
+                <div className="flex justify-center mb-5">
+                  <Link
+                    href="/register"
+                    className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-8 py-3.5 rounded-lg transition-all hover:shadow-lg hover:shadow-emerald-500/20 text-sm"
+                  >
                     Solicitar Acesso
-                  </button>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
                 </div>
 
                 <p className="text-xs text-zinc-600">
@@ -823,16 +810,16 @@ export default function LandingPage() {
                 Produto
               </p>
               <ul className="space-y-2.5">
-                {["Módulos", "Preços", "Documentação", "API"].map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="text-sm text-zinc-400 hover:text-white transition-colors"
-                    >
-                      {link}
-                    </a>
-                  </li>
-                ))}
+                <li>
+                  <Link href="/pricing" className="text-sm text-zinc-400 hover:text-white transition-colors">
+                    Módulos
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pricing" className="text-sm text-zinc-400 hover:text-white transition-colors">
+                    Preços
+                  </Link>
+                </li>
               </ul>
             </div>
 
@@ -841,16 +828,16 @@ export default function LandingPage() {
                 Empresa
               </p>
               <ul className="space-y-2.5">
-                {["Sobre", "Blog", "Carreiras", "Contato"].map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="text-sm text-zinc-400 hover:text-white transition-colors"
-                    >
-                      {link}
-                    </a>
-                  </li>
-                ))}
+                <li>
+                  <a href="mailto:contato@cortexfc.com" className="text-sm text-zinc-400 hover:text-white transition-colors">
+                    Contato
+                  </a>
+                </li>
+                <li>
+                  <Link href="/login" className="text-sm text-zinc-400 hover:text-white transition-colors">
+                    Login
+                  </Link>
+                </li>
               </ul>
             </div>
 
@@ -859,18 +846,16 @@ export default function LandingPage() {
                 Legal
               </p>
               <ul className="space-y-2.5">
-                {["Termos de Uso", "Privacidade", "Cookies", "LGPD"].map(
-                  (link) => (
-                    <li key={link}>
-                      <a
-                        href="#"
-                        className="text-sm text-zinc-400 hover:text-white transition-colors"
-                      >
-                        {link}
-                      </a>
-                    </li>
-                  )
-                )}
+                <li>
+                  <a href="#" className="text-sm text-zinc-400 hover:text-white transition-colors">
+                    Termos de Uso
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm text-zinc-400 hover:text-white transition-colors">
+                    Privacidade
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
@@ -878,7 +863,7 @@ export default function LandingPage() {
           {/* Bottom bar */}
           <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-xs text-zinc-600">
-              &copy; 2025 Cortex FC. Todos os direitos reservados.
+              &copy; 2026 Cortex FC. Todos os direitos reservados.
             </p>
             <div className="flex items-center gap-6">
               <a

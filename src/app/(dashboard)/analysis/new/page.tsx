@@ -277,7 +277,12 @@ export default function NewAnalysisPage() {
         sace: algorithms.SACE,
         scnPlus: algorithms.SCN_plus,
         decision,
-        confidence: Math.round(70 + Math.random() * 25),
+        confidence: (() => {
+          const layerValues = [c1, c2, c3, c4, c5, c6, c7];
+          const avg = layerValues.reduce((a, b) => a + b, 0) / layerValues.length;
+          const variance = layerValues.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / layerValues.length;
+          return Math.round(Math.max(60, Math.min(98, 95 - (variance / 20))));
+        })(),
         reasoning: `Analise neural executada via ORACLE para ${selectedPlayer?.name} no contexto de ${selectedClubName}. Vx=${clampedVx.toFixed(2)}, Rx=${clampedRx.toFixed(2)}.`,
       }
 
