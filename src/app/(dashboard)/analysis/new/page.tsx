@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import {
@@ -11,6 +11,7 @@ import {
   Search,
   Info,
   Loader2,
+  Sparkles,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -25,7 +26,7 @@ import {
 import { NeuralRadar } from "@/components/cortex/NeuralRadar"
 import { DecisionBadge } from "@/components/cortex/DecisionBadge"
 import { AlgorithmBars } from "@/components/cortex/AlgorithmBars"
-import type { CortexDecision, NeuralLayers, AlgorithmScores } from "@/types/cortex"
+import type { CortexDecision, NeuralLayers, AlgorithmScores, OracleOutput } from "@/types/cortex"
 
 interface APIPlayer {
   id: string
@@ -54,14 +55,16 @@ interface SliderFieldProps {
   max?: number
   onChange: (v: number) => void
   color?: string
+  aiFilled?: boolean
 }
 
-function SliderField({ label, tooltip, value, max = 10, onChange, color = "emerald" }: SliderFieldProps) {
+function SliderField({ label, tooltip, value, max = 10, onChange, color = "emerald", aiFilled }: SliderFieldProps) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <Label className="text-xs text-zinc-400">{label}</Label>
+          {aiFilled && <AIBadge />}
           <Tooltip>
             <TooltipTrigger asChild>
               <Info className="w-3 h-3 text-zinc-600 cursor-help" />
@@ -90,6 +93,51 @@ function SliderField({ label, tooltip, value, max = 10, onChange, color = "emera
   )
 }
 
+const AI_PROGRESS_MESSAGES = [
+  "Inicializando ORACLE...",
+  "Processando camada C1 — Tecnico...",
+  "Processando camada C2 — Tatico...",
+  "Processando camada C3 — Fisico...",
+  "Calculando matriz VxRx...",
+  "Gerando algoritmos proprietarios...",
+  "Formulando parecer neural...",
+]
+
+function AILoadingOverlay({ messageIndex }: { messageIndex: number }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+      <div className="flex flex-col items-center gap-6 max-w-md text-center px-6">
+        <div className="relative">
+          <Brain className="w-16 h-16 text-emerald-400 animate-pulse" />
+          <div className="absolute inset-0 w-16 h-16 rounded-full border-2 border-emerald-500/30 animate-ping" />
+        </div>
+        <div className="space-y-2">
+          <p className="text-lg font-semibold text-zinc-100">Gerando Analise Neural com IA</p>
+          <p className="text-sm text-emerald-400 font-mono animate-pulse">
+            {AI_PROGRESS_MESSAGES[messageIndex % AI_PROGRESS_MESSAGES.length]}
+          </p>
+        </div>
+        <div className="w-64 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full transition-all duration-1000"
+            style={{ width: `${Math.min(95, ((messageIndex + 1) / AI_PROGRESS_MESSAGES.length) * 100)}%` }}
+          />
+        </div>
+        <p className="text-xs text-zinc-600">Isso pode levar 10-30 segundos</p>
+      </div>
+    </div>
+  )
+}
+
+function AIBadge() {
+  return (
+    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 ml-1.5">
+      <Sparkles className="w-2.5 h-2.5" />
+      IA
+    </span>
+  )
+}
+
 function computeDecision(vx: number, rx: number): CortexDecision {
   if (vx >= 1.5 && rx <= 0.8) return "BLINDAR"
   if (vx >= 1.5 && rx <= 1.2) return "CONTRATAR"
@@ -108,6 +156,17 @@ export default function NewAnalysisPage() {
   const [clubContext, setClubContext] = useState("")
   const [showResult, setShowResult] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+
+  // AI generation state
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false)
+  const [aiError, setAiError] = useState("")
+  const [aiProgressIndex, setAiProgressIndex] = useState(0)
+  const [aiFilledFields, setAiFilledFields] = useState(false)
+  const [aiReasoning, setAiReasoning] = useState("")
+  const [aiRecommendedActions, setAiRecommendedActions] = useState<string[]>([])
+  const [aiRisks, setAiRisks] = useState<string[]>([])
+  const [aiComparables, setAiComparables] = useState<string[]>([])
+  const aiProgressTimer = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // Players from API
   const [players, setPlayers] = useState<APIPlayer[]>([])
@@ -283,7 +342,9 @@ export default function NewAnalysisPage() {
           const variance = layerValues.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / layerValues.length;
           return Math.round(Math.max(60, Math.min(98, 95 - (variance / 20))));
         })(),
-        reasoning: `Analise neural executada via ORACLE para ${selectedPlayer?.name} no contexto de ${selectedClubName}. Vx=${clampedVx.toFixed(2)}, Rx=${clampedRx.toFixed(2)}.`,
+        reasoning: aiFilledFields && aiReasoning
+          ? aiReasoning.slice(0, 5000)
+          : `Analise neural executada via ORACLE para ${selectedPlayer?.name} no contexto de ${selectedClubName}. Vx=${clampedVx.toFixed(2)}, Rx=${clampedRx.toFixed(2)}.`,
       }
 
       const res = await fetch("/api/analyses", {
@@ -303,8 +364,112 @@ export default function NewAnalysisPage() {
     }
   }
 
+  const generateWithAI = useCallback(async () => {
+    if (!selectedPlayer || !clubContext) return
+    setIsGeneratingAI(true)
+    setAiError("")
+    setAiProgressIndex(0)
+
+    // Start cycling progress messages
+    aiProgressTimer.current = setInterval(() => {
+      setAiProgressIndex((prev) => prev + 1)
+    }, 3000)
+
+    try {
+      const res = await fetch("/api/oracle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          playerId: selectedPlayer.id,
+          clubContextId: clubContext,
+          playerName: selectedPlayer.name,
+          position: selectedPlayer.positionDetail || selectedPlayer.positionCluster,
+          age: selectedPlayer.age,
+          nationality: selectedPlayer.nationality,
+          currentClub: selectedPlayer.currentClub?.name || "",
+          marketValue: selectedPlayer.marketValue,
+          contractEnd: null,
+          targetClubName: selectedClubName,
+          targetClubLeague: "",
+        }),
+      })
+
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || "Erro na API")
+      }
+
+      const { data } = (await res.json()) as { data: OracleOutput }
+
+      // Fill Vx-related components: map from ORACLE Vx to slider-friendly values
+      // ORACLE returns vx as a float (e.g. 1.5). We reverse-engineer slider values.
+      // For simplicity we use the neural layers to derive component estimates.
+      const layerAvg = (
+        data.layers.C1_technical +
+        data.layers.C2_tactical +
+        data.layers.C3_physical +
+        data.layers.C4_behavioral +
+        data.layers.C5_narrative +
+        data.layers.C6_economic +
+        data.layers.C7_ai
+      ) / 7
+
+      // Set Vx components (scale 0-10 from layer percentages)
+      setTechnical(Math.round(data.layers.C1_technical / 10))
+      setMarketImpact(Math.round(data.layers.C5_narrative / 10))
+      setCulturalAdaptation(Math.round(data.layers.C4_behavioral / 10))
+      setNetworkingBenefit(Math.round(Math.min(10, data.algorithms.CLF / 10)))
+      setAgeDepreciation(Math.round(Math.min(10, data.layers.C3_physical / 10)))
+      setLiabilities(Math.round(Math.max(0, 10 - data.layers.C6_economic / 10)))
+      setRegulatoryRisk(Math.round(Math.max(0, Math.min(10, (100 - data.algorithms.SACE) / 10))))
+      setTotalCost(selectedPlayer.marketValue ?? 20)
+
+      // Set Rx components
+      setTacticalGap(Math.round(Math.min(10, data.algorithms.GNE / 10)))
+      setContextualFit(Math.round(Math.min(10, data.algorithms.AST / 10)))
+      setExperienceProfile(Math.round(Math.min(10, data.layers.C2_tactical / 10)))
+      setNarrativeIndex(Math.round(Math.min(10, data.layers.C5_narrative / 10)))
+      setMentalFortitude(Math.round(Math.min(10, data.layers.C4_behavioral / 10)))
+      setInjuryMicroRisk(Math.round(Math.max(0, Math.min(10, (100 - data.layers.C3_physical) / 10))))
+      setSuspensionRisk(Math.round(Math.max(0, Math.min(10, (100 - data.layers.C4_behavioral) / 12))))
+      setValueAtRisk(Math.round(Math.max(0, (selectedPlayer.marketValue ?? 20) * (data.rx / 3))))
+      setMarketJitter(Math.round(Math.max(0, Math.min(10, data.rx * 3))))
+
+      // Set Neural layers directly
+      setC1(Math.round(data.layers.C1_technical))
+      setC2(Math.round(data.layers.C2_tactical))
+      setC3(Math.round(data.layers.C3_physical))
+      setC4(Math.round(data.layers.C4_behavioral))
+      setC5(Math.round(data.layers.C5_narrative))
+      setC6(Math.round(data.layers.C6_economic))
+      setC7(Math.round(data.layers.C7_ai))
+
+      // Store AI-specific outputs
+      setAiReasoning(data.reasoning || "")
+      setAiRecommendedActions(data.recommendedActions || [])
+      setAiRisks(data.risks || [])
+      setAiComparables(data.comparables || [])
+      setAiFilledFields(true)
+
+      // Jump to the review step
+      setStep(5)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erro ao gerar analise."
+      setAiError(msg + " Tente novamente ou preencha manualmente.")
+    } finally {
+      if (aiProgressTimer.current) {
+        clearInterval(aiProgressTimer.current)
+        aiProgressTimer.current = null
+      }
+      setIsGeneratingAI(false)
+    }
+  }, [selectedPlayer, clubContext, selectedClubName])
+
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
+      {/* AI Loading Overlay */}
+      {isGeneratingAI && <AILoadingOverlay messageIndex={aiProgressIndex} />}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -442,6 +607,36 @@ export default function NewAnalysisPage() {
                     O ORACLE ira avaliar fit tatico, economico e cultural para este contexto especifico.
                   </p>
                 </div>
+
+                {/* AI Generation Section */}
+                <Separator className="bg-zinc-800" />
+                <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-emerald-400" />
+                    <p className="text-sm font-semibold text-emerald-400">Geracao Automatica</p>
+                  </div>
+                  <p className="text-xs text-zinc-400">
+                    Use o agente ORACLE para preencher automaticamente todos os campos da analise
+                    (camadas neurais, algoritmos, Vx/Rx, decisao e parecer). Voce pode ajustar os
+                    valores depois.
+                  </p>
+                  <Button
+                    onClick={generateWithAI}
+                    disabled={isGeneratingAI || !selectedPlayer}
+                    className="w-full bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-700 hover:to-cyan-700 text-white font-semibold"
+                  >
+                    <Brain className="w-4 h-4 mr-2" />
+                    Gerar Analise Neural com IA
+                  </Button>
+                  {aiError && (
+                    <p className="text-xs text-red-400 bg-red-500/10 rounded p-2 border border-red-500/20">
+                      {aiError}
+                    </p>
+                  )}
+                  <p className="text-[10px] text-zinc-600 text-center">
+                    Ou continue manualmente usando os botoes de navegacao
+                  </p>
+                </div>
               </CardContent>
             </Card>
           )}
@@ -455,14 +650,14 @@ export default function NewAnalysisPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-5">
-                <SliderField label="T — Qualidade Tecnica" tooltip="Avaliacao da qualidade tecnica com bola: passe, controle, finalizacao, drible (0-10)" value={technical} onChange={setTechnical} />
-                <SliderField label="M — Impacto de Mercado" tooltip="Impacto comercial/marca: visibilidade, camisas vendidas, atencao da midia (0-10)" value={marketImpact} onChange={setMarketImpact} />
-                <SliderField label="A — Adaptacao Cultural" tooltip="Score BHAR de fit cultural: idioma, estilo de vida, historico em contextos similares (0-10)" value={culturalAdaptation} onChange={setCulturalAdaptation} />
-                <SliderField label="N — Networking" tooltip="Beneficio de rede: compatriotas no elenco, relacao com agentes, conexoes (0-10)" value={networkingBenefit} onChange={setNetworkingBenefit} />
-                <SliderField label="D — Depreciacao por Idade" tooltip="Fator de curva de idade: 10 = jovem com alta valorizacao, 1 = veterano em declinio (0-10)" value={ageDepreciation} onChange={setAgeDepreciation} />
+                <SliderField label="T — Qualidade Tecnica" tooltip="Avaliacao da qualidade tecnica com bola: passe, controle, finalizacao, drible (0-10)" value={technical} onChange={setTechnical} aiFilled={aiFilledFields} />
+                <SliderField label="M — Impacto de Mercado" tooltip="Impacto comercial/marca: visibilidade, camisas vendidas, atencao da midia (0-10)" value={marketImpact} onChange={setMarketImpact} aiFilled={aiFilledFields} />
+                <SliderField label="A — Adaptacao Cultural" tooltip="Score BHAR de fit cultural: idioma, estilo de vida, historico em contextos similares (0-10)" value={culturalAdaptation} onChange={setCulturalAdaptation} aiFilled={aiFilledFields} />
+                <SliderField label="N — Networking" tooltip="Beneficio de rede: compatriotas no elenco, relacao com agentes, conexoes (0-10)" value={networkingBenefit} onChange={setNetworkingBenefit} aiFilled={aiFilledFields} />
+                <SliderField label="D — Depreciacao por Idade" tooltip="Fator de curva de idade: 10 = jovem com alta valorizacao, 1 = veterano em declinio (0-10)" value={ageDepreciation} onChange={setAgeDepreciation} aiFilled={aiFilledFields} />
                 <Separator className="bg-zinc-800" />
-                <SliderField label="L — Passivos" tooltip="Risco de passivos: ratio salarial, historico de lesoes, custos ocultos (0-10, maior = pior)" value={liabilities} onChange={setLiabilities} color="red" />
-                <SliderField label="R — Risco Regulatorio" tooltip="Risco regulatorio: work permit, visto, impacto FFP, restricoes de registro (0-10, maior = pior)" value={regulatoryRisk} onChange={setRegulatoryRisk} color="red" />
+                <SliderField label="L — Passivos" tooltip="Risco de passivos: ratio salarial, historico de lesoes, custos ocultos (0-10, maior = pior)" value={liabilities} onChange={setLiabilities} color="red" aiFilled={aiFilledFields} />
+                <SliderField label="R — Risco Regulatorio" tooltip="Risco regulatorio: work permit, visto, impacto FFP, restricoes de registro (0-10, maior = pior)" value={regulatoryRisk} onChange={setRegulatoryRisk} color="red" aiFilled={aiFilledFields} />
                 <Separator className="bg-zinc-800" />
                 <div>
                   <div className="flex items-center gap-1.5 mb-1.5">
@@ -498,15 +693,15 @@ export default function NewAnalysisPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-5">
-                <SliderField label="Tg — Gap Tatico" tooltip="Quao grande e a lacuna que o jogador preenche no sistema tatico (0-10, maior = preenche lacuna critica)" value={tacticalGap} onChange={setTacticalGap} />
-                <SliderField label="Cx — Fit Contextual" tooltip="Encaixe no sistema/formacao: quao bem o jogador se adapta ao estilo de jogo (0-10)" value={contextualFit} onChange={setContextualFit} />
-                <SliderField label="Ep — Perfil de Experiencia" tooltip="Experiencia em contextos similares: liga, nivel de competicao, pressao (0-10)" value={experienceProfile} onChange={setExperienceProfile} />
-                <SliderField label="Ni — Indice Narrativo" tooltip="Impacto narrativo: reacao da midia, torcida, vestiario (0-10)" value={narrativeIndex} onChange={setNarrativeIndex} />
-                <SliderField label="Mf — Fortaleza Mental" tooltip="Capacidade de lidar com pressao, jogos grandes, adversidade (0-10)" value={mentalFortitude} onChange={setMentalFortitude} />
+                <SliderField label="Tg — Gap Tatico" tooltip="Quao grande e a lacuna que o jogador preenche no sistema tatico (0-10, maior = preenche lacuna critica)" value={tacticalGap} onChange={setTacticalGap} aiFilled={aiFilledFields} />
+                <SliderField label="Cx — Fit Contextual" tooltip="Encaixe no sistema/formacao: quao bem o jogador se adapta ao estilo de jogo (0-10)" value={contextualFit} onChange={setContextualFit} aiFilled={aiFilledFields} />
+                <SliderField label="Ep — Perfil de Experiencia" tooltip="Experiencia em contextos similares: liga, nivel de competicao, pressao (0-10)" value={experienceProfile} onChange={setExperienceProfile} aiFilled={aiFilledFields} />
+                <SliderField label="Ni — Indice Narrativo" tooltip="Impacto narrativo: reacao da midia, torcida, vestiario (0-10)" value={narrativeIndex} onChange={setNarrativeIndex} aiFilled={aiFilledFields} />
+                <SliderField label="Mf — Fortaleza Mental" tooltip="Capacidade de lidar com pressao, jogos grandes, adversidade (0-10)" value={mentalFortitude} onChange={setMentalFortitude} aiFilled={aiFilledFields} />
                 <Separator className="bg-zinc-800" />
-                <SliderField label="Mi — Micro-Risco Lesao" tooltip="Padrao de lesoes cronicas, fragilidade muscular, historico (0-10, maior = pior)" value={injuryMicroRisk} onChange={setInjuryMicroRisk} color="red" />
-                <SliderField label="S — Risco de Suspensao" tooltip="Historico disciplinar: cartoes, suspensoes, incidentes (0-10, maior = pior)" value={suspensionRisk} onChange={setSuspensionRisk} color="red" />
-                <SliderField label="Mj — Jitter de Mercado" tooltip="Volatilidade do mercado para este perfil de jogador (0-10, maior = mais volatil)" value={marketJitter} onChange={setMarketJitter} color="amber" />
+                <SliderField label="Mi — Micro-Risco Lesao" tooltip="Padrao de lesoes cronicas, fragilidade muscular, historico (0-10, maior = pior)" value={injuryMicroRisk} onChange={setInjuryMicroRisk} color="red" aiFilled={aiFilledFields} />
+                <SliderField label="S — Risco de Suspensao" tooltip="Historico disciplinar: cartoes, suspensoes, incidentes (0-10, maior = pior)" value={suspensionRisk} onChange={setSuspensionRisk} color="red" aiFilled={aiFilledFields} />
+                <SliderField label="Mj — Jitter de Mercado" tooltip="Volatilidade do mercado para este perfil de jogador (0-10, maior = mais volatil)" value={marketJitter} onChange={setMarketJitter} color="amber" aiFilled={aiFilledFields} />
                 <Separator className="bg-zinc-800" />
                 <div>
                   <div className="flex items-center gap-1.5 mb-1.5">
@@ -542,13 +737,13 @@ export default function NewAnalysisPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-5">
-                <SliderField label="C1 — Habilidade Tecnica" tooltip="Score de habilidade tecnica pura: controle, passe, finalizacao, visao de jogo" value={c1} max={100} onChange={setC1} />
-                <SliderField label="C2 — Inteligencia Tatica" tooltip="Leitura de jogo, posicionamento, decisoes em campo, awareness" value={c2} max={100} onChange={setC2} />
-                <SliderField label="C3 — Perfil Fisico" tooltip="Atributos fisicos: velocidade, resistencia, forca, agilidade" value={c3} max={100} onChange={setC3} />
-                <SliderField label="C4 — Comportamental" tooltip="Perfil psicologico: lideranca, disciplina, resiliencia, mentalidade" value={c4} max={100} onChange={setC4} />
-                <SliderField label="C5 — Narrativa" tooltip="Impacto de midia/narrativa: como a contratacao e percebida publicamente" value={c5} max={100} onChange={setC5} />
-                <SliderField label="C6 — Economico" tooltip="Eficiencia economica: relacao custo-beneficio, potencial de valorizacao" value={c6} max={100} onChange={setC6} />
-                <SliderField label="C7 — Composito IA" tooltip="Score composito gerado pelo modelo de IA preditiva do CORTEX" value={c7} max={100} onChange={setC7} />
+                <SliderField label="C1 — Habilidade Tecnica" tooltip="Score de habilidade tecnica pura: controle, passe, finalizacao, visao de jogo" value={c1} max={100} onChange={setC1} aiFilled={aiFilledFields} />
+                <SliderField label="C2 — Inteligencia Tatica" tooltip="Leitura de jogo, posicionamento, decisoes em campo, awareness" value={c2} max={100} onChange={setC2} aiFilled={aiFilledFields} />
+                <SliderField label="C3 — Perfil Fisico" tooltip="Atributos fisicos: velocidade, resistencia, forca, agilidade" value={c3} max={100} onChange={setC3} aiFilled={aiFilledFields} />
+                <SliderField label="C4 — Comportamental" tooltip="Perfil psicologico: lideranca, disciplina, resiliencia, mentalidade" value={c4} max={100} onChange={setC4} aiFilled={aiFilledFields} />
+                <SliderField label="C5 — Narrativa" tooltip="Impacto de midia/narrativa: como a contratacao e percebida publicamente" value={c5} max={100} onChange={setC5} aiFilled={aiFilledFields} />
+                <SliderField label="C6 — Economico" tooltip="Eficiencia economica: relacao custo-beneficio, potencial de valorizacao" value={c6} max={100} onChange={setC6} aiFilled={aiFilledFields} />
+                <SliderField label="C7 — Composito IA" tooltip="Score composito gerado pelo modelo de IA preditiva do CORTEX" value={c7} max={100} onChange={setC7} aiFilled={aiFilledFields} />
               </CardContent>
             </Card>
           )}
@@ -590,18 +785,73 @@ export default function NewAnalysisPage() {
                   </div>
 
                   <div className="bg-zinc-800/30 rounded-lg p-4 border border-zinc-800">
-                    <p className="text-xs text-zinc-500 mb-2">Parecer Simulado:</p>
+                    <p className="text-xs text-zinc-500 mb-2 flex items-center gap-1">
+                      {aiFilledFields ? (
+                        <>Parecer ORACLE <AIBadge /></>
+                      ) : (
+                        "Parecer Simulado:"
+                      )}
+                    </p>
                     <p className="text-sm text-zinc-300 leading-relaxed">
-                      Com base nos parametros fornecidos, {selectedPlayer?.name} apresenta um indice de valor (Vx) de{" "}
-                      {clampedVx.toFixed(2)} contra um risco (Rx) de {clampedRx.toFixed(2)}.{" "}
-                      {decision === "CONTRATAR" && "A relacao risco-retorno e favoravel. Recomenda-se avancar com a negociacao."}
-                      {decision === "BLINDAR" && "O jogador demonstra alto valor com risco controlado. Prioridade maxima para protecao contratual."}
-                      {decision === "MONITORAR" && "Os indicadores sugerem potencial, mas e necessario acompanhamento antes de decisao definitiva."}
-                      {decision === "RECUSAR" && "O nivel de risco supera o valor potencial. Nao recomendado neste momento."}
-                      {decision === "ALERTA_CINZA" && "Sinais mistos detectados. Investigacao aprofundada e necessaria antes de qualquer decisao."}
-                      {decision === "EMPRESTIMO" && "O perfil sugere que um emprestimo seria a melhor estrategia de desenvolvimento."}
+                      {aiFilledFields && aiReasoning ? aiReasoning : (
+                        <>
+                          Com base nos parametros fornecidos, {selectedPlayer?.name} apresenta um indice de valor (Vx) de{" "}
+                          {clampedVx.toFixed(2)} contra um risco (Rx) de {clampedRx.toFixed(2)}.{" "}
+                          {decision === "CONTRATAR" && "A relacao risco-retorno e favoravel. Recomenda-se avancar com a negociacao."}
+                          {decision === "BLINDAR" && "O jogador demonstra alto valor com risco controlado. Prioridade maxima para protecao contratual."}
+                          {decision === "MONITORAR" && "Os indicadores sugerem potencial, mas e necessario acompanhamento antes de decisao definitiva."}
+                          {decision === "RECUSAR" && "O nivel de risco supera o valor potencial. Nao recomendado neste momento."}
+                          {decision === "ALERTA_CINZA" && "Sinais mistos detectados. Investigacao aprofundada e necessaria antes de qualquer decisao."}
+                          {decision === "EMPRESTIMO" && "O perfil sugere que um emprestimo seria a melhor estrategia de desenvolvimento."}
+                        </>
+                      )}
                     </p>
                   </div>
+
+                  {/* AI-generated extras */}
+                  {aiFilledFields && (aiRecommendedActions.length > 0 || aiRisks.length > 0 || aiComparables.length > 0) && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {aiRecommendedActions.length > 0 && (
+                        <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-lg p-3">
+                          <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-wider mb-2">Proximos Passos</p>
+                          <ul className="space-y-1">
+                            {aiRecommendedActions.map((action, i) => (
+                              <li key={i} className="text-xs text-zinc-400 flex items-start gap-1.5">
+                                <span className="text-emerald-500 mt-0.5">&#8226;</span>
+                                {action}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {aiRisks.length > 0 && (
+                        <div className="bg-red-500/5 border border-red-500/20 rounded-lg p-3">
+                          <p className="text-[10px] font-semibold text-red-400 uppercase tracking-wider mb-2">Riscos Identificados</p>
+                          <ul className="space-y-1">
+                            {aiRisks.map((risk, i) => (
+                              <li key={i} className="text-xs text-zinc-400 flex items-start gap-1.5">
+                                <span className="text-red-500 mt-0.5">&#8226;</span>
+                                {risk}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {aiComparables.length > 0 && (
+                        <div className="bg-cyan-500/5 border border-cyan-500/20 rounded-lg p-3">
+                          <p className="text-[10px] font-semibold text-cyan-400 uppercase tracking-wider mb-2">Comparaveis</p>
+                          <ul className="space-y-1">
+                            {aiComparables.map((comp, i) => (
+                              <li key={i} className="text-xs text-zinc-400 flex items-start gap-1.5">
+                                <span className="text-cyan-500 mt-0.5">&#8226;</span>
+                                {comp}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -628,7 +878,7 @@ export default function NewAnalysisPage() {
               <div className="flex gap-3 justify-end">
                 <Button
                   variant="outline"
-                  onClick={() => { setShowResult(false); setStep(1) }}
+                  onClick={() => { setShowResult(false); setStep(1); setAiFilledFields(false); setAiReasoning(""); setAiRecommendedActions([]); setAiRisks([]); setAiComparables([]) }}
                   className="border-zinc-700 text-zinc-400 hover:text-zinc-200"
                 >
                   Nova Analise

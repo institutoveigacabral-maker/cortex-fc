@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useSession, signOut } from "next-auth/react"
 import {
   Brain,
   LayoutDashboard,
@@ -17,6 +18,7 @@ import {
   User,
   Menu,
   X,
+  LogOut,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -43,6 +45,7 @@ export default function DashboardLayout({
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const pathname = usePathname()
+  const { data: session } = useSession()
 
   const sidebarContent = (
     <>
@@ -194,7 +197,7 @@ export default function DashboardLayout({
             </Button>
             <span className="text-xs text-zinc-600 font-mono">v2.1.0</span>
             <span className="text-zinc-800">|</span>
-            <span className="text-xs text-zinc-500">Nottingham Forest FC</span>
+            <span className="text-xs text-zinc-500">{session?.user?.orgName || "Carregando..."}</span>
           </div>
 
           <div className="flex items-center gap-4">
@@ -206,10 +209,18 @@ export default function DashboardLayout({
                 <User className="w-4 h-4 text-zinc-400" />
               </div>
               <div className="hidden md:block">
-                <p className="text-xs font-medium text-zinc-300">Analista NFFC</p>
-                <p className="text-[10px] text-zinc-600">club_professional</p>
+                <p className="text-xs font-medium text-zinc-300">{session?.user?.name || "..."}</p>
+                <p className="text-[10px] text-zinc-600">{session?.user?.role || "..."}</p>
               </div>
             </div>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="text-zinc-500 hover:text-red-400"
+              onClick={() => signOut({ callbackUrl: "/login" })}
+            >
+              <LogOut className="w-4 h-4" />
+            </Button>
           </div>
         </header>
 

@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import bcrypt from "bcryptjs";
 import { db } from "./index";
 import {
   organizations,
@@ -666,7 +667,7 @@ async function seed() {
     id: USER_ID,
     email: "analyst@cortexfc.com",
     name: "Cortex Analyst",
-    passwordHash: "$2b$10$placeholder_hash_for_seed_data_only",
+    passwordHash: await bcrypt.hash("cortex2025", 10),
     orgId: ORG_ID,
     role: "admin",
   });

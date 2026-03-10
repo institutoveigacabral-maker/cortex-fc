@@ -90,16 +90,16 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validate numeric ranges: vx and rx are 0-1
-    if (!isNumberInRange(body.vx, 0, 1)) {
+    // Validate numeric ranges: vx and rx are 0-3 (per CORTEX methodology)
+    if (!isNumberInRange(body.vx, 0, 3)) {
       return NextResponse.json(
-        { error: "vx must be a number between 0 and 1" },
+        { error: "vx must be a number between 0 and 3" },
         { status: 400 }
       );
     }
-    if (!isNumberInRange(body.rx, 0, 1)) {
+    if (!isNumberInRange(body.rx, 0, 3)) {
       return NextResponse.json(
-        { error: "rx must be a number between 0 and 1" },
+        { error: "rx must be a number between 0 and 3" },
         { status: 400 }
       );
     }

@@ -3,7 +3,8 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Brain, Eye, EyeOff, Mail, Lock, User, Building } from "lucide-react"
+import { signIn } from "next-auth/react"
+import { Brain, Eye, EyeOff, Mail, Lock, User, Building, AlertCircle } from "lucide-react"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -14,10 +15,57 @@ export default function RegisterPage() {
   const [club, setClub] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  function handleRegister(e: React.FormEvent) {
+  async function handleRegister(e: React.FormEvent) {
     e.preventDefault()
-    router.push("/dashboard")
+    setError("")
+    setLoading(true)
+
+    if (password !== confirmPassword) {
+      setError("Senhas não coincidem")
+      setLoading(false)
+      return
+    }
+
+    if (password.length < 6) {
+      setError("Senha deve ter no mínimo 6 caracteres")
+      setLoading(false)
+      return
+    }
+
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password, clubName: club }),
+      })
+
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error || "Erro ao criar conta")
+        setLoading(false)
+        return
+      }
+
+      // Auto login after register
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        setError("Conta criada, mas erro ao fazer login. Tente fazer login manualmente.")
+        setLoading(false)
+      } else {
+        router.push("/dashboard")
+      }
+    } catch {
+      setError("Erro ao criar conta. Tente novamente.")
+      setLoading(false)
+    }
   }
 
   return (
@@ -150,12 +198,21 @@ export default function RegisterPage() {
               </div>
             </div>
 
+            {/* Error message */}
+            {error && (
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                <p className="text-xs text-red-400">{error}</p>
+              </div>
+            )}
+
             {/* Submit */}
             <button
               type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 shadow-lg shadow-emerald-900/30 hover:shadow-emerald-900/50 hover:-translate-y-0.5 mt-2"
+              disabled={loading}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 shadow-lg shadow-emerald-900/30 hover:shadow-emerald-900/50 hover:-translate-y-0.5 mt-2"
             >
-              Criar Conta
+              {loading ? "Criando conta..." : "Criar Conta"}
             </button>
           </form>
 
