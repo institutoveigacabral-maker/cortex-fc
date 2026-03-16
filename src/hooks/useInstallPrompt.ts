@@ -13,20 +13,22 @@ export function useInstallPrompt() {
 
   useEffect(() => {
     if (window.matchMedia("(display-mode: standalone)").matches) {
-      setIsInstalled(true)
+      queueMicrotask(() => setIsInstalled(true))
       return
     }
 
     const handler = (e: Event) => {
       e.preventDefault()
-      setInstallPrompt(e as BeforeInstallPromptEvent)
+      queueMicrotask(() => setInstallPrompt(e as BeforeInstallPromptEvent))
     }
 
     window.addEventListener("beforeinstallprompt", handler)
 
     const installHandler = () => {
-      setIsInstalled(true)
-      setInstallPrompt(null)
+      queueMicrotask(() => {
+        setIsInstalled(true)
+        setInstallPrompt(null)
+      })
     }
 
     window.addEventListener("appinstalled", installHandler)

@@ -64,7 +64,7 @@ export function useOfflineQuery<T>({
   }, [key, fetcher, ttl, enabled, isOnline])
 
   useEffect(() => {
-    fetchData()
+    queueMicrotask(() => fetchData())
   }, [fetchData])
 
   // Refetch when coming back online

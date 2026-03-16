@@ -6,10 +6,10 @@ export function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(true)
 
   useEffect(() => {
-    setIsOnline(navigator.onLine)
+    queueMicrotask(() => setIsOnline(navigator.onLine))
 
-    const handleOnline = () => setIsOnline(true)
-    const handleOffline = () => setIsOnline(false)
+    const handleOnline = () => queueMicrotask(() => setIsOnline(true))
+    const handleOffline = () => queueMicrotask(() => setIsOnline(false))
 
     window.addEventListener("online", handleOnline)
     window.addEventListener("offline", handleOffline)

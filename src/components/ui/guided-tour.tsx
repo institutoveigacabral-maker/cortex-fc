@@ -107,7 +107,7 @@ function GuidedTour({ steps, tourId, onComplete }: GuidedTourProps) {
   useEffect(() => {
     if (!isTourCompleted(tourId) && steps.length > 0) {
       // Small delay to let dashboard elements render
-      const timer = setTimeout(() => setActive(true), 800)
+      const timer = setTimeout(() => queueMicrotask(() => setActive(true)), 800)
       return () => clearTimeout(timer)
     }
   }, [tourId, steps.length])
@@ -121,7 +121,7 @@ function GuidedTour({ steps, tourId, onComplete }: GuidedTourProps) {
       // Wait for scroll to settle
       const timer = setTimeout(() => {
         const rect = el.getBoundingClientRect()
-        setTargetRect(rect)
+        queueMicrotask(() => setTargetRect(rect))
       }, 300)
       return () => clearTimeout(timer)
     } else {
@@ -142,7 +142,8 @@ function GuidedTour({ steps, tourId, onComplete }: GuidedTourProps) {
       if (!step) return
       const el = document.querySelector(step.target)
       if (el) {
-        setTargetRect(el.getBoundingClientRect())
+        const rect = el.getBoundingClientRect()
+        queueMicrotask(() => setTargetRect(rect))
       }
     }
     window.addEventListener("resize", handleResize)
@@ -159,7 +160,7 @@ function GuidedTour({ steps, tourId, onComplete }: GuidedTourProps) {
       tooltipEl.offsetWidth,
       tooltipEl.offsetHeight
     )
-    setTooltipPos(pos)
+    queueMicrotask(() => setTooltipPos(pos))
   }, [targetRect, step])
 
   const closeTour = useCallback(() => {
@@ -365,7 +366,8 @@ function TourRestartButton({ tourId, onRestart }: { tourId: string; onRestart: (
   const [completed, setCompleted] = useState(false)
 
   useEffect(() => {
-    setCompleted(isTourCompleted(tourId))
+    const val = isTourCompleted(tourId)
+    queueMicrotask(() => setCompleted(val))
   }, [tourId])
 
   if (!completed) return null

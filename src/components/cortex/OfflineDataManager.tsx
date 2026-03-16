@@ -14,7 +14,7 @@ export function OfflineDataManager() {
 
   const refreshCacheInfo = useCallback(async () => {
     const size = await getCacheSize()
-    setCacheCount(size)
+    queueMicrotask(() => setCacheCount(size))
   }, [])
 
   useEffect(() => {
@@ -22,9 +22,11 @@ export function OfflineDataManager() {
     // Read preference from localStorage
     try {
       const stored = localStorage.getItem("cortex-fc-offline-enabled")
-      if (stored !== null) setOfflineEnabled(stored === "true")
       const syncTime = localStorage.getItem("cortex-fc-last-sync")
-      if (syncTime) setLastSync(syncTime)
+      queueMicrotask(() => {
+        if (stored !== null) setOfflineEnabled(stored === "true")
+        if (syncTime) setLastSync(syncTime)
+      })
     } catch {
       // localStorage not available
     }

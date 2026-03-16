@@ -76,8 +76,10 @@ export function AgentLaunchModal({ isOpen, onClose, agentType, agentName }: Agen
     if (searchQuery.length >= 2) {
       searchTimeout.current = setTimeout(() => searchPlayers(searchQuery), 300)
     } else {
-      setSearchResults([])
-      setShowDropdown(false)
+      queueMicrotask(() => {
+        setSearchResults([])
+        setShowDropdown(false)
+      })
     }
     return () => {
       if (searchTimeout.current) clearTimeout(searchTimeout.current)

@@ -30,7 +30,7 @@ export function WelcomeModal() {
   useEffect(() => {
     const seen = localStorage.getItem(STORAGE_KEY)
     if (!seen) {
-      setOpen(true)
+      queueMicrotask(() => setOpen(true))
     }
   }, [])
 

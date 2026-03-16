@@ -12,7 +12,8 @@ export function InstallPrompt() {
   const [installing, setInstalling] = useState(false)
 
   useEffect(() => {
-    setDismissed(localStorage.getItem(DISMISS_KEY) === "true")
+    const val = localStorage.getItem(DISMISS_KEY) === "true"
+    queueMicrotask(() => setDismissed(val))
   }, [])
 
   if (!canInstall || dismissed) return null

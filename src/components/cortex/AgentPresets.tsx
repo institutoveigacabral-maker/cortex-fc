@@ -72,7 +72,8 @@ export function AgentPresets({
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
-        setPresets(JSON.parse(stored))
+        const parsed = JSON.parse(stored)
+        queueMicrotask(() => setPresets(parsed))
       }
     } catch {
       // Ignore parse errors

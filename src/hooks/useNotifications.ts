@@ -35,6 +35,7 @@ export function useNotifications() {
   const failCountRef = useRef(0)
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const mountedRef = useRef(true)
+  const connectRef = useRef<() => void>(() => {})
 
   // Fetch initial data
   const fetchNotifications = useCallback(async () => {
@@ -181,10 +182,13 @@ export function useNotifications() {
       const delay = Math.min(1000 * Math.pow(2, retryCountRef.current), MAX_RETRY_DELAY)
       retryCountRef.current += 1
       setTimeout(() => {
-        if (mountedRef.current) connect()
+        if (mountedRef.current) connectRef.current()
       }, delay)
     }
   }, [toast, startPolling, stopPolling])
+
+  // Keep ref in sync with latest connect
+  connectRef.current = connect
 
   useEffect(() => {
     mountedRef.current = true

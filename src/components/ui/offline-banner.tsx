@@ -13,15 +13,21 @@ export function OfflineBanner() {
   useEffect(() => {
     if (!isOnline) {
       wasOffline.current = true
-      setRestored(false)
-      setVisible(true)
+      queueMicrotask(() => {
+        setRestored(false)
+        setVisible(true)
+      })
     } else if (wasOffline.current) {
       wasOffline.current = false
-      setRestored(true)
-      setVisible(true)
+      queueMicrotask(() => {
+        setRestored(true)
+        setVisible(true)
+      })
       const timer = setTimeout(() => {
-        setVisible(false)
-        setRestored(false)
+        queueMicrotask(() => {
+          setVisible(false)
+          setRestored(false)
+        })
       }, 3000)
       return () => clearTimeout(timer)
     }
