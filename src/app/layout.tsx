@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { SessionProvider } from "next-auth/react"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import "./globals.css"
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,6 +68,8 @@ export default function RootLayout({
         <SessionProvider>
           <TooltipProvider delayDuration={300}>{children}</TooltipProvider>
         </SessionProvider>
+              <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
