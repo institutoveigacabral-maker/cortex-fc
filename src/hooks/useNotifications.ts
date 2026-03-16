@@ -194,8 +194,10 @@ export function useNotifications() {
 
   useEffect(() => {
     mountedRef.current = true
-    fetchNotifications()
-    connect()
+    queueMicrotask(() => {
+      fetchNotifications()
+      connect()
+    })
 
     return () => {
       mountedRef.current = false
