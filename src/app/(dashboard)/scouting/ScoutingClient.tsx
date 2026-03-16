@@ -301,7 +301,7 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
   // Alerts
   // ============================================
 
-  async function loadAlerts() {
+  const loadAlerts = useCallback(async () => {
     setAlertsLoading(true)
     try {
       const res = await fetch("/api/scouting/alerts")
@@ -311,13 +311,15 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
       }
     } catch {}
     setAlertsLoading(false)
-  }
+  }, [])
 
   useEffect(() => {
     if (activeTab === "alerts" && alerts.length === 0) {
-      loadAlerts()
+      // Schedule outside the synchronous effect to avoid cascading renders
+      const id = requestAnimationFrame(() => { loadAlerts() })
+      return () => cancelAnimationFrame(id)
     }
-  }, [activeTab])
+  }, [activeTab, alerts.length, loadAlerts])
 
   // ============================================
   // SCOUT agent

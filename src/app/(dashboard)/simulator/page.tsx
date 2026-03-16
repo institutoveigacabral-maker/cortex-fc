@@ -170,7 +170,7 @@ export default function SimulatorPage() {
             Simulador de Janela
           </h1>
           <p className="text-sm text-zinc-500 mt-1">
-            "E se contratarmos X e vendermos Y?" — simule cenarios de transferencia
+            &ldquo;E se contratarmos X e vendermos Y?&rdquo; — simule cenarios de transferencia
           </p>
         </div>
         <Button

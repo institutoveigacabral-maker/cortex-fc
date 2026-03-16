@@ -18,7 +18,7 @@ describe("checkRateLimit", () => {
         pending: Promise.resolve(),
       }),
     };
-    const result = await checkRateLimit(mockLimiter as any, "test-user");
+    const result = await checkRateLimit(mockLimiter as unknown as Parameters<typeof checkRateLimit>[0], "test-user");
     expect(result.success).toBe(true);
     expect(result.remaining).toBe(99);
   });
@@ -33,7 +33,7 @@ describe("checkRateLimit", () => {
         pending: Promise.resolve(),
       }),
     };
-    const result = await checkRateLimit(mockLimiter as any, "spam-ip");
+    const result = await checkRateLimit(mockLimiter as unknown as Parameters<typeof checkRateLimit>[0], "spam-ip");
     expect(result.success).toBe(false);
     expect(result.remaining).toBe(0);
   });

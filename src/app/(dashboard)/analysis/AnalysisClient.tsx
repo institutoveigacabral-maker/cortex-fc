@@ -76,7 +76,7 @@ export function AnalysisClient({ analyses }: Props) {
     }
   }
 
-  function SortHeader({ field, children }: { field: SortField; children: React.ReactNode }) {
+  function renderSortHeader(field: SortField, children: React.ReactNode) {
     const isActive = sortField === field
     return (
       <button
@@ -218,7 +218,7 @@ export function AnalysisClient({ analyses }: Props) {
               <thead>
                 <tr className="border-b border-zinc-800 bg-zinc-900/50">
                   <th className="text-left py-3.5 px-4">
-                    <SortHeader field="name">Jogador</SortHeader>
+                    {renderSortHeader("name", "Jogador")}
                   </th>
                   <th className="text-left py-3.5 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     Posicao
@@ -227,13 +227,13 @@ export function AnalysisClient({ analyses }: Props) {
                     Clube
                   </th>
                   <th className="text-center py-3.5 px-3">
-                    <SortHeader field="vx">Vx</SortHeader>
+                    {renderSortHeader("vx", "Vx")}
                   </th>
                   <th className="text-center py-3.5 px-3">
-                    <SortHeader field="rx">Rx</SortHeader>
+                    {renderSortHeader("rx", "Rx")}
                   </th>
                   <th className="text-center py-3.5 px-3">
-                    <SortHeader field="scn">SCN+</SortHeader>
+                    {renderSortHeader("scn", "SCN+")}
                   </th>
                   <th className="text-center py-3.5 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     Decisao
@@ -242,7 +242,7 @@ export function AnalysisClient({ analyses }: Props) {
                     Confianca
                   </th>
                   <th className="text-right py-3.5 px-4">
-                    <SortHeader field="date">Data</SortHeader>
+                    {renderSortHeader("date", "Data")}
                   </th>
                 </tr>
               </thead>

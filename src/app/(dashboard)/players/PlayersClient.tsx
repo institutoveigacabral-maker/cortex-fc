@@ -96,7 +96,7 @@ export function PlayersClient({ players }: { players: PlayerListItem[] }) {
     }
   }
 
-  function SortHeader({ field, children }: { field: SortField; children: React.ReactNode }) {
+  function renderSortHeader(field: SortField, children: React.ReactNode) {
     const isActive = sortField === field
     return (
       <button
@@ -260,22 +260,22 @@ export function PlayersClient({ players }: { players: PlayerListItem[] }) {
                 <tr className="border-b border-zinc-800 bg-zinc-900/50">
                   <th className="text-left py-3 px-4 w-8"></th>
                   <th className="text-left py-3 px-3">
-                    <SortHeader field="name">Jogador</SortHeader>
+                    {renderSortHeader("name", "Jogador")}
                   </th>
                   <th className="text-left py-3 px-3">
-                    <SortHeader field="position">Posicao</SortHeader>
+                    {renderSortHeader("position", "Posicao")}
                   </th>
                   <th className="text-left py-3 px-3">
-                    <SortHeader field="club">Clube</SortHeader>
+                    {renderSortHeader("club", "Clube")}
                   </th>
                   <th className="text-center py-3 px-3">
-                    <SortHeader field="age">Idade</SortHeader>
+                    {renderSortHeader("age", "Idade")}
                   </th>
                   <th className="text-right py-3 px-3">
-                    <SortHeader field="marketValue">Valor (M&euro;)</SortHeader>
+                    {renderSortHeader("marketValue", <>Valor (M&euro;)</>)}
                   </th>
                   <th className="text-center py-3 px-3">
-                    <SortHeader field="scn">SCN+</SortHeader>
+                    {renderSortHeader("scn", "SCN+")}
                   </th>
                   <th className="text-center py-3 px-3">
                     <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">

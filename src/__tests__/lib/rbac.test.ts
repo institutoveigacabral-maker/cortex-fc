@@ -50,7 +50,7 @@ describe("hasPermission", () => {
   });
 
   it("returns false for unknown roles", () => {
-    expect(hasPermission("unknown" as any, "read")).toBe(false);
+    expect(hasPermission("unknown" as unknown as Parameters<typeof hasPermission>[0], "read")).toBe(false);
   });
 });
 
