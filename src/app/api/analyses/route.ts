@@ -4,6 +4,7 @@ import { requireAuth } from "@/lib/auth-helpers";
 import { hasPermission } from "@/lib/rbac";
 import { isValidUUID, isNumberInRange, stripHtmlTags } from "@/lib/validation";
 import { inngest } from "@/lib/inngest-client";
+import { invalidateOnMutation } from "@/lib/cache";
 
 const VALID_DECISIONS = [
   "CONTRATAR",
@@ -181,6 +182,9 @@ export async function POST(request: Request) {
     } catch (err) {
       console.error("Failed to send analysis.created event:", err);
     }
+
+    // Invalidate related caches
+    await invalidateOnMutation("analysis.created", session!.orgId);
 
     return NextResponse.json({ data: analysis }, { status: 201 });
   } catch (error) {

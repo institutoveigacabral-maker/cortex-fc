@@ -5,6 +5,7 @@ import { db } from "@/db/index"
 import { players, clubs, transfers as transfersTable } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import type { PlayerCluster } from "@/types/cortex"
+import { invalidateOnMutation } from "@/lib/cache"
 
 function mapPositionToCluster(position: string): PlayerCluster {
   const pos = position.toLowerCase()
@@ -150,6 +151,9 @@ export async function POST(request: Request) {
     } catch {
       // Transfer import is best-effort — don't fail the whole import
     }
+
+    // Invalidate related caches
+    await invalidateOnMutation("player.imported", session!.orgId)
 
     return NextResponse.json({ data: newPlayer, imported: true })
   } catch (err) {

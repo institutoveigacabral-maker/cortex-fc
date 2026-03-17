@@ -47,6 +47,26 @@ type CortexEvents = {
       prefix?: string;
     };
   };
+  "agent/run.requested": {
+    data: {
+      agentType: string;
+      systemPrompt: string;
+      userMessage: string;
+      model?: string;
+      maxTokens?: number;
+      userId: string;
+      orgId: string;
+      metadata?: Record<string, unknown>;
+    };
+  };
+  "report/generate.requested": {
+    data: {
+      reportType: string;
+      orgId: string;
+      userId: string;
+      params?: Record<string, unknown>;
+    };
+  };
 };
 
 export const inngest = new Inngest({

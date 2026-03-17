@@ -15,7 +15,7 @@ const hasRedis =
   !!process.env.UPSTASH_REDIS_REST_URL &&
   !!process.env.UPSTASH_REDIS_REST_TOKEN;
 
-const redis = hasRedis
+export const redis = hasRedis
   ? new Redis({
       url: process.env.UPSTASH_REDIS_REST_URL!,
       token: process.env.UPSTASH_REDIS_REST_TOKEN!,
@@ -193,4 +193,61 @@ export async function invalidateAgentCache(
   } catch {
     // Silently fail
   }
+}
+
+// ============================================
+// AUTO CACHE INVALIDATION
+// ============================================
+
+type MutationType =
+  | "analysis.created"
+  | "analysis.deleted"
+  | "player.imported"
+  | "player.deleted"
+  | "scouting.updated"
+  | "scouting.created"
+  | "report.generated"
+  | "agent.completed"
+
+const INVALIDATION_MAP: Record<MutationType, (orgId: string) => string[]> = {
+  "analysis.created": (orgId) => [
+    CACHE_KEYS.dashboardStats(orgId),
+    `players:list:${orgId}:*`,
+  ],
+  "analysis.deleted": (orgId) => [
+    CACHE_KEYS.dashboardStats(orgId),
+  ],
+  "player.imported": (orgId) => [
+    CACHE_KEYS.dashboardStats(orgId),
+    CACHE_KEYS.playerList(orgId, 1),
+  ],
+  "player.deleted": (orgId) => [
+    CACHE_KEYS.dashboardStats(orgId),
+    CACHE_KEYS.playerList(orgId, 1),
+  ],
+  "scouting.updated": (orgId) => [
+    CACHE_KEYS.scoutingTargets(orgId),
+    CACHE_KEYS.dashboardStats(orgId),
+  ],
+  "scouting.created": (orgId) => [
+    CACHE_KEYS.scoutingTargets(orgId),
+    CACHE_KEYS.dashboardStats(orgId),
+  ],
+  "report.generated": (orgId) => [
+    CACHE_KEYS.dashboardStats(orgId),
+  ],
+  "agent.completed": (orgId) => [
+    CACHE_KEYS.agentMetrics(orgId),
+    CACHE_KEYS.dashboardStats(orgId),
+  ],
+}
+
+export async function invalidateOnMutation(mutation: MutationType, orgId: string): Promise<void> {
+  const keysToInvalidate = INVALIDATION_MAP[mutation]?.(orgId) || []
+  await Promise.all(keysToInvalidate.map(key => {
+    if (key.includes("*")) {
+      return invalidateCachePrefix(key.replace("*", ""))
+    }
+    return invalidateCache(key)
+  }))
 }

@@ -1,8 +1,10 @@
 import { serve } from "inngest/next";
 import { inngest } from "@/lib/inngest-client";
 import { functions } from "@/inngest/functions";
+import { runAgentBackground } from "@/inngest/functions/agent-background";
+import { generateReportBackground } from "@/inngest/functions/generate-report";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
-  functions,
+  functions: [...functions, runAgentBackground, generateReportBackground],
 });

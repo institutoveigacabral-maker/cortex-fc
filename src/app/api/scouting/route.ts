@@ -6,6 +6,7 @@ import { requireAuth } from "@/lib/auth-helpers";
 import { isValidUUID } from "@/lib/validation";
 import { hasPermission } from "@/lib/rbac";
 import { inngest } from "@/lib/inngest-client";
+import { invalidateOnMutation } from "@/lib/cache";
 
 // GET — list scouting targets for the org
 export async function GET() {
@@ -139,6 +140,9 @@ export async function POST(request: Request) {
     } catch (err) {
       console.error("Failed to send scouting.target.added event:", err);
     }
+
+    // Invalidate related caches
+    await invalidateOnMutation("scouting.created", session!.orgId);
 
     return NextResponse.json({ data: inserted }, { status: 201 });
   } catch (error) {
