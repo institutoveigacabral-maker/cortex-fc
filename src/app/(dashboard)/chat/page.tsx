@@ -198,10 +198,10 @@ export default function ChatPage() {
         <div className="flex-1 overflow-y-auto py-2">
           {loadingConvs ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="w-4 h-4 animate-spin text-zinc-600" />
+              <Loader2 className="w-4 h-4 animate-spin text-zinc-500" />
             </div>
           ) : conversations.length === 0 ? (
-            <p className="text-xs text-zinc-600 text-center py-8 px-4">
+            <p className="text-xs text-zinc-500 text-center py-8 px-4">
               Nenhuma conversa ainda. Comece perguntando sobre seus jogadores.
             </p>
           ) : (
@@ -220,7 +220,7 @@ export default function ChatPage() {
                   className="flex-1 text-left min-w-0"
                 >
                   <p className="text-xs truncate">{conv.title}</p>
-                  <p className="text-[10px] text-zinc-600 mt-0.5">
+                  <p className="text-xs text-zinc-500 mt-0.5">
                     {new Date(conv.updatedAt).toLocaleDateString("pt-BR")}
                   </p>
                 </button>
@@ -259,7 +259,7 @@ export default function ChatPage() {
               Chat IA Contextual
             </span>
           </div>
-          <span className="text-[10px] text-zinc-600 font-mono ml-auto">
+          <span className="text-xs text-zinc-500 font-mono ml-auto">
             claude-sonnet-4
           </span>
         </div>
@@ -296,8 +296,8 @@ export default function ChatPage() {
           ) : messages.length === 0 ? (
             // Active conversation but no messages
             <div className="flex flex-col items-center justify-center h-full">
-              <Bot className="w-10 h-10 text-zinc-700 mb-3" />
-              <p className="text-sm text-zinc-600">
+              <Bot className="w-10 h-10 text-zinc-500 mb-3" />
+              <p className="text-sm text-zinc-500">
                 Comece a conversa...
               </p>
             </div>
@@ -332,11 +332,11 @@ export default function ChatPage() {
                         <span className="text-xs font-medium text-zinc-400">
                           {msg.role === "assistant" ? "CORTEX IA" : "Voce"}
                         </span>
-                        <span className="text-[10px] text-zinc-700">
+                        <span className="text-xs text-zinc-500">
                           {formatTime(msg.createdAt)}
                         </span>
                         {msg.tokensUsed && (
-                          <span className="text-[10px] text-zinc-700 font-mono">
+                          <span className="text-xs text-zinc-500 font-mono">
                             {msg.tokensUsed} tokens
                           </span>
                         )}
@@ -360,7 +360,7 @@ export default function ChatPage() {
                         <span className="w-2 h-2 rounded-full bg-emerald-500/40 animate-bounce" style={{ animationDelay: "150ms" }} />
                         <span className="w-2 h-2 rounded-full bg-emerald-500/40 animate-bounce" style={{ animationDelay: "300ms" }} />
                       </div>
-                      <span className="text-xs text-zinc-600">Analisando contexto...</span>
+                      <span className="text-xs text-zinc-500">Analisando contexto...</span>
                     </div>
                   </div>
                 </div>
@@ -382,7 +382,7 @@ export default function ChatPage() {
                   onKeyDown={handleKeyDown}
                   placeholder="Pergunte sobre jogadores, analises, scouting..."
                   rows={1}
-                  className="w-full resize-none rounded-xl border border-zinc-700/40 bg-zinc-800/40 px-4 py-3 text-sm text-zinc-300 placeholder:text-zinc-600 outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
+                  className="w-full resize-none rounded-xl border border-zinc-700/40 bg-zinc-800/40 px-4 py-3 text-sm text-zinc-300 placeholder:text-zinc-500 outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
                   style={{ minHeight: "44px", maxHeight: "120px" }}
                   onInput={(e) => {
                     const target = e.target as HTMLTextAreaElement
@@ -399,7 +399,7 @@ export default function ChatPage() {
                 <Send className="w-4 h-4" />
               </Button>
             </div>
-            <p className="text-[10px] text-zinc-700 mt-2 text-center">
+            <p className="text-xs text-zinc-500 mt-2 text-center">
               Respostas baseadas nos dados da sua organizacao. Claude Sonnet 4.
             </p>
           </div>

@@ -71,7 +71,7 @@ function NeuralTooltipContent({
         minWidth: 160,
       }}
     >
-      <p style={{ fontSize: 11, color: "#a1a1aa", marginBottom: 6, fontWeight: 600 }}>
+      <p style={{ fontSize: 12, color: "#a1a1aa", marginBottom: 6, fontWeight: 600 }}>
         {data.layer}
       </p>
 
@@ -86,7 +86,7 @@ function NeuralTooltipContent({
             flexShrink: 0,
           }}
         />
-        <span style={{ fontSize: 11, color: "#d4d4d8", flex: 1 }}>
+        <span style={{ fontSize: 12, color: "#d4d4d8", flex: 1 }}>
           {playerName || "Jogador"}
         </span>
         <span style={{ fontSize: 12, color: "#fafafa", fontWeight: 700, fontFamily: "monospace" }}>
@@ -127,7 +127,7 @@ function NeuralTooltipContent({
                 flexShrink: 0,
               }}
             />
-            <span style={{ fontSize: 11, color: "#d4d4d8", flex: 1 }}>
+            <span style={{ fontSize: 12, color: "#d4d4d8", flex: 1 }}>
               {benchmarkLabel || "Benchmark"}
             </span>
             <span style={{ fontSize: 12, color: "#fafafa", fontWeight: 700, fontFamily: "monospace" }}>
@@ -161,7 +161,7 @@ function NeuralTooltipContent({
             const color = delta > 0 ? "#10b981" : delta < 0 ? "#ef4444" : "#a1a1aa"
             const sign = delta > 0 ? "+" : ""
             return (
-              <div style={{ textAlign: "right", fontSize: 10, color, fontWeight: 600, fontFamily: "monospace" }}>
+              <div style={{ textAlign: "right", fontSize: 12, color, fontWeight: 600, fontFamily: "monospace" }}>
                 {sign}{delta} pts
               </div>
             )
@@ -268,7 +268,7 @@ export function NeuralRadar({
           <p className="text-sm font-semibold text-zinc-200">{playerName}</p>
         </div>
       )}
-      <div className="relative w-full max-w-[220px] sm:max-w-none" style={{ width: size, height: size }}>
+      <div className="relative w-full max-w-[220px] sm:max-w-none overflow-hidden" style={{ width: Math.min(size, 300), height: Math.min(size, 300) }}>
         {/* Center score overlay */}
         {scnScore !== undefined && (
           <div
@@ -278,12 +278,12 @@ export function NeuralRadar({
             <span className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent drop-shadow-lg">
               {scnScore}
             </span>
-            <span className="text-[10px] font-mono text-emerald-400/70 tracking-widest uppercase mt-0.5">
+            <span className="text-xs font-mono text-emerald-400/70 tracking-widest uppercase mt-0.5">
               SCN+
             </span>
           </div>
         )}
-        <ResponsiveContainer width={size} height={size}>
+        <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={data} cx="50%" cy="50%" outerRadius="70%">
             <defs>
               <linearGradient id="neuralRadarGradient" x1="0" y1="0" x2="1" y2="1">
@@ -382,23 +382,25 @@ export function NeuralRadar({
 
       {/* Legend */}
       {(playerName || hasBenchmark) && (
-        <div className="flex items-center gap-4 mt-3">
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-4 mt-3" role="list" aria-label="Legenda do radar">
+          <div className="flex items-center gap-1.5" role="listitem">
             <span
               className="inline-block w-2 h-2 rounded-full"
               style={{ background: "#10b981" }}
+              aria-hidden="true"
             />
-            <span className="text-[11px] text-zinc-400 font-medium">
+            <span className="text-xs text-zinc-400 font-medium">
               {playerName || "Jogador"}
             </span>
           </div>
           {hasBenchmark && (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5" role="listitem">
               <span
                 className="inline-block w-2 h-2 rounded-full"
                 style={{ background: "#f59e0b" }}
+                aria-hidden="true"
               />
-              <span className="text-[11px] text-zinc-400 font-medium">
+              <span className="text-xs text-zinc-400 font-medium">
                 {benchmarkLabel || "Benchmark"}
               </span>
             </div>

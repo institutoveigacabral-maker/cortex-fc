@@ -28,7 +28,7 @@ export function BottomNav({ onMorePress }: BottomNavProps) {
   }))
 
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-50 md:hidden border-t border-zinc-800/60 bg-[#0c0c0f]/95 backdrop-blur-xl safe-area-bottom">
+    <nav aria-label="Navegacao principal" className="fixed bottom-0 inset-x-0 z-50 md:hidden border-t border-zinc-800/60 bg-[#0c0c0f]/95 backdrop-blur-xl safe-area-bottom">
       <div className="flex items-center justify-around h-14 px-2">
         {navItems.map((item) => {
           const isActive = item.href === "/dashboard"
@@ -41,12 +41,13 @@ export function BottomNav({ onMorePress }: BottomNavProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex flex-col items-center justify-center -mt-5"
+                className="flex flex-col items-center justify-center -mt-5 min-h-[48px] min-w-[48px]"
+                aria-current={isActive ? "page" : undefined}
               >
-                <div className="w-12 h-12 rounded-full bg-emerald-600 shadow-lg shadow-emerald-900/40 flex items-center justify-center ring-4 ring-[#0c0c0f] active:scale-95 transition-transform">
+                <div className="w-12 h-12 rounded-full bg-emerald-600 shadow-lg shadow-emerald-900/40 flex items-center justify-center ring-4 ring-[#0c0c0f] active:scale-95 transition-transform focus:ring-2 focus:ring-emerald-500/50">
                   <Icon className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-[10px] text-emerald-400 mt-0.5">{item.label}</span>
+                <span className="text-[11px] text-emerald-400 mt-0.5">{item.label}</span>
               </Link>
             )
           }
@@ -55,15 +56,16 @@ export function BottomNav({ onMorePress }: BottomNavProps) {
             <Link
               key={item.href}
               href={item.href}
-              className="flex flex-col items-center justify-center gap-0.5 py-1 min-w-[56px]"
+              className="flex flex-col items-center justify-center gap-1 py-1 min-w-[48px] min-h-[48px]"
+              aria-current={isActive ? "page" : undefined}
             >
               <Icon className={cn(
                 "w-5 h-5 transition-colors",
-                isActive ? "text-emerald-400" : "text-zinc-600"
+                isActive ? "text-emerald-400" : "text-zinc-500"
               )} />
               <span className={cn(
-                "text-[10px] transition-colors",
-                isActive ? "text-emerald-400 font-medium" : "text-zinc-600"
+                "text-[11px] transition-colors",
+                isActive ? "text-emerald-400 font-medium" : "text-zinc-500"
               )}>
                 {item.label}
               </span>
@@ -78,10 +80,10 @@ export function BottomNav({ onMorePress }: BottomNavProps) {
         <button
           onClick={onMorePress}
           aria-label={tc("moreOptions")}
-          className="flex flex-col items-center justify-center gap-0.5 py-1 min-w-[56px]"
+          className="flex flex-col items-center justify-center gap-1 py-1 min-w-[48px] min-h-[48px]"
         >
-          <Menu className="w-5 h-5 text-zinc-600" />
-          <span className="text-[10px] text-zinc-600">{tc("more")}</span>
+          <Menu className="w-5 h-5 text-zinc-500" />
+          <span className="text-[11px] text-zinc-500">{tc("more")}</span>
         </button>
       </div>
     </nav>

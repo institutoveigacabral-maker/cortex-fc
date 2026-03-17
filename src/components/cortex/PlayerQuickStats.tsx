@@ -146,7 +146,7 @@ export function PlayerQuickStats({
           key={stat.key}
           className={`animate-slide-up ${stat.stagger} bg-zinc-800/40 border border-zinc-700/30 rounded-lg px-3 py-2 flex-shrink-0`}
         >
-          <p className="text-[10px] text-zinc-500 leading-tight">{stat.label}</p>
+          <p className="text-xs text-zinc-500 leading-tight">{stat.label}</p>
           <p className="text-base font-mono font-bold leading-tight mt-0.5">{stat.value}</p>
         </div>
       ))}

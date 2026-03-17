@@ -87,7 +87,7 @@ export function BoardAdvisorWidget() {
               <CardTitle className="text-sm font-semibold text-zinc-300">
                 Briefing Executivo
               </CardTitle>
-              <p className="text-xs text-zinc-600">Board Advisor IA</p>
+              <p className="text-xs text-zinc-500">Board Advisor IA</p>
             </div>
           </div>
           <Button
@@ -227,7 +227,7 @@ export function BoardAdvisorWidget() {
               <div>
                 <div className="flex items-center gap-1.5 mb-2">
                   <Target className="w-3 h-3 text-zinc-500" />
-                  <span className="text-[10px] text-zinc-500 uppercase font-semibold tracking-wider">Prioridades</span>
+                  <span className="text-xs text-zinc-500 uppercase font-semibold tracking-wider">Prioridades</span>
                 </div>
                 <div className="space-y-1.5">
                   {result.squadPriorities.slice(0, 4).map((p, i) => (
@@ -246,17 +246,17 @@ export function BoardAdvisorWidget() {
               <div className="grid grid-cols-3 gap-2">
                 <div className="text-center p-2 rounded bg-zinc-800/30">
                   <DollarSign className="w-3 h-3 text-emerald-500 mx-auto mb-1" />
-                  <p className="text-[10px] text-zinc-600">Gastar</p>
+                  <p className="text-xs text-zinc-500">Gastar</p>
                   <p className="text-xs font-mono text-emerald-400">&euro;{result.financialOverview.recommendedSpend}M</p>
                 </div>
                 <div className="text-center p-2 rounded bg-zinc-800/30">
                   <DollarSign className="w-3 h-3 text-red-500 mx-auto mb-1" />
-                  <p className="text-[10px] text-zinc-600">Vender</p>
+                  <p className="text-xs text-zinc-500">Vender</p>
                   <p className="text-xs font-mono text-red-400">&euro;{result.financialOverview.recommendedSales}M</p>
                 </div>
                 <div className="text-center p-2 rounded bg-zinc-800/30">
                   <AlertTriangle className="w-3 h-3 text-amber-500 mx-auto mb-1" />
-                  <p className="text-[10px] text-zinc-600">FFP</p>
+                  <p className="text-xs text-zinc-500">FFP</p>
                   <p className="text-xs font-mono text-amber-400">&euro;{result.financialOverview.ffpHeadroom}M</p>
                 </div>
               </div>
@@ -265,7 +265,7 @@ export function BoardAdvisorWidget() {
               <div>
                 <div className="flex items-center gap-1.5 mb-2">
                   <ListChecks className="w-3 h-3 text-zinc-500" />
-                  <span className="text-[10px] text-zinc-500 uppercase font-semibold tracking-wider">Acoes Prioritarias</span>
+                  <span className="text-xs text-zinc-500 uppercase font-semibold tracking-wider">Acoes Prioritarias</span>
                 </div>
                 <div className="space-y-1">
                   {result.actionPlan.slice(0, 3).map((a, i) => (
@@ -273,7 +273,7 @@ export function BoardAdvisorWidget() {
                       <span className="text-emerald-500 font-mono font-bold mt-0.5">{a.priority}</span>
                       <div>
                         <p className="text-zinc-300">{a.action}</p>
-                        <p className="text-[10px] text-zinc-600">{a.timeline}</p>
+                        <p className="text-xs text-zinc-500">{a.timeline}</p>
                       </div>
                     </div>
                   ))}

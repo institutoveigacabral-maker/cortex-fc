@@ -94,7 +94,7 @@ export function FormField({
         {Icon && (
           <Icon className={cn(
             "absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors",
-            showError ? "text-red-400" : showValid ? "text-emerald-400" : "text-zinc-600"
+            showError ? "text-red-400" : showValid ? "text-emerald-400" : "text-zinc-500"
           )} />
         )}
         <input
@@ -106,7 +106,7 @@ export function FormField({
           placeholder={placeholder}
           autoComplete={autoComplete}
           className={cn(
-            "w-full bg-zinc-900/80 border rounded-lg py-2.5 text-sm text-zinc-200 placeholder-zinc-600 transition-all duration-200",
+            "w-full bg-zinc-900/80 border rounded-lg py-2.5 text-sm text-zinc-200 placeholder-zinc-500 transition-all duration-200",
             "focus:outline-none focus:ring-1",
             Icon ? "pl-10" : "pl-4",
             rightElement ? "pr-10" : "pr-4",
@@ -131,7 +131,7 @@ export function FormField({
         )}
       </div>
       {showError && (
-        <p className="text-[11px] text-red-400 animate-slide-down">{error}</p>
+        <p className="text-xs text-red-400 animate-slide-down">{error}</p>
       )}
     </div>
   )

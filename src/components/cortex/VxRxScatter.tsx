@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef, useCallback } from "react"
 import {
   ScatterChart,
   Scatter,
@@ -14,6 +14,7 @@ import {
 } from "recharts"
 import type { CortexDecision } from "@/types/cortex"
 import { getDecisionColor } from "@/lib/db-transforms"
+import { useRovingTabIndex } from "@/hooks/useRovingTabIndex"
 
 interface ScatterPoint {
   name: string
@@ -102,6 +103,18 @@ export function VxRxScatter({ data, height = 400 }: VxRxScatterProps) {
     () => new Set(ALL_DECISIONS)
   )
 
+  const pillsRef = useRef<HTMLDivElement>(null)
+
+  const handlePillSelect = useCallback((_index: number, element: HTMLElement) => {
+    element.click()
+  }, [])
+
+  useRovingTabIndex(pillsRef, "[data-roving-item]", {
+    orientation: "horizontal",
+    loop: true,
+    onSelect: handlePillSelect,
+  })
+
   const filteredData = useMemo(
     () => data.filter((d) => activeDecisions.has(d.decision)),
     [data, activeDecisions]
@@ -128,7 +141,7 @@ export function VxRxScatter({ data, height = 400 }: VxRxScatterProps) {
   return (
     <div className="space-y-3">
       {/* Decision filter pills */}
-      <div className="flex flex-wrap gap-1.5 px-2">
+      <div ref={pillsRef} className="flex flex-wrap gap-1.5 px-2" role="group" aria-label="Filtros de decisao">
         {ALL_DECISIONS.filter((d) => presentDecisions.has(d)).map((decision) => {
           const colors = getDecisionColor(decision)
           const isActive = activeDecisions.has(decision)
@@ -137,8 +150,18 @@ export function VxRxScatter({ data, height = 400 }: VxRxScatterProps) {
             <button
               key={decision}
               type="button"
+              data-roving-item
+              role="checkbox"
+              aria-checked={isActive}
+              aria-label={`Filtrar decisao: ${decision.replace("_", " ")}`}
               onClick={() => toggleDecision(decision)}
-              className="px-2.5 py-1 rounded-full text-[11px] font-medium transition-all duration-200 border"
+              onKeyDown={(e) => {
+                if (e.key === " " || e.key === "Enter") {
+                  e.preventDefault()
+                  toggleDecision(decision)
+                }
+              }}
+              className="min-h-[36px] px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 border"
               style={{
                 backgroundColor: isActive ? `${colors.fill}20` : "rgba(39, 39, 42, 0.4)",
                 borderColor: isActive ? `${colors.fill}50` : "rgba(63, 63, 70, 0.3)",
@@ -159,8 +182,9 @@ export function VxRxScatter({ data, height = 400 }: VxRxScatterProps) {
       </div>
 
       {/* Chart */}
-      <div className="overflow-x-auto -mx-2 px-2">
-        <ResponsiveContainer width="100%" height={height} minWidth={480}>
+      <div className="overflow-x-auto overflow-y-hidden -mx-2 px-2 scroll-touch">
+        <div className="h-[280px] md:h-[400px] min-w-[480px]">
+        <ResponsiveContainer width="100%" height="100%">
           <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
             <defs>
               <filter id="dotGlow">
@@ -271,14 +295,15 @@ export function VxRxScatter({ data, height = 400 }: VxRxScatterProps) {
             />
           </ScatterChart>
         </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Data point count badge */}
       <div className="flex justify-center px-2">
-        <span className="text-[11px] text-zinc-500 font-medium bg-zinc-800/50 border border-zinc-700/30 rounded-full px-3 py-0.5">
+        <span className="text-xs text-zinc-500 font-medium bg-zinc-800/50 border border-zinc-700/30 rounded-full px-3 py-0.5">
           {filteredData.length} jogador{filteredData.length !== 1 ? "es" : ""}
           {filteredData.length !== data.length && (
-            <span className="text-zinc-600 ml-1">de {data.length}</span>
+            <span className="text-zinc-500 ml-1">de {data.length}</span>
           )}
         </span>
       </div>

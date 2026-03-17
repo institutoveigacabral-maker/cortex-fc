@@ -100,7 +100,7 @@ export default function OnboardingPage() {
                   value={orgName}
                   onChange={(e) => setOrgName(e.target.value)}
                   placeholder="Ex: Nottingham Forest FC"
-                  className="w-full px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="w-full px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
               <div>
@@ -145,7 +145,7 @@ export default function OnboardingPage() {
               <div className="border-2 border-dashed border-zinc-700 rounded-xl p-8 text-center hover:border-zinc-600 transition-colors cursor-pointer">
                 <Upload className="w-8 h-8 text-zinc-500 mx-auto mb-3" />
                 <p className="text-sm text-zinc-400">Arraste ou clique para fazer upload</p>
-                <p className="text-xs text-zinc-600 mt-1">PNG, SVG ou JPG (max 2MB)</p>
+                <p className="text-xs text-zinc-500 mt-1">PNG, SVG ou JPG (max 2MB)</p>
               </div>
               <div className="flex gap-3">
                 <button
@@ -177,9 +177,9 @@ export default function OnboardingPage() {
                   onChange={(e) => setInviteEmails(e.target.value)}
                   placeholder={"analista@seuclube.com\nscout@seuclube.com"}
                   rows={3}
-                  className="w-full px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none"
+                  className="w-full px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none"
                 />
-                <p className="text-xs text-zinc-600 mt-1">Convites serao enviados como &quot;Analista&quot; (podem ser promovidos depois)</p>
+                <p className="text-xs text-zinc-500 mt-1">Convites serao enviados como &quot;Analista&quot; (podem ser promovidos depois)</p>
               </div>
               {error && (
                 <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">

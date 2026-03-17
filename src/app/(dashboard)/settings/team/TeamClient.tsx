@@ -207,10 +207,10 @@ export function TeamClient({ members, invites, currentUserId, isAdmin }: Props) 
                       <p className="text-sm font-medium text-zinc-200">
                         {member.userName}
                         {isCurrentUser && (
-                          <span className="text-[10px] text-zinc-600 ml-2">(voce)</span>
+                          <span className="text-xs text-zinc-500 ml-2">(voce)</span>
                         )}
                       </p>
-                      <p className="text-xs text-zinc-600">{member.userEmail}</p>
+                      <p className="text-xs text-zinc-500">{member.userEmail}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -218,25 +218,25 @@ export function TeamClient({ members, invites, currentUserId, isAdmin }: Props) 
                       <select
                         value={member.role}
                         onChange={(e) => handleRoleChange(member.id, e.target.value)}
-                        className={`h-7 rounded-md border text-[11px] font-semibold px-2 ${roleColor}`}
+                        className={`h-7 rounded-md border text-xs font-semibold px-2 ${roleColor}`}
                       >
                         <option value="admin">Administrador</option>
                         <option value="analyst">Analista</option>
                         <option value="viewer">Visualizador</option>
                       </select>
                     ) : (
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[11px] font-semibold ${roleColor}`}>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-semibold ${roleColor}`}>
                         <RoleIcon className="w-3 h-3" />
                         {member.role}
                       </span>
                     )}
-                    <span className="text-[10px] text-zinc-700 font-mono">
+                    <span className="text-xs text-zinc-500 font-mono">
                       {formatDate(member.joinedAt)}
                     </span>
                     {isAdmin && !isCurrentUser && (
                       <button
                         onClick={() => handleRemove(member.id)}
-                        className="text-zinc-600 hover:text-red-400 transition-colors"
+                        className="text-zinc-500 hover:text-red-400 transition-colors"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -246,7 +246,7 @@ export function TeamClient({ members, invites, currentUserId, isAdmin }: Props) 
               )
             })}
             {memberList.length === 0 && (
-              <div className="py-8 text-center text-zinc-600 text-sm">
+              <div className="py-8 text-center text-zinc-500 text-sm">
                 Nenhum membro encontrado
               </div>
             )}
@@ -272,11 +272,11 @@ export function TeamClient({ members, invites, currentUserId, isAdmin }: Props) 
                 >
                   <div>
                     <p className="text-sm text-zinc-300">{invite.email}</p>
-                    <p className="text-[10px] text-zinc-600">
+                    <p className="text-xs text-zinc-500">
                       Cargo: <span className="capitalize">{invite.role}</span> — Expira: {formatDate(invite.expiresAt)}
                     </p>
                   </div>
-                  <span className="text-[10px] text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
+                  <span className="text-xs text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
                     Pendente
                   </span>
                 </div>
@@ -305,7 +305,7 @@ export function TeamClient({ members, invites, currentUserId, isAdmin }: Props) 
                     className="flex items-center justify-between px-5 py-3"
                   >
                     <p className="text-sm text-zinc-500">{invite.email}</p>
-                    <span className="text-[10px] text-emerald-500">
+                    <span className="text-xs text-emerald-500">
                       Aceito em {formatDate(invite.acceptedAt!)}
                     </span>
                   </div>

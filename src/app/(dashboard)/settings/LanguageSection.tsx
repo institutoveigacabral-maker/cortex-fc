@@ -25,7 +25,7 @@ export function LanguageSection() {
           </div>
           Idioma / Language
         </CardTitle>
-        <p className="text-xs text-zinc-600">
+        <p className="text-xs text-zinc-500">
           Selecione o idioma da interface
         </p>
       </CardHeader>
@@ -69,7 +69,7 @@ export function LanguageSection() {
                   <p className={`text-xs font-medium ${isActive ? "text-emerald-400" : "text-zinc-300"}`}>
                     {info.name}
                   </p>
-                  <p className="text-[10px] text-zinc-600 font-mono mt-0.5">
+                  <p className="text-xs text-zinc-500 font-mono mt-0.5">
                     {info.shortCode}
                   </p>
                 </div>

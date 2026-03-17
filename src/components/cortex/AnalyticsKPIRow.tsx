@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from "next-intl"
 import { Users, BarChart3, TrendingUp, ShieldAlert, Brain } from "lucide-react"
 import { AnimatedNumber } from "@/components/ui/animated-number"
 
@@ -14,7 +15,7 @@ interface AnalyticsKPIRowProps {
 const KPI_CONFIG = [
   {
     key: "totalPlayers",
-    label: "Jogadores",
+    labelKey: "players" as const,
     icon: Users,
     color: "text-emerald-400",
     bgColor: "bg-emerald-500/10",
@@ -24,7 +25,7 @@ const KPI_CONFIG = [
   },
   {
     key: "totalAnalyses",
-    label: "Analises",
+    labelKey: "analyses" as const,
     icon: BarChart3,
     color: "text-cyan-400",
     bgColor: "bg-cyan-500/10",
@@ -34,7 +35,7 @@ const KPI_CONFIG = [
   },
   {
     key: "avgVx",
-    label: "Vx Medio",
+    labelKey: "avgVx" as const,
     icon: TrendingUp,
     color: "text-amber-400",
     bgColor: "bg-amber-500/10",
@@ -44,7 +45,7 @@ const KPI_CONFIG = [
   },
   {
     key: "avgRx",
-    label: "Rx Medio",
+    labelKey: "avgRx" as const,
     icon: ShieldAlert,
     color: "text-red-400",
     bgColor: "bg-red-500/10",
@@ -54,7 +55,7 @@ const KPI_CONFIG = [
   },
   {
     key: "avgSCNPlus",
-    label: "SCN+ Medio",
+    labelKey: "avgScn" as const,
     icon: Brain,
     color: "text-purple-400",
     bgColor: "bg-purple-500/10",
@@ -71,6 +72,7 @@ export function AnalyticsKPIRow({
   avgRx,
   avgSCNPlus,
 }: AnalyticsKPIRowProps) {
+  const t = useTranslations("analytics")
   const values: Record<string, number> = {
     totalPlayers,
     totalAnalyses,
@@ -100,8 +102,8 @@ export function AnalyticsKPIRow({
                 <Icon className={`w-4.5 h-4.5 ${kpi.color}`} />
               </div>
               <div className="min-w-0">
-                <p className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider truncate">
-                  {kpi.label}
+                <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider truncate">
+                  {t(kpi.labelKey)}
                 </p>
                 <p className={`text-xl font-bold font-mono tracking-tight ${kpi.color}`}>
                   <AnimatedNumber value={value} decimals={kpi.decimals} />

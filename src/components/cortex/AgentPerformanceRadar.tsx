@@ -138,7 +138,7 @@ export function AgentPerformanceRadar({ agents }: AgentPerformanceRadarProps) {
               formatter={(value: string) => (
                 <span
                   className={`text-xs cursor-pointer ${
-                    hiddenAgents.has(value) ? "text-zinc-600 line-through" : "text-zinc-400"
+                    hiddenAgents.has(value) ? "text-zinc-500 line-through" : "text-zinc-400"
                   }`}
                 >
                   {AGENT_LABELS[value] ?? value}

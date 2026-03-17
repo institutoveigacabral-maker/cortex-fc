@@ -83,7 +83,7 @@ function CustomLegend({ payload }: { payload?: Array<{ value: string; color: str
             className="w-2 h-2 rounded-full"
             style={{ backgroundColor: entry.color }}
           />
-          <span className="text-[11px] text-zinc-400 font-medium">
+          <span className="text-xs text-zinc-400 font-medium">
             {entry.value} - {POSITION_LABELS[entry.value] ?? entry.value}
           </span>
         </div>
@@ -110,7 +110,7 @@ export function PositionRadialBar({ data }: PositionRadialBarProps) {
 
   if (data.length === 0) {
     return (
-      <div className="h-64 flex items-center justify-center text-zinc-600 text-sm">
+      <div className="h-64 flex items-center justify-center text-zinc-500 text-sm">
         Sem dados de posicao disponiveis
       </div>
     )
@@ -121,7 +121,7 @@ export function PositionRadialBar({ data }: PositionRadialBarProps) {
       {/* Center total overlay */}
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
         <span className="text-2xl font-bold font-mono text-zinc-100">{total}</span>
-        <span className="text-[10px] text-zinc-500 font-medium tracking-widest uppercase">
+        <span className="text-xs text-zinc-500 font-medium tracking-widest uppercase">
           JOGADORES
         </span>
       </div>

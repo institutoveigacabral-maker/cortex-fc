@@ -47,7 +47,7 @@ export function SeasonStats({ stats }: SeasonStatsProps) {
           >
             <Icon className={`w-3.5 h-3.5 mx-auto mb-1.5 ${item.color}`} />
             <p className="text-lg font-bold font-mono text-white">{item.value}</p>
-            <p className="text-[10px] text-zinc-500 mt-0.5">{item.label}</p>
+            <p className="text-xs text-zinc-500 mt-0.5">{item.label}</p>
           </div>
         );
       })}

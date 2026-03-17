@@ -184,7 +184,7 @@ function PlayerSelector({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={`Buscar ${label}...`}
-          className="w-full bg-zinc-800/50 border border-zinc-700/30 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50"
+          className="w-full bg-zinc-800/50 border border-zinc-700/30 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50"
         />
       </div>
       {(results.length > 0 || searching) && (
@@ -200,11 +200,11 @@ function PlayerSelector({
             >
               <div>
                 <p className="text-sm text-white">{p.name}</p>
-                <p className="text-[10px] text-zinc-500">
+                <p className="text-xs text-zinc-500">
                   {p.position} — {p.club}
                 </p>
               </div>
-              <span className="text-[10px] text-zinc-600 font-mono">
+              <span className="text-xs text-zinc-500 font-mono">
                 {p.nationality}
               </span>
             </button>
@@ -242,7 +242,7 @@ function CompareBar({
             style={{ width: `${(valueA / max) * 100}%` }}
           />
         </div>
-        <span className="text-[9px] text-zinc-600 w-14 text-center shrink-0">
+        <span className="text-[9px] text-zinc-500 w-14 text-center shrink-0">
           {label}
         </span>
         <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
@@ -316,7 +316,7 @@ export default function PlayerComparePage() {
                 <div>
                   <p className="text-white font-bold text-lg">{playerA.name}</p>
                   <p className="text-xs text-zinc-500">{playerA.position}</p>
-                  <p className="text-xs text-zinc-600">{playerA.club}</p>
+                  <p className="text-xs text-zinc-500">{playerA.club}</p>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-2">
                   {[
@@ -324,9 +324,9 @@ export default function PlayerComparePage() {
                     { label: "Valor", a: `€${playerA.marketValue}M`, b: `€${playerB.marketValue}M` },
                     { label: "Nac.", a: playerA.nationality, b: playerB.nationality },
                   ].map((row) => (
-                    <div key={row.label} className="flex items-center gap-2 text-[10px]">
+                    <div key={row.label} className="flex items-center gap-2 text-xs">
                       <span className="text-emerald-400 font-mono w-12 text-right">{row.a}</span>
-                      <span className="text-zinc-600 w-10 text-center">{row.label}</span>
+                      <span className="text-zinc-500 w-10 text-center">{row.label}</span>
                       <span className="text-cyan-400 font-mono w-12">{row.b}</span>
                     </div>
                   ))}
@@ -334,7 +334,7 @@ export default function PlayerComparePage() {
                 <div>
                   <p className="text-white font-bold text-lg">{playerB.name}</p>
                   <p className="text-xs text-zinc-500">{playerB.position}</p>
-                  <p className="text-xs text-zinc-600">{playerB.club}</p>
+                  <p className="text-xs text-zinc-500">{playerB.club}</p>
                 </div>
               </div>
             </CardContent>
@@ -359,14 +359,14 @@ export default function PlayerComparePage() {
                           <p className="text-2xl font-bold font-mono text-emerald-400">
                             {aAnalysis.vx.toFixed(2)}
                           </p>
-                          <p className="text-[10px] text-zinc-600">Vx A</p>
+                          <p className="text-xs text-zinc-500">Vx A</p>
                         </div>
-                        <span className="text-zinc-700 text-xs">vs</span>
+                        <span className="text-zinc-500 text-xs">vs</span>
                         <div className="text-center">
                           <p className="text-2xl font-bold font-mono text-cyan-400">
                             {bAnalysis.vx.toFixed(2)}
                           </p>
-                          <p className="text-[10px] text-zinc-600">Vx B</p>
+                          <p className="text-xs text-zinc-500">Vx B</p>
                         </div>
                       </div>
                       <Separator className="bg-zinc-800" />
@@ -375,14 +375,14 @@ export default function PlayerComparePage() {
                           <p className="text-2xl font-bold font-mono text-red-400">
                             {aAnalysis.rx.toFixed(2)}
                           </p>
-                          <p className="text-[10px] text-zinc-600">Rx A</p>
+                          <p className="text-xs text-zinc-500">Rx A</p>
                         </div>
-                        <span className="text-zinc-700 text-xs">vs</span>
+                        <span className="text-zinc-500 text-xs">vs</span>
                         <div className="text-center">
                           <p className="text-2xl font-bold font-mono text-orange-400">
                             {bAnalysis.rx.toFixed(2)}
                           </p>
-                          <p className="text-[10px] text-zinc-600">Rx B</p>
+                          <p className="text-xs text-zinc-500">Rx B</p>
                         </div>
                       </div>
                       <Separator className="bg-zinc-800" />
@@ -422,7 +422,7 @@ export default function PlayerComparePage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="flex justify-between text-[10px] text-zinc-600 mb-2">
+                  <div className="flex justify-between text-xs text-zinc-500 mb-2">
                     <span className="text-emerald-500">{playerA.name}</span>
                     <span className="text-cyan-500">{playerB.name}</span>
                   </div>
@@ -483,7 +483,7 @@ export default function PlayerComparePage() {
       {!bothSelected && (
         <Card className="bg-zinc-900/80 border-zinc-800 glass">
           <CardContent className="py-12 text-center">
-            <Users className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
+            <Users className="w-12 h-12 text-zinc-500 mx-auto mb-4" />
             <p className="text-zinc-500">
               Selecione dois jogadores para comparar seus perfis neurais
             </p>

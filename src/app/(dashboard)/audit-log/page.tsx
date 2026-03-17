@@ -139,7 +139,7 @@ export default function AuditLogPage() {
 
       {/* Filters */}
       <div className="flex items-center gap-2 flex-wrap">
-        <Filter className="w-4 h-4 text-zinc-600" />
+        <Filter className="w-4 h-4 text-zinc-500" />
         {ENTITY_FILTERS.map((f) => (
           <Button
             key={f}
@@ -165,7 +165,7 @@ export default function AuditLogPage() {
               <div className="w-6 h-6 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
             </div>
           ) : logs.length === 0 ? (
-            <div className="text-center py-16 text-zinc-600 text-sm">
+            <div className="text-center py-16 text-zinc-500 text-sm">
               Nenhum registro encontrado
             </div>
           ) : (
@@ -181,18 +181,18 @@ export default function AuditLogPage() {
                       className="w-full flex items-center gap-4 px-5 py-3.5 hover:bg-zinc-800/30 transition-colors text-left"
                     >
                       {isExpanded ? (
-                        <ChevronDown className="w-3.5 h-3.5 text-zinc-600 flex-shrink-0" />
+                        <ChevronDown className="w-3.5 h-3.5 text-zinc-500 flex-shrink-0" />
                       ) : (
-                        <ChevronRight className="w-3.5 h-3.5 text-zinc-600 flex-shrink-0" />
+                        <ChevronRight className="w-3.5 h-3.5 text-zinc-500 flex-shrink-0" />
                       )}
 
                       <div className="flex-1 min-w-0 flex items-center gap-3">
-                        <Badge className={`text-[10px] font-mono border ${info.color}`}>
+                        <Badge className={`text-xs font-mono border ${info.color}`}>
                           {info.label}
                         </Badge>
 
                         {log.entityType && (
-                          <span className="text-[10px] text-zinc-600 font-mono">
+                          <span className="text-xs text-zinc-500 font-mono">
                             {log.entityType}
                             {log.entityId && `:${log.entityId.slice(0, 8)}`}
                           </span>
@@ -200,11 +200,11 @@ export default function AuditLogPage() {
                       </div>
 
                       <div className="flex items-center gap-4 flex-shrink-0">
-                        <div className="flex items-center gap-1.5 text-[11px] text-zinc-500">
+                        <div className="flex items-center gap-1.5 text-xs text-zinc-500">
                           <User className="w-3 h-3" />
                           {log.userName ?? log.userEmail ?? "Sistema"}
                         </div>
-                        <div className="flex items-center gap-1.5 text-[11px] text-zinc-600 font-mono">
+                        <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-mono">
                           <Clock className="w-3 h-3" />
                           {formatDate(log.createdAt)}
                         </div>
@@ -215,19 +215,19 @@ export default function AuditLogPage() {
                       <div className="px-12 pb-4 space-y-2 animate-fade-in">
                         <div className="grid grid-cols-2 gap-4 text-xs">
                           <div>
-                            <span className="text-zinc-600">Email:</span>{" "}
+                            <span className="text-zinc-500">Email:</span>{" "}
                             <span className="text-zinc-400">{log.userEmail ?? "-"}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <Globe className="w-3 h-3 text-zinc-600" />
-                            <span className="text-zinc-600">IP:</span>{" "}
+                            <Globe className="w-3 h-3 text-zinc-500" />
+                            <span className="text-zinc-500">IP:</span>{" "}
                             <span className="text-zinc-400 font-mono">{log.ipAddress ?? "-"}</span>
                           </div>
                         </div>
                         {log.metadata && Object.keys(log.metadata).length > 0 && (
                           <div className="mt-2">
-                            <p className="text-[10px] text-zinc-600 uppercase mb-1">Metadata</p>
-                            <pre className="text-[11px] text-zinc-500 font-mono bg-zinc-900/50 border border-zinc-800 rounded-lg p-3 overflow-x-auto">
+                            <p className="text-xs text-zinc-500 uppercase mb-1">Metadata</p>
+                            <pre className="text-xs text-zinc-500 font-mono bg-zinc-900/50 border border-zinc-800 rounded-lg p-3 overflow-x-auto">
                               {JSON.stringify(log.metadata, null, 2)}
                             </pre>
                           </div>
@@ -252,7 +252,7 @@ export default function AuditLogPage() {
               >
                 Anterior
               </Button>
-              <span className="text-[11px] text-zinc-600">
+              <span className="text-xs text-zinc-500">
                 {offset + 1} - {offset + logs.length}
               </span>
               <Button

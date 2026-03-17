@@ -52,7 +52,7 @@ export default async function PlayerDetailPage({
       <div className="flex items-center justify-center h-96 animate-fade-in">
         <div className="text-center">
           <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center mx-auto mb-4">
-            <User className="w-8 h-8 text-zinc-600" />
+            <User className="w-8 h-8 text-zinc-500" />
           </div>
           <p className="text-zinc-500 text-lg">Jogador nao encontrado</p>
           <Link href="/players">
@@ -148,7 +148,7 @@ export default async function PlayerDetailPage({
                   priority
                 />
               ) : (
-                <span className="text-2xl font-bold text-zinc-600">
+                <span className="text-2xl font-bold text-zinc-500">
                   {player.name.split(" ").map((n: string) => n[0]).slice(0, 2).join("").toUpperCase()}
                 </span>
               )}
@@ -188,7 +188,7 @@ export default async function PlayerDetailPage({
                 </span>
               </div>
 
-              <div className="flex items-center gap-4 mt-3 text-xs text-zinc-600">
+              <div className="flex items-center gap-4 mt-3 text-xs text-zinc-500">
                 <span className="flex items-center gap-1">
                   <Banknote className="w-3 h-3" />
                   Salario: &euro;{player.salary}M/ano
@@ -272,7 +272,7 @@ export default async function PlayerDetailPage({
           <Card className="bg-zinc-900/80 border-zinc-800 glass animate-scale-in">
             <CardContent className="py-12 text-center">
               <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center mx-auto mb-4">
-                <Activity className="w-8 h-8 text-zinc-700" />
+                <Activity className="w-8 h-8 text-zinc-500" />
               </div>
               <p className="text-zinc-500">Nenhuma analise neural disponivel para este jogador.</p>
               <Link href="/analysis/new">

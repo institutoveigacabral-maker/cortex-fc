@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react"
 import Link from "next/link"
-import { Search, ArrowUpDown, Filter, Users, X, Globe } from "lucide-react"
+import { Search, ArrowUpDown, ArrowUp, ArrowDown, Filter, Users, X, Globe, ChevronDown } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -40,6 +40,7 @@ export function PlayersClient({ players }: { players: PlayerListItem[] }) {
   const [clubFilter, setClubFilter] = useState("")
   const [sortField, setSortField] = useState<SortField>("name")
   const [sortDir, setSortDir] = useState<SortDir>("asc")
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
   const positions = useMemo(
     () => [...new Set(players.map((p) => p.positionCluster))].sort(),
@@ -96,7 +97,17 @@ export function PlayersClient({ players }: { players: PlayerListItem[] }) {
     }
   }
 
-  function renderSortHeader(field: SortField, children: React.ReactNode) {
+  const activeFilterCount = [positionFilter, clubFilter].filter(Boolean).length + (search ? 1 : 0)
+
+  const sortPills: { field: SortField; label: string }[] = [
+    { field: "name", label: "Nome" },
+    { field: "age", label: "Idade" },
+    { field: "marketValue", label: "Valor" },
+    { field: "scn", label: "SCN+" },
+    { field: "position", label: "Posicao" },
+  ]
+
+  function SortHeader({ field, children }: { field: SortField; children: React.ReactNode }) {
     const isActive = sortField === field
     return (
       <button
@@ -112,7 +123,7 @@ export function PlayersClient({ players }: { players: PlayerListItem[] }) {
   }
 
   return (
-    <div className="animate-fade-in space-y-6">
+    <div className="animate-fade-in space-y-6" aria-busy="false">
       {/* Header */}
       <div className="flex items-center justify-between animate-slide-down">
         <div>
@@ -131,8 +142,90 @@ export function PlayersClient({ players }: { players: PlayerListItem[] }) {
         </div>
       </div>
 
-      {/* Filters */}
-      <Card className="bg-zinc-900/80 border-zinc-800 glass animate-slide-up stagger-1">
+      {/* Search + Filters — Mobile */}
+      <div className="md:hidden space-y-3 animate-slide-up stagger-1">
+        {/* Search bar mobile */}
+        <div className="relative group">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 transition-colors group-focus-within:text-emerald-400" />
+          <input
+            type="text"
+            placeholder="Buscar jogador, clube ou posicao..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full min-h-[44px] pl-10 pr-10 rounded-xl bg-zinc-900/80 border border-zinc-800 text-zinc-200 text-sm placeholder:text-zinc-500 outline-none transition-all focus:border-emerald-500/50 focus:bg-zinc-800/80 focus:shadow-[0_0_12px_rgba(16,185,129,0.08)]"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full bg-zinc-700/60 text-zinc-400 active:bg-zinc-600"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+
+        {/* Filters toggle mobile */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+            className={`flex items-center gap-1.5 min-h-[36px] px-3 rounded-lg border text-sm transition-all ${
+              activeFilterCount > 0
+                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                : "border-zinc-700 bg-zinc-900/80 text-zinc-400"
+            }`}
+          >
+            <Filter className="w-3.5 h-3.5" />
+            Filtros{activeFilterCount > 0 && ` (${activeFilterCount})`}
+            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${mobileFiltersOpen ? "rotate-180" : ""}`} />
+          </button>
+          {(search || positionFilter || clubFilter) && (
+            <button
+              onClick={() => { setSearch(""); setPositionFilter(""); setClubFilter("") }}
+              className="flex items-center gap-1 min-h-[36px] px-3 rounded-lg border border-zinc-700 bg-zinc-900/80 text-red-400 text-sm active:bg-red-500/10"
+            >
+              <X className="w-3 h-3" />
+              Limpar
+            </button>
+          )}
+        </div>
+
+        {/* Expandable filter section */}
+        {mobileFiltersOpen && (
+          <div className="flex flex-col gap-2 animate-expand">
+            <select
+              value={positionFilter}
+              onChange={(e) => setPositionFilter(e.target.value)}
+              className={`min-h-[36px] rounded-lg border bg-zinc-800/50 px-3 text-sm outline-none transition-all ${
+                positionFilter
+                  ? "border-emerald-500/40 text-emerald-300 bg-emerald-500/5"
+                  : "border-zinc-700 text-zinc-300"
+              } focus:border-emerald-500`}
+            >
+              <option value="">Todas Posicoes</option>
+              {positions.map((p) => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
+            <select
+              value={clubFilter}
+              onChange={(e) => setClubFilter(e.target.value)}
+              className={`min-h-[36px] rounded-lg border bg-zinc-800/50 px-3 text-sm outline-none transition-all ${
+                clubFilter
+                  ? "border-emerald-500/40 text-emerald-300 bg-emerald-500/5"
+                  : "border-zinc-700 text-zinc-300"
+              } focus:border-emerald-500`}
+            >
+              <option value="">Todos Clubes</option>
+              {clubs.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
+
+      {/* Search + Filters — Desktop */}
+      <Card className="bg-zinc-900/80 border-zinc-800 glass animate-slide-up stagger-1 hidden md:block">
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1 group">
@@ -141,7 +234,7 @@ export function PlayersClient({ players }: { players: PlayerListItem[] }) {
                 placeholder="Buscar jogador, clube ou posicao..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 bg-zinc-800/50 border-zinc-700 text-zinc-200 placeholder:text-zinc-600 transition-all focus:border-emerald-500/50 focus:bg-zinc-800/80 focus:shadow-[0_0_12px_rgba(16,185,129,0.08)]"
+                className="pl-9 bg-zinc-800/50 border-zinc-700 text-zinc-200 placeholder:text-zinc-500 transition-all focus:border-emerald-500/50 focus:bg-zinc-800/80 focus:shadow-[0_0_12px_rgba(16,185,129,0.08)]"
               />
             </div>
             <div className="flex gap-2 items-center">
@@ -189,49 +282,88 @@ export function PlayersClient({ players }: { players: PlayerListItem[] }) {
         </CardContent>
       </Card>
 
-      {/* Mobile Cards */}
-      <div className="md:hidden space-y-2 animate-slide-up stagger-2">
-        {filtered.map((player) => (
-          <Link
-            key={player.id}
-            href={`/players/${player.id}`}
-            className="block bg-zinc-900/80 border border-zinc-800 rounded-xl p-3 active:bg-zinc-800/60 transition-all"
-          >
-            <div className="flex items-center gap-3">
-              <PlayerAvatar src={player.photoUrl} name={player.name} size={40} />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-sm font-medium text-zinc-200 truncate">{player.name}</p>
-                  {player.decision ? (
-                    <DecisionBadge decision={player.decision} size="sm" />
-                  ) : (
-                    <span className="text-zinc-700 text-[10px] flex-shrink-0">Sem analise</span>
+      {/* Mobile Sort Pills + Cards */}
+      <div className="md:hidden space-y-3 animate-slide-up stagger-2">
+        {/* Sort pills — horizontal scrollable */}
+        <div className="overflow-x-auto scrollbar-hide -mx-1 px-1" style={{ scrollSnapType: "x mandatory" }}>
+          <div className="flex gap-2 w-max">
+            {sortPills.map(({ field, label }) => {
+              const isActive = sortField === field
+              return (
+                <button
+                  key={field}
+                  onClick={() => toggleSort(field)}
+                  style={{ scrollSnapAlign: "start" }}
+                  className={`flex items-center gap-1 min-h-[32px] px-3 rounded-full border text-xs font-medium transition-all whitespace-nowrap ${
+                    isActive
+                      ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
+                      : "bg-zinc-900/80 border-zinc-800 text-zinc-400 active:bg-zinc-800"
+                  }`}
+                >
+                  {label}
+                  {isActive && (
+                    sortDir === "asc"
+                      ? <ArrowUp className="w-3 h-3" />
+                      : <ArrowDown className="w-3 h-3" />
                   )}
-                </div>
-                <div className="flex items-center gap-2 text-xs text-zinc-500 mt-0.5">
-                  <span>{player.position}</span>
-                  <span className="text-zinc-700">·</span>
-                  <span>{player.club}</span>
-                  {player.age && (
-                    <>
-                      <span className="text-zinc-700">·</span>
-                      <span>{player.age}a</span>
-                    </>
-                  )}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Player count */}
+        <p className="text-xs text-zinc-500">{filtered.length} jogador{filtered.length !== 1 ? "es" : ""}</p>
+
+        {/* Cards */}
+        <div className="space-y-2">
+          {filtered.map((player) => (
+            <Link
+              key={player.id}
+              href={`/players/${player.id}`}
+              className="block bg-zinc-900/80 border border-zinc-800 rounded-xl p-3 active:bg-zinc-800/60 transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <PlayerAvatar src={player.photoUrl} name={player.name} size={48} className="w-12 h-12 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-semibold text-zinc-200 truncate">{player.name}</p>
+                    {player.decision && (
+                      <DecisionBadge decision={player.decision} size="sm" />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-zinc-400 mt-0.5">
+                    <span>{player.position}</span>
+                    <span className="text-zinc-600">·</span>
+                    <span className="truncate">{player.club}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3 mt-2 pt-2 border-t border-zinc-800/50">
-              <span className="text-xs text-zinc-400 font-mono">&euro;{player.marketValue}M</span>
-              {player.scn !== undefined && (
-                <span className="font-mono text-cyan-400 text-[10px] font-semibold bg-cyan-500/10 px-1.5 py-0.5 rounded">
-                  SCN+ {player.scn}
-                </span>
-              )}
-              <span className="text-[10px] text-zinc-600 ml-auto">{player.nationality}</span>
-            </div>
-          </Link>
-        ))}
+              <div className="flex items-center gap-2 mt-2 pt-2 border-t border-zinc-800/50 flex-wrap">
+                <span className="text-xs text-zinc-400 font-mono">&euro;{player.marketValue}M</span>
+                {player.vx !== undefined && (
+                  <span className="font-mono text-xs text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">
+                    Vx {player.vx}
+                  </span>
+                )}
+                {player.rx !== undefined && (
+                  <span className="font-mono text-xs text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded">
+                    Rx {player.rx}
+                  </span>
+                )}
+                {player.scn !== undefined && (
+                  <span className="font-mono text-xs text-cyan-400 font-semibold bg-cyan-500/10 px-1.5 py-0.5 rounded">
+                    SCN+ {player.scn}
+                  </span>
+                )}
+                {player.age && (
+                  <span className="text-xs text-zinc-500 ml-auto">{player.age}a</span>
+                )}
+              </div>
+            </Link>
+          ))}
+        </div>
+
         {filtered.length === 0 && players.length === 0 && (
           <EmptyStateCTA
             icon={<Users className="w-6 h-6" />}
@@ -256,28 +388,29 @@ export function PlayersClient({ players }: { players: PlayerListItem[] }) {
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
+              <caption className="sr-only">Lista de jogadores do elenco com metricas de desempenho</caption>
               <thead>
                 <tr className="border-b border-zinc-800 bg-zinc-900/50">
-                  <th className="text-left py-3 px-4 w-8"></th>
-                  <th className="text-left py-3 px-3">
-                    {renderSortHeader("name", "Jogador")}
+                  <th scope="col" className="text-left py-3 px-4 w-8"></th>
+                  <th scope="col" className="text-left py-3 px-3" aria-sort={sortField === "name" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
+                    <SortHeader field="name">Jogador</SortHeader>
                   </th>
-                  <th className="text-left py-3 px-3">
-                    {renderSortHeader("position", "Posicao")}
+                  <th scope="col" className="text-left py-3 px-3" aria-sort={sortField === "position" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
+                    <SortHeader field="position">Posicao</SortHeader>
                   </th>
-                  <th className="text-left py-3 px-3">
-                    {renderSortHeader("club", "Clube")}
+                  <th scope="col" className="text-left py-3 px-3" aria-sort={sortField === "club" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
+                    <SortHeader field="club">Clube</SortHeader>
                   </th>
-                  <th className="text-center py-3 px-3">
-                    {renderSortHeader("age", "Idade")}
+                  <th scope="col" className="text-center py-3 px-3" aria-sort={sortField === "age" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
+                    <SortHeader field="age">Idade</SortHeader>
                   </th>
-                  <th className="text-right py-3 px-3">
-                    {renderSortHeader("marketValue", <>Valor (M&euro;)</>)}
+                  <th scope="col" className="text-right py-3 px-3" aria-sort={sortField === "marketValue" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
+                    <SortHeader field="marketValue">Valor (M&euro;)</SortHeader>
                   </th>
-                  <th className="text-center py-3 px-3">
-                    {renderSortHeader("scn", "SCN+")}
+                  <th scope="col" className="text-center py-3 px-3" aria-sort={sortField === "scn" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
+                    <SortHeader field="scn">SCN+</SortHeader>
                   </th>
-                  <th className="text-center py-3 px-3">
+                  <th scope="col" className="text-center py-3 px-3">
                     <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
                       Decisao
                     </span>
@@ -301,11 +434,11 @@ export function PlayersClient({ players }: { players: PlayerListItem[] }) {
                       >
                         {player.name}
                       </Link>
-                      <p className="text-[11px] text-zinc-600">{player.nationality}</p>
+                      <p className="text-xs text-zinc-500">{player.nationality}</p>
                     </td>
                     <td className="py-3 px-3 text-zinc-400 text-xs">
                       {player.position}
-                      <span className="ml-1 text-zinc-600">({player.positionCluster})</span>
+                      <span className="ml-1 text-zinc-500">({player.positionCluster})</span>
                     </td>
                     <td className="py-3 px-3 text-zinc-400 text-xs">{player.club}</td>
                     <td className="py-3 px-3 text-center text-zinc-400 font-mono text-xs">
@@ -320,14 +453,14 @@ export function PlayersClient({ players }: { players: PlayerListItem[] }) {
                           {player.scn}
                         </span>
                       ) : (
-                        <span className="text-zinc-700 text-xs">--</span>
+                        <span className="text-zinc-500 text-xs">--</span>
                       )}
                     </td>
                     <td className="py-3 px-3 text-center">
                       {player.decision ? (
                         <DecisionBadge decision={player.decision} size="sm" />
                       ) : (
-                        <span className="text-zinc-700 text-xs">Sem analise</span>
+                        <span className="text-zinc-500 text-xs">Sem analise</span>
                       )}
                     </td>
                   </tr>

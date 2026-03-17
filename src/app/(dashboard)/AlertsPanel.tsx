@@ -36,7 +36,7 @@ export function AlertsPanel({ alerts }: { alerts: Alert[] }) {
             <Bell className="w-3.5 h-3.5 text-amber-400" />
           </div>
           Alertas
-          <span className="ml-auto text-[10px] font-mono text-zinc-600 bg-zinc-800 px-2 py-0.5 rounded-full">
+          <span className="ml-auto text-xs font-mono text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded-full">
             {alerts.length}
           </span>
         </CardTitle>
@@ -63,10 +63,10 @@ export function AlertsPanel({ alerts }: { alerts: Alert[] }) {
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] opacity-70 mt-0.5 line-clamp-2 leading-relaxed">
+                  <p className="text-xs opacity-70 mt-0.5 line-clamp-2 leading-relaxed">
                     {alert.description}
                   </p>
-                  <p className="text-[10px] opacity-50 mt-1.5 font-mono">{alert.date}</p>
+                  <p className="text-xs opacity-50 mt-1.5 font-mono">{alert.date}</p>
                 </div>
               </div>
             </div>

@@ -49,7 +49,7 @@ function GlassTooltip({
 export function MonthlyTrendChart({ data }: MonthlyTrendChartProps) {
   if (data.length === 0) {
     return (
-      <div className="h-48 flex items-center justify-center text-zinc-600 text-sm">
+      <div className="h-48 flex items-center justify-center text-zinc-500 text-sm">
         Sem dados de tendencia mensal
       </div>
     )

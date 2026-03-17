@@ -277,7 +277,7 @@ export function ExternalPlayerSearch() {
                     />
                   </div>
                   <div className="py-1">
-                    <div className="px-2 py-1 text-[10px] text-zinc-600 uppercase tracking-wider">
+                    <div className="px-2 py-1 text-xs text-zinc-500 uppercase tracking-wider">
                       Ligas populares
                     </div>
                     {POPULAR_LEAGUES.map(l => (
@@ -298,7 +298,7 @@ export function ExternalPlayerSearch() {
                     ))}
                     {searchedLeagues.length > 0 && (
                       <>
-                        <div className="px-2 py-1 mt-2 text-[10px] text-zinc-600 uppercase tracking-wider border-t border-zinc-700">
+                        <div className="px-2 py-1 mt-2 text-xs text-zinc-500 uppercase tracking-wider border-t border-zinc-700">
                           Resultados da busca
                         </div>
                         {searchedLeagues.map(l => (
@@ -349,7 +349,7 @@ export function ExternalPlayerSearch() {
                 </button>
               ))}
             </div>
-            <p className="text-[10px] text-zinc-600">Plano gratuito: temporadas 2022 a 2024</p>
+            <p className="text-xs text-zinc-500">Plano gratuito: temporadas 2022 a 2024</p>
           </div>
 
           {/* Player Name Search — auto-debounce, no button */}
@@ -359,7 +359,7 @@ export function ExternalPlayerSearch() {
               placeholder="Nome do jogador (min. 4 caracteres)..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="pl-9 bg-zinc-800/50 border-zinc-700 text-zinc-200 placeholder:text-zinc-600"
+              className="pl-9 bg-zinc-800/50 border-zinc-700 text-zinc-200 placeholder:text-zinc-500"
             />
             {loading && (
               <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-400 animate-spin" />
@@ -408,7 +408,7 @@ export function ExternalPlayerSearch() {
                         </button>
 
                         {/* Expand indicator */}
-                        <ChevronRight className={`w-3 h-3 text-zinc-600 flex-shrink-0 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`} />
+                        <ChevronRight className={`w-3 h-3 text-zinc-500 flex-shrink-0 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`} />
 
                         {/* Photo */}
                         <div className="w-10 h-10 rounded-full bg-zinc-800 overflow-hidden ring-1 ring-zinc-700/50 flex-shrink-0">
@@ -428,7 +428,7 @@ export function ExternalPlayerSearch() {
                             <span className="text-sm font-medium text-zinc-200 truncate">
                               {r.player.name}
                             </span>
-                            <span className="text-[10px] text-zinc-600 font-mono">
+                            <span className="text-xs text-zinc-500 font-mono">
                               #{r.player.id}
                             </span>
                           </div>
@@ -473,19 +473,19 @@ export function ExternalPlayerSearch() {
                           <div className="grid grid-cols-4 gap-3">
                             <div className="text-center">
                               <div className="text-zinc-300 font-mono text-sm">{stats.games?.minutes ?? 0}</div>
-                              <div className="text-[10px] text-zinc-500">minutos</div>
+                              <div className="text-xs text-zinc-500">minutos</div>
                             </div>
                             <div className="text-center">
                               <div className="text-zinc-300 font-mono text-sm">{stats.passes?.total ?? 0}</div>
-                              <div className="text-[10px] text-zinc-500">passes</div>
+                              <div className="text-xs text-zinc-500">passes</div>
                             </div>
                             <div className="text-center">
                               <div className="text-zinc-300 font-mono text-sm">{stats.passes?.accuracy ?? 0}%</div>
-                              <div className="text-[10px] text-zinc-500">precisao</div>
+                              <div className="text-xs text-zinc-500">precisao</div>
                             </div>
                             <div className="text-center">
                               <div className="text-zinc-300 font-mono text-sm">{stats.goals?.total ?? 0}</div>
-                              <div className="text-[10px] text-zinc-500">gols</div>
+                              <div className="text-xs text-zinc-500">gols</div>
                             </div>
                           </div>
                           <div className="mt-2 flex items-center gap-3 text-xs text-zinc-500">
@@ -521,7 +521,7 @@ export function ExternalPlayerSearch() {
           )}
 
           {results.length === 0 && !loading && !error && query.length >= 4 && selectedLeague && (
-            <div className="text-center py-6 text-zinc-600 text-sm">
+            <div className="text-center py-6 text-zinc-500 text-sm">
               Buscando automaticamente...
             </div>
           )}

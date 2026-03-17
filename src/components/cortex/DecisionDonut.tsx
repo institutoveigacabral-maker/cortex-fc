@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState, useEffect } from "react"
 import {
   PieChart,
   Pie,
@@ -111,7 +111,7 @@ function CustomLegend({ payload }: { payload?: Array<{ value: string; color: str
             className="w-2 h-2 rounded-full"
             style={{ backgroundColor: entry.color }}
           />
-          <span className="text-[11px] text-zinc-400 font-medium">
+          <span className="text-xs text-zinc-400 font-medium">
             {entry.value.replace("_", " ")}
           </span>
         </div>
@@ -121,6 +121,15 @@ function CustomLegend({ payload }: { payload?: Array<{ value: string; color: str
 }
 
 export function DecisionDonut({ data }: DecisionDonutProps) {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
+
   const total = useMemo(() => data.reduce((sum, d) => sum + d.count, 0), [data])
 
   const enrichedData = useMemo(
@@ -134,14 +143,15 @@ export function DecisionDonut({ data }: DecisionDonutProps) {
 
   if (data.length === 0) {
     return (
-      <div className="h-64 flex items-center justify-center text-zinc-600 text-sm">
+      <div className="h-64 flex items-center justify-center text-zinc-500 text-sm">
         Sem dados de decisao disponiveis
       </div>
     )
   }
 
   return (
-    <ResponsiveContainer width="100%" height={320}>
+    <div className="h-[260px] md:h-[320px]">
+    <ResponsiveContainer width="100%" height="100%">
       <PieChart>
         <Pie
           data={enrichedData}
@@ -149,8 +159,8 @@ export function DecisionDonut({ data }: DecisionDonutProps) {
           nameKey="decision"
           cx="50%"
           cy="45%"
-          innerRadius={70}
-          outerRadius={110}
+          innerRadius={isMobile ? 55 : 70}
+          outerRadius={isMobile ? 90 : 110}
           paddingAngle={2}
           strokeWidth={0}
           isAnimationActive={true}
@@ -172,5 +182,6 @@ export function DecisionDonut({ data }: DecisionDonutProps) {
         <Legend content={<CustomLegend />} />
       </PieChart>
     </ResponsiveContainer>
+    </div>
   )
 }

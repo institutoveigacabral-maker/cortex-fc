@@ -35,8 +35,8 @@ export const colors = {
     secondary: "text-zinc-300",
     tertiary: "text-zinc-400",
     muted: "text-zinc-500",
-    faint: "text-zinc-600",
-    ghost: "text-zinc-700",
+    faint: "text-zinc-400",
+    ghost: "text-zinc-500",
   },
 
   // Accent — Emerald (primary brand)
@@ -134,7 +134,7 @@ export const typography = {
 
   // Caption — timestamps, metadata
   caption: "text-xs",
-  captionSm: "text-[10px]",
+  captionSm: "text-xs",
 
   // Label — form labels, section markers
   label: "text-xs font-medium uppercase tracking-wider",
@@ -185,7 +185,7 @@ export const presets = {
   cardGlass: "bg-zinc-900/80 border border-zinc-800 glass rounded-xl",
   cardInteractive: "bg-zinc-900/80 border border-zinc-800 rounded-xl card-hover",
 
-  badge: "inline-flex items-center gap-1 px-2 py-0.5 rounded-md border text-[11px] font-semibold",
+  badge: "inline-flex items-center gap-1 px-2 py-0.5 rounded-md border text-xs font-semibold",
   pill: "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs",
 
   sectionHeader: "text-xs font-medium text-zinc-500 uppercase tracking-wider",

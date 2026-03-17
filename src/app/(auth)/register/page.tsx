@@ -35,7 +35,7 @@ function PasswordStrength({ password }: { password: string }) {
           />
         ))}
       </div>
-      <p className={`text-[10px] ${level >= 3 ? "text-emerald-400" : level >= 2 ? "text-amber-400" : "text-red-400"}`}>
+      <p className={`text-xs ${level >= 3 ? "text-emerald-400" : level >= 2 ? "text-amber-400" : "text-red-400"}`}>
         {labels[level]}
       </p>
     </div>
@@ -118,7 +118,7 @@ export default function RegisterPage() {
               <Brain className="w-7 h-7 text-emerald-400" />
             </div>
             <h1 className="text-xl font-bold text-zinc-100 tracking-tight">CORTEX FC</h1>
-            <p className="text-[11px] text-zinc-600 font-mono tracking-widest mt-0.5">
+            <p className="text-xs text-zinc-500 font-mono tracking-widest mt-0.5">
               NEURAL ANALYTICS
             </p>
           </div>
@@ -131,7 +131,7 @@ export default function RegisterPage() {
                 Nome completo
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                 <input
                   id="name"
                   type="text"
@@ -149,7 +149,7 @@ export default function RegisterPage() {
                 Email
               </label>
               <div className="relative">
-                <Mail className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${email && emailValid ? "text-emerald-400" : "text-zinc-600"}`} />
+                <Mail className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${email && emailValid ? "text-emerald-400" : "text-zinc-500"}`} />
                 <input
                   id="email"
                   type="email"
@@ -171,7 +171,7 @@ export default function RegisterPage() {
                 )}
               </div>
               {email && !emailValid && (
-                <p className="text-[10px] text-red-400">Email invalido</p>
+                <p className="text-xs text-red-400">Email invalido</p>
               )}
             </div>
 
@@ -181,7 +181,7 @@ export default function RegisterPage() {
                 Clube / Organização
               </label>
               <div className="relative">
-                <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+                <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                 <input
                   id="club"
                   type="text"
@@ -199,7 +199,7 @@ export default function RegisterPage() {
                 Senha
               </label>
               <div className="relative">
-                <Lock className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${password.length >= 6 ? "text-emerald-400" : "text-zinc-600"}`} />
+                <Lock className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${password.length >= 6 ? "text-emerald-400" : "text-zinc-500"}`} />
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -217,7 +217,7 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-zinc-400 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-400 transition-colors"
                 >
                   {showPassword ? (
                     <EyeOff className="w-4 h-4" />
@@ -235,7 +235,7 @@ export default function RegisterPage() {
                 Confirmar senha
               </label>
               <div className="relative">
-                <Lock className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${passwordsMatch ? "text-emerald-400" : "text-zinc-600"}`} />
+                <Lock className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${passwordsMatch ? "text-emerald-400" : "text-zinc-500"}`} />
                 <input
                   id="confirmPassword"
                   type={showConfirm ? "text" : "password"}
@@ -253,7 +253,7 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-zinc-400 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-400 transition-colors"
                 >
                   {showConfirm ? (
                     <EyeOff className="w-4 h-4" />
@@ -263,10 +263,10 @@ export default function RegisterPage() {
                 </button>
               </div>
               {confirmPassword && !passwordsMatch && (
-                <p className="text-[10px] text-red-400">Senhas nao coincidem</p>
+                <p className="text-xs text-red-400">Senhas nao coincidem</p>
               )}
               {passwordsMatch && (
-                <p className="text-[10px] text-emerald-400 flex items-center gap-1">
+                <p className="text-xs text-emerald-400 flex items-center gap-1">
                   <Check className="w-3 h-3" /> Senhas coincidem
                 </p>
               )}
@@ -296,7 +296,7 @@ export default function RegisterPage() {
               <div className="w-full border-t border-zinc-800" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-zinc-900/80 px-3 text-zinc-600">ou</span>
+              <span className="bg-zinc-900/80 px-3 text-zinc-500">ou</span>
             </div>
           </div>
 
@@ -328,7 +328,7 @@ export default function RegisterPage() {
           </button>
 
           {/* Terms */}
-          <p className="mt-4 text-center text-[11px] text-zinc-600 leading-relaxed">
+          <p className="mt-4 text-center text-xs text-zinc-500 leading-relaxed">
             Ao criar uma conta, você concorda com nossos{" "}
             <Link href="#" className="text-zinc-500 hover:text-zinc-400 underline transition-colors">
               Termos de Uso

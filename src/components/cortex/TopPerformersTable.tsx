@@ -35,14 +35,14 @@ function PlayerAvatar({ name, photoUrl }: { name: string; photoUrl: string | nul
       <img
         src={photoUrl}
         alt={name}
-        className="w-8 h-8 rounded-full object-cover ring-1 ring-zinc-700"
+        className="w-9 h-9 rounded-full object-cover ring-1 ring-zinc-700"
       />
     )
   }
 
   return (
-    <div className="w-8 h-8 rounded-full bg-zinc-800 ring-1 ring-zinc-700 flex items-center justify-center">
-      <span className="text-[10px] font-semibold text-zinc-400">{initials}</span>
+    <div className="w-9 h-9 rounded-full bg-zinc-800 ring-1 ring-zinc-700 flex items-center justify-center">
+      <span className="text-xs font-semibold text-zinc-400">{initials}</span>
     </div>
   )
 }
@@ -50,7 +50,7 @@ function PlayerAvatar({ name, photoUrl }: { name: string; photoUrl: string | nul
 export function TopPerformersTable({ data }: TopPerformersTableProps) {
   if (data.length === 0) {
     return (
-      <div className="h-48 flex items-center justify-center text-zinc-600 text-sm">
+      <div className="h-48 flex items-center justify-center text-zinc-500 text-sm">
         Sem dados de jogadores
       </div>
     )
@@ -59,24 +59,25 @@ export function TopPerformersTable({ data }: TopPerformersTableProps) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
+        <caption className="sr-only">Ranking dos melhores jogadores por pontuacao SCN+</caption>
         <thead>
           <tr className="border-b border-zinc-800">
-            <th className="text-left text-[11px] text-zinc-500 font-medium uppercase tracking-wider py-2 px-2 w-8">
+            <th scope="col" className="text-left text-xs text-zinc-500 font-medium uppercase tracking-wider py-2 px-2 w-8">
               #
             </th>
-            <th className="text-left text-[11px] text-zinc-500 font-medium uppercase tracking-wider py-2 px-2">
+            <th scope="col" className="text-left text-xs text-zinc-500 font-medium uppercase tracking-wider py-2 px-2">
               Jogador
             </th>
-            <th className="text-right text-[11px] text-zinc-500 font-medium uppercase tracking-wider py-2 px-2">
+            <th scope="col" className="text-right text-xs text-zinc-500 font-medium uppercase tracking-wider py-2 px-2">
               SCN+
             </th>
-            <th className="text-right text-[11px] text-zinc-500 font-medium uppercase tracking-wider py-2 px-2">
+            <th scope="col" className="text-right text-xs text-zinc-500 font-medium uppercase tracking-wider py-2 px-2">
               Vx
             </th>
-            <th className="text-right text-[11px] text-zinc-500 font-medium uppercase tracking-wider py-2 px-2">
+            <th scope="col" className="text-right text-xs text-zinc-500 font-medium uppercase tracking-wider py-2 px-2">
               Rx
             </th>
-            <th className="text-left text-[11px] text-zinc-500 font-medium uppercase tracking-wider py-2 px-2">
+            <th scope="col" className="text-left text-xs text-zinc-500 font-medium uppercase tracking-wider py-2 px-2">
               Decisao
             </th>
           </tr>
@@ -89,16 +90,16 @@ export function TopPerformersTable({ data }: TopPerformersTableProps) {
             return (
               <tr
                 key={player.id}
-                className="border-b border-zinc-800/50 transition-colors hover:bg-zinc-800/40"
+                className="border-b border-zinc-800/50 transition-colors hover:bg-zinc-800/40 min-h-[48px]"
               >
-                <td className="py-2.5 px-2">
+                <td className="py-3 px-2">
                   <span
-                    className={`font-mono font-bold text-sm ${medalClass ?? "text-zinc-600"}`}
+                    className={`font-mono font-bold text-sm ${medalClass ?? "text-zinc-500"}`}
                   >
                     {rank}
                   </span>
                 </td>
-                <td className="py-2.5 px-2">
+                <td className="py-3 px-2">
                   <Link
                     href={`/players/${player.id}`}
                     className="flex items-center gap-2.5 group"
@@ -124,7 +125,7 @@ export function TopPerformersTable({ data }: TopPerformersTableProps) {
                     {player.rx.toFixed(2)}
                   </span>
                 </td>
-                <td className="py-2.5 px-2">
+                <td className="py-3 px-2">
                   <DecisionBadge decision={player.decision as CortexDecision} size="sm" />
                 </td>
               </tr>

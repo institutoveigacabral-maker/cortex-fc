@@ -29,7 +29,7 @@ export function ProgressSteps({ steps, currentStep, className }: ProgressStepsPr
               "flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono transition-all duration-300",
               isCompleted && "bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/40",
               isActive && "bg-emerald-500/10 text-emerald-400 ring-2 ring-emerald-500/60 animate-pulse-glow",
-              isPending && "bg-zinc-800/50 text-zinc-600 ring-1 ring-zinc-700/50"
+              isPending && "bg-zinc-800/50 text-zinc-500 ring-1 ring-zinc-700/50"
             )}>
               {isCompleted ? (
                 <Check className="w-3.5 h-3.5" />
@@ -46,14 +46,14 @@ export function ProgressSteps({ steps, currentStep, className }: ProgressStepsPr
                 "text-sm font-medium transition-colors",
                 isCompleted && "text-emerald-400",
                 isActive && "text-zinc-200",
-                isPending && "text-zinc-600"
+                isPending && "text-zinc-500"
               )}>
                 {step.label}
               </p>
               {step.description && (
                 <p className={cn(
                   "text-xs mt-0.5",
-                  isActive ? "text-zinc-500" : "text-zinc-700"
+                  isActive ? "text-zinc-500" : "text-zinc-500"
                 )}>
                   {step.description}
                 </p>

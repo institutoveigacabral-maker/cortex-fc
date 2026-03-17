@@ -37,7 +37,10 @@ export async function getCached<T>(key: string): Promise<T | null> {
       req.onsuccess = () => {
         const entry = req.result as CacheEntry | undefined
         if (!entry) return resolve(null)
-        // For offline, stale data is better than no data
+        // TTL validation — expired entries return null
+        if (entry.timestamp + entry.ttl < Date.now()) {
+          return resolve(null)
+        }
         resolve(entry.data as T)
       }
       req.onerror = () => resolve(null)

@@ -27,7 +27,7 @@ function DeltaIndicator({
 }) {
   if (Math.abs(value) < 0.01) {
     return (
-      <span className="inline-flex items-center gap-0.5 text-zinc-500 text-[10px] font-mono">
+      <span className="inline-flex items-center gap-0.5 text-zinc-500 text-xs font-mono">
         <Minus className="w-3 h-3" />
         0.00
       </span>
@@ -40,7 +40,7 @@ function DeltaIndicator({
 
   return (
     <span
-      className={`inline-flex items-center gap-0.5 text-[10px] font-mono ${
+      className={`inline-flex items-center gap-0.5 text-xs font-mono ${
         isGood ? "text-emerald-400" : "text-red-400"
       }`}
     >
@@ -70,12 +70,12 @@ function MetricRow({
 
   return (
     <div className="flex items-center justify-between py-1.5">
-      <span className="text-[10px] text-zinc-500 uppercase tracking-wide w-16">
+      <span className="text-xs text-zinc-500 uppercase tracking-wide w-16">
         {label}
       </span>
       <div className="flex items-center gap-2">
         <span className="text-xs font-mono text-zinc-500">{oldVal.toFixed(2)}</span>
-        <ArrowRight className="w-3 h-3 text-zinc-600" />
+        <ArrowRight className="w-3 h-3 text-zinc-500" />
         <span className="text-xs font-mono text-zinc-300">{newVal.toFixed(2)}</span>
         <DeltaIndicator value={delta} inverted={inverted} />
       </div>
@@ -116,7 +116,7 @@ export function AnalysisDiff({ current, previous }: AnalysisDiffProps) {
   return (
     <div className="rounded-lg border border-zinc-800/50 bg-zinc-900/40 p-4">
       {/* Header */}
-      <p className="text-[11px] text-zinc-500 font-mono mb-3">
+      <p className="text-xs text-zinc-500 font-mono mb-3">
         {previous.date} → {current.date}
       </p>
 
@@ -137,11 +137,11 @@ export function AnalysisDiff({ current, previous }: AnalysisDiffProps) {
         {decisionChanged ? (
           <div className="flex items-center gap-2 flex-wrap">
             <DecisionBadge decision={previous.decision as CortexDecision} size="sm" />
-            <ArrowRight className="w-3 h-3 text-zinc-600" />
+            <ArrowRight className="w-3 h-3 text-zinc-500" />
             <DecisionBadge decision={current.decision as CortexDecision} size="sm" />
           </div>
         ) : (
-          <p className="text-[11px] text-zinc-500">
+          <p className="text-xs text-zinc-500">
             Decisao mantida:{" "}
             <span className="text-zinc-400 font-medium">{current.decision}</span>
           </p>
@@ -151,7 +151,7 @@ export function AnalysisDiff({ current, previous }: AnalysisDiffProps) {
       {/* Assessment */}
       <div className="mt-3">
         <span
-          className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-semibold border ${assessment.color}`}
+          className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold border ${assessment.color}`}
         >
           {assessment.label}
         </span>

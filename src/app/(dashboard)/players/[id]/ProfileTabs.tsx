@@ -156,21 +156,21 @@ export function ProfileTabs({
                       <p className="text-3xl font-bold font-mono text-emerald-400">
                         {vx.toFixed(2)}
                       </p>
-                      <p className="text-xs text-zinc-600 mt-1">Vx (Valor)</p>
+                      <p className="text-xs text-zinc-500 mt-1">Vx (Valor)</p>
                     </div>
                     <div className="w-px h-12 bg-zinc-800" />
                     <div className="text-center">
                       <p className="text-3xl font-bold font-mono text-red-400">
                         {rx.toFixed(2)}
                       </p>
-                      <p className="text-xs text-zinc-600 mt-1">Rx (Risco)</p>
+                      <p className="text-xs text-zinc-500 mt-1">Rx (Risco)</p>
                     </div>
                   </div>
                   <Separator className="bg-zinc-800 my-4" />
                   <div className="text-center">
                     <p className="text-xs text-zinc-500 mb-2">Decisao ORACLE</p>
                     <DecisionBadge decision={typedDecision} size="lg" />
-                    <p className="text-xs text-zinc-600 mt-2 font-mono">
+                    <p className="text-xs text-zinc-500 mt-2 font-mono">
                       Confianca: {confidence}%
                     </p>
                   </div>
@@ -276,7 +276,7 @@ export function ProfileTabs({
                       <Cpu className="w-4 h-4 text-cyan-500" />
                       <div>
                         <span>Radar Neural — 7 Camadas</span>
-                        <p className="text-[11px] text-zinc-600 font-normal mt-0.5">
+                        <p className="text-xs text-zinc-500 font-normal mt-0.5">
                           Perfil multidimensional de performance e potencial
                         </p>
                       </div>
@@ -298,7 +298,7 @@ export function ProfileTabs({
                       <BarChart3 className="w-4 h-4 text-amber-500" />
                       <div>
                         <span>Algoritmos Proprietarios</span>
-                        <p className="text-[11px] text-zinc-600 font-normal mt-0.5">
+                        <p className="text-xs text-zinc-500 font-normal mt-0.5">
                           Scores compostos dos modelos CortexFC
                         </p>
                       </div>
@@ -384,7 +384,7 @@ export function ProfileTabs({
                     <CardTitle className="text-sm text-zinc-400 flex items-center gap-2">
                       <Globe className="w-4 h-4 text-amber-500" />
                       Historico de Transferencias
-                      <span className="ml-auto text-[10px] font-mono text-zinc-600 bg-zinc-800 px-2 py-0.5 rounded-full">
+                      <span className="ml-auto text-xs font-mono text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded-full">
                         {transferHistory.length} movimentacoes
                       </span>
                     </CardTitle>
@@ -401,7 +401,7 @@ export function ProfileTabs({
                     <CardTitle className="text-sm text-zinc-400 flex items-center gap-2">
                       <Clock className="w-4 h-4 text-blue-500" />
                       Historico de Analises
-                      <span className="ml-auto text-[10px] font-mono text-zinc-600 bg-zinc-800 px-2 py-0.5 rounded-full">
+                      <span className="ml-auto text-xs font-mono text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded-full">
                         {analyses.length} registros
                       </span>
                     </CardTitle>
@@ -451,7 +451,7 @@ export function ProfileTabs({
                               <div className="flex items-center justify-between mb-2">
                                 <span className="text-xs text-zinc-500 font-mono">{a.date}</span>
                                 <div className="flex items-center gap-2">
-                                  <span className="text-[10px] text-zinc-600 font-mono">
+                                  <span className="text-xs text-zinc-500 font-mono">
                                     Conf. {a.confidence}%
                                   </span>
                                   <DecisionBadge decision={a.decision as CortexDecision} size="sm" />
@@ -459,19 +459,19 @@ export function ProfileTabs({
                               </div>
                               <div className="flex items-center gap-6">
                                 <div className="flex items-center gap-1">
-                                  <span className="text-[10px] text-zinc-600 uppercase">Vx</span>
+                                  <span className="text-xs text-zinc-500 uppercase">Vx</span>
                                   <span className="font-mono text-emerald-400 text-sm font-semibold">
                                     {a.vx.toFixed(2)}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                  <span className="text-[10px] text-zinc-600 uppercase">Rx</span>
+                                  <span className="text-xs text-zinc-500 uppercase">Rx</span>
                                   <span className="font-mono text-red-400 text-sm font-semibold">
                                     {a.rx.toFixed(2)}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                  <span className="text-[10px] text-zinc-600 uppercase">SCN+</span>
+                                  <span className="text-xs text-zinc-500 uppercase">SCN+</span>
                                   <span className="font-mono text-cyan-400 text-sm font-semibold">
                                     {a.algorithms.SCN_plus}
                                   </span>

@@ -149,11 +149,11 @@ export default function EnterpriseSettingsPage() {
                 </div>
                 White-Label
               </CardTitle>
-              <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 text-[10px]">
+              <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 text-xs">
                 ENTERPRISE
               </Badge>
             </div>
-            <p className="text-xs text-zinc-600">
+            <p className="text-xs text-zinc-500">
               Personalize cores, logo e dominio
             </p>
           </CardHeader>
@@ -221,7 +221,7 @@ export default function EnterpriseSettingsPage() {
 
             {/* Preview */}
             <div className="rounded-xl border border-zinc-700/40 p-4 space-y-2">
-              <p className="text-[10px] text-zinc-600 uppercase font-medium">Preview</p>
+              <p className="text-xs text-zinc-500 uppercase font-medium">Preview</p>
               <div
                 className="rounded-lg p-4 flex items-center gap-3"
                 style={{ backgroundColor: branding.brandDarkBg }}
@@ -239,7 +239,7 @@ export default function EnterpriseSettingsPage() {
                   <p className="text-sm font-bold" style={{ color: branding.brandPrimaryColor }}>
                     Seu Clube FC
                   </p>
-                  <p className="text-[10px]" style={{ color: branding.brandAccentColor }}>
+                  <p className="text-xs" style={{ color: branding.brandAccentColor }}>
                     NEURAL ANALYTICS
                   </p>
                 </div>
@@ -259,7 +259,7 @@ export default function EnterpriseSettingsPage() {
                 placeholder="analytics.seuclube.com"
                 className="bg-zinc-800/40 border-zinc-700/40 text-zinc-300 text-sm font-mono rounded-lg"
               />
-              <p className="text-[10px] text-zinc-600">
+              <p className="text-xs text-zinc-500">
                 Configure o CNAME do seu dominio para cortex-fc.vercel.app
               </p>
             </div>
@@ -293,11 +293,11 @@ export default function EnterpriseSettingsPage() {
                 </div>
                 SSO / SAML
               </CardTitle>
-              <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 text-[10px]">
+              <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 text-xs">
                 ENTERPRISE
               </Badge>
             </div>
-            <p className="text-xs text-zinc-600">
+            <p className="text-xs text-zinc-500">
               Single Sign-On para login corporativo
             </p>
           </CardHeader>
@@ -354,17 +354,17 @@ export default function EnterpriseSettingsPage() {
 
                 {/* SSO Info */}
                 <div className="rounded-lg bg-zinc-900/50 border border-zinc-800 p-3 space-y-2">
-                  <p className="text-[10px] text-zinc-600 uppercase font-medium">Informacoes do SP</p>
+                  <p className="text-xs text-zinc-500 uppercase font-medium">Informacoes do SP</p>
                   <div className="space-y-1.5 text-xs">
                     <div className="flex justify-between">
                       <span className="text-zinc-500">ACS URL:</span>
-                      <span className="text-zinc-400 font-mono text-[11px]">
+                      <span className="text-zinc-400 font-mono text-xs">
                         https://cortex-fc.vercel.app/api/auth/callback/saml
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-zinc-500">Entity ID:</span>
-                      <span className="text-zinc-400 font-mono text-[11px]">
+                      <span className="text-zinc-400 font-mono text-xs">
                         https://cortex-fc.vercel.app
                       </span>
                     </div>
@@ -375,7 +375,7 @@ export default function EnterpriseSettingsPage() {
                 <div className="flex items-center justify-between p-3 rounded-lg border border-zinc-800/50">
                   <div>
                     <p className="text-sm text-zinc-300">Ativar SSO</p>
-                    <p className="text-[11px] text-zinc-600">Usuarios poderao fazer login via IdP</p>
+                    <p className="text-xs text-zinc-500">Usuarios poderao fazer login via IdP</p>
                   </div>
                   <button
                     onClick={() => setSso({ ...sso, ssoEnabled: !sso.ssoEnabled })}

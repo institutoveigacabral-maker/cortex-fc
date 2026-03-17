@@ -1,7 +1,7 @@
 "use client"
 
 import { useLocale } from "next-intl"
-import { formatDate, formatDateRelative, formatNumber, formatCurrency, formatPercent } from "@/lib/formatters"
+import { formatDate, formatDateRelative, formatNumber, formatCurrency, formatPercent, type RelativeTimeStrings } from "@/lib/formatters"
 import type { Locale } from "@/i18n/config"
 
 export function useFormatters() {
@@ -9,7 +9,7 @@ export function useFormatters() {
 
   return {
     date: (d: Date | string) => formatDate(d, locale),
-    dateRelative: (d: Date | string) => formatDateRelative(d, locale),
+    dateRelative: (d: Date | string, strings?: RelativeTimeStrings) => formatDateRelative(d, strings, locale),
     number: (n: number) => formatNumber(n, locale),
     currency: (n: number, cur?: string) => formatCurrency(n, locale, cur),
     percent: (n: number) => formatPercent(n, locale),

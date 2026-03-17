@@ -43,7 +43,7 @@ export default async function SharedReportPage({
     return (
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
         <div className="text-center">
-          <Shield className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
+          <Shield className="w-12 h-12 text-zinc-500 mx-auto mb-4" />
           <h1 className="text-xl font-bold text-white mb-2">Relatorio nao encontrado</h1>
         </div>
       </div>
@@ -103,7 +103,7 @@ export default async function SharedReportPage({
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center border border-zinc-700/50">
-                    <User className="w-6 h-6 text-zinc-600" />
+                    <User className="w-6 h-6 text-zinc-500" />
                   </div>
                   <div>
                     <h2 className="text-lg font-bold text-white">{analysis.player?.name ?? "—"}</h2>
@@ -119,15 +119,15 @@ export default async function SharedReportPage({
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div className="text-center p-3 rounded-lg bg-zinc-800/50">
                   <p className="text-2xl font-bold font-mono text-emerald-400">{analysis.vx.toFixed(2)}</p>
-                  <p className="text-[10px] text-zinc-600">Vx (Valor)</p>
+                  <p className="text-xs text-zinc-500">Vx (Valor)</p>
                 </div>
                 <div className="text-center p-3 rounded-lg bg-zinc-800/50">
                   <p className="text-2xl font-bold font-mono text-red-400">{analysis.rx.toFixed(2)}</p>
-                  <p className="text-[10px] text-zinc-600">Rx (Risco)</p>
+                  <p className="text-xs text-zinc-500">Rx (Risco)</p>
                 </div>
                 <div className="text-center p-3 rounded-lg bg-zinc-800/50">
                   <p className="text-2xl font-bold font-mono text-cyan-400">{analysis.algorithms.SCN_plus}</p>
-                  <p className="text-[10px] text-zinc-600">SCN+</p>
+                  <p className="text-xs text-zinc-500">SCN+</p>
                 </div>
               </div>
 
@@ -136,7 +136,7 @@ export default async function SharedReportPage({
                 {analysis.reasoning}
               </p>
 
-              <p className="text-xs text-zinc-600 mt-3 font-mono">
+              <p className="text-xs text-zinc-500 mt-3 font-mono">
                 Confianca: {analysis.confidence}% | {analysis.date}
               </p>
             </div>
@@ -144,10 +144,10 @@ export default async function SharedReportPage({
         </div>
 
         {analyses.length === 0 && (
-          <div className="text-center py-16 text-zinc-600">Nenhum dado disponivel.</div>
+          <div className="text-center py-16 text-zinc-500">Nenhum dado disponivel.</div>
         )}
 
-        <p className="text-center text-[10px] text-zinc-700 mt-10">
+        <p className="text-center text-xs text-zinc-500 mt-10">
           {org?.name ?? "CORTEX FC"} — Analytics Futebolístico Neural
         </p>
       </div>

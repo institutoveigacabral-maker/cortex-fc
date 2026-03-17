@@ -68,7 +68,7 @@ export function OfflineDataManager() {
           </div>
           Dados Offline
         </CardTitle>
-        <p className="text-xs text-zinc-600">
+        <p className="text-xs text-zinc-500">
           Cache local para acesso sem conexao
         </p>
       </CardHeader>
@@ -88,7 +88,7 @@ export function OfflineDataManager() {
               <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">
                 Ultimo sync
               </span>
-              <span className="text-[11px] font-mono text-zinc-400">
+              <span className="text-xs font-mono text-zinc-400">
                 {lastSync}
               </span>
             </div>
@@ -99,12 +99,15 @@ export function OfflineDataManager() {
         <div className="flex items-center justify-between py-3 px-2 -mx-2 rounded-lg hover:bg-zinc-800/10 transition-colors">
           <div>
             <p className="text-sm text-zinc-300">Salvar dados para uso offline</p>
-            <p className="text-[11px] text-zinc-600 mt-0.5">
+            <p className="text-xs text-zinc-500 mt-0.5">
               Armazena respostas da API localmente
             </p>
           </div>
           <button
             onClick={toggleOffline}
+            role="switch"
+            aria-checked={offlineEnabled}
+            aria-label="Salvar dados para uso offline"
             className={`relative w-11 h-6 rounded-full transition-all duration-300 ${
               offlineEnabled
                 ? "bg-emerald-500 shadow-sm shadow-emerald-500/30"

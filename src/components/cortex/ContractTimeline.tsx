@@ -42,7 +42,7 @@ function formatValue(value: number): string {
 export function ContractTimeline({ data }: ContractTimelineProps) {
   if (data.length === 0) {
     return (
-      <div className="h-48 flex items-center justify-center text-zinc-600 text-sm">
+      <div className="h-48 flex items-center justify-center text-zinc-500 text-sm">
         Sem dados de contratos
       </div>
     )
@@ -70,7 +70,7 @@ export function ContractTimeline({ data }: ContractTimelineProps) {
             {/* Player chips */}
             <div className="flex flex-col gap-2 w-full">
               {quarter.players.length === 0 ? (
-                <div className="text-center text-[11px] text-zinc-700 py-4">
+                <div className="text-center text-xs text-zinc-500 py-4">
                   Nenhum jogador
                 </div>
               ) : (
@@ -88,15 +88,15 @@ export function ContractTimeline({ data }: ContractTimelineProps) {
                         {player.name}
                       </Link>
                       <div className="flex items-center justify-between mt-1">
-                        <span className="text-[10px] text-zinc-500 truncate max-w-[100px]">
+                        <span className="text-xs text-zinc-500 truncate max-w-[100px]">
                           {player.club ?? "—"}
                         </span>
-                        <span className="text-[10px] font-mono text-zinc-400 font-medium">
+                        <span className="text-xs font-mono text-zinc-400 font-medium">
                           {player.marketValue != null ? formatValue(player.marketValue) : "—"}
                         </span>
                       </div>
                       <div className="mt-1">
-                        <span className="text-[9px] text-zinc-600">
+                        <span className="text-[9px] text-zinc-500">
                           Ate {(player.contractUntil instanceof Date ? player.contractUntil : new Date(player.contractUntil)).toLocaleDateString("pt-BR", {
                             month: "short",
                             year: "numeric",
@@ -113,18 +113,18 @@ export function ContractTimeline({ data }: ContractTimelineProps) {
       </div>
 
       {/* Legend */}
-      <div className="flex justify-center gap-4 mt-4 pt-3 border-t border-zinc-800/50">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-red-500" />
-          <span className="text-[11px] text-zinc-500">&lt;6 meses</span>
+      <div className="flex justify-center gap-4 mt-4 pt-3 border-t border-zinc-800/50" role="list" aria-label="Legenda de urgencia do contrato">
+        <div className="flex items-center gap-1.5" role="listitem">
+          <span className="w-2 h-2 rounded-full bg-red-500" aria-hidden="true" />
+          <span className="text-xs text-zinc-500">&lt;6 meses</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-amber-500" />
-          <span className="text-[11px] text-zinc-500">6-12 meses</span>
+        <div className="flex items-center gap-1.5" role="listitem">
+          <span className="w-2 h-2 rounded-full bg-amber-500" aria-hidden="true" />
+          <span className="text-xs text-zinc-500">6-12 meses</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-zinc-500" />
-          <span className="text-[11px] text-zinc-500">12-18 meses</span>
+        <div className="flex items-center gap-1.5" role="listitem">
+          <span className="w-2 h-2 rounded-full bg-zinc-500" aria-hidden="true" />
+          <span className="text-xs text-zinc-500">12-18 meses</span>
         </div>
       </div>
     </div>

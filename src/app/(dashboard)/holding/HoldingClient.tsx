@@ -83,7 +83,7 @@ export function HoldingClient({ stats, currentOrgId }: Props) {
                     <Icon className={`w-5 h-5 ${stat.color}`} />
                   </div>
                   <div>
-                    <p className="text-[10px] text-zinc-600 uppercase font-medium tracking-wider">{stat.label}</p>
+                    <p className="text-xs text-zinc-500 uppercase font-medium tracking-wider">{stat.label}</p>
                     <p className="text-xl font-bold text-zinc-100 font-mono">{stat.value}</p>
                   </div>
                 </div>
@@ -104,15 +104,16 @@ export function HoldingClient({ stats, currentOrgId }: Props) {
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
+              <caption className="sr-only">Benchmarking entre clubes da holding</caption>
               <thead>
                 <tr className="border-b border-zinc-800">
-                  <th className="text-left py-3 px-5 text-xs font-medium text-zinc-500 uppercase tracking-wider">Clube</th>
-                  <th className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">Tier</th>
-                  <th className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">Analises</th>
-                  <th className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">SCN+ Med.</th>
-                  <th className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">Agent Runs</th>
-                  <th className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">Tokens</th>
-                  <th className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">Membros</th>
+                  <th scope="col" className="text-left py-3 px-5 text-xs font-medium text-zinc-500 uppercase tracking-wider">Clube</th>
+                  <th scope="col" className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">Tier</th>
+                  <th scope="col" className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">Analises</th>
+                  <th scope="col" className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">SCN+ Med.</th>
+                  <th scope="col" className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">Agent Runs</th>
+                  <th scope="col" className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">Tokens</th>
+                  <th scope="col" className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">Membros</th>
                 </tr>
               </thead>
               <tbody>
@@ -128,7 +129,7 @@ export function HoldingClient({ stats, currentOrgId }: Props) {
                     >
                       <td className="py-3 px-5">
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-lg bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400 border border-zinc-700/50">
+                          <div className="w-7 h-7 rounded-lg bg-zinc-800 flex items-center justify-center text-xs font-bold text-zinc-400 border border-zinc-700/50">
                             {(stat.org?.name ?? "?")
                               .split(" ")
                               .map((n) => n[0])
@@ -144,7 +145,7 @@ export function HoldingClient({ stats, currentOrgId }: Props) {
                         </div>
                       </td>
                       <td className="py-3 px-3 text-center">
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded border ${tierColor[tier]}`}>
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded border ${tierColor[tier]}`}>
                           {tierLabel[tier]}
                         </span>
                       </td>
@@ -176,7 +177,7 @@ export function HoldingClient({ stats, currentOrgId }: Props) {
 
           {stats.length === 0 && (
             <div className="py-12 text-center">
-              <Building2 className="w-8 h-8 text-zinc-700 mx-auto mb-3" />
+              <Building2 className="w-8 h-8 text-zinc-500 mx-auto mb-3" />
               <p className="text-sm text-zinc-500">Nenhuma organizacao encontrada</p>
             </div>
           )}

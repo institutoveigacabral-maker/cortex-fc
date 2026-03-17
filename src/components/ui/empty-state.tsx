@@ -31,14 +31,14 @@ export function EmptyState({
           <SecondaryIcon className="w-6 h-6 text-zinc-800" />
         )}
         <div className="w-14 h-14 rounded-2xl bg-zinc-800/50 border border-zinc-700/30 flex items-center justify-center">
-          <Icon className="w-7 h-7 text-zinc-600" />
+          <Icon className="w-7 h-7 text-zinc-500" />
         </div>
         {SecondaryIcon && (
           <SecondaryIcon className="w-6 h-6 text-zinc-800 scale-x-[-1]" />
         )}
       </div>
       <h3 className="text-zinc-400 text-sm font-medium mb-1">{title}</h3>
-      <p className="text-zinc-600 text-xs max-w-sm mx-auto">{description}</p>
+      <p className="text-zinc-500 text-xs max-w-sm mx-auto">{description}</p>
       {actionLabel && (actionHref || onAction) && (
         <div className="mt-5">
           {actionHref ? (

@@ -44,7 +44,7 @@ function MiniTooltip({ active, payload, label }: { active?: boolean; payload?: {
   if (!active || !payload?.length) return null
   return (
     <div className="rounded-lg border border-zinc-700/50 bg-zinc-900/90 backdrop-blur-md p-2 shadow-xl">
-      <p className="text-[10px] text-zinc-500">{label}</p>
+      <p className="text-xs text-zinc-500">{label}</p>
       <p className="text-xs font-mono text-zinc-200">${payload[0].value.toFixed(4)}</p>
     </div>
   )
@@ -74,17 +74,17 @@ export function AgentCostTracker({ totalTokens, totalRuns, byAgent, dailyUsage }
         {/* Top metrics */}
         <div className="grid grid-cols-3 gap-2">
           <div className="rounded-lg bg-zinc-800/30 border border-zinc-700/30 p-2.5 text-center">
-            <p className="text-[9px] text-zinc-600 uppercase font-medium tracking-wider">Total</p>
+            <p className="text-[9px] text-zinc-500 uppercase font-medium tracking-wider">Total</p>
             <p className="text-sm font-bold font-mono text-zinc-100">${totalCost.toFixed(2)}</p>
           </div>
           <div className="rounded-lg bg-zinc-800/30 border border-zinc-700/30 p-2.5 text-center">
-            <p className="text-[9px] text-zinc-600 uppercase font-medium tracking-wider flex items-center justify-center gap-1">
+            <p className="text-[9px] text-zinc-500 uppercase font-medium tracking-wider flex items-center justify-center gap-1">
               <Calendar className="w-2.5 h-2.5" /> Dia
             </p>
             <p className="text-sm font-bold font-mono text-zinc-100">${dailyAvg.toFixed(3)}</p>
           </div>
           <div className="rounded-lg bg-zinc-800/30 border border-zinc-700/30 p-2.5 text-center">
-            <p className="text-[9px] text-zinc-600 uppercase font-medium tracking-wider flex items-center justify-center gap-1">
+            <p className="text-[9px] text-zinc-500 uppercase font-medium tracking-wider flex items-center justify-center gap-1">
               <TrendingUp className="w-2.5 h-2.5" /> Proj. Mes
             </p>
             <p className={`text-sm font-bold font-mono ${overBudget ? "text-amber-400" : "text-zinc-100"}`}>
@@ -95,15 +95,15 @@ export function AgentCostTracker({ totalTokens, totalRuns, byAgent, dailyUsage }
 
         {/* Per-agent token bars */}
         <div className="space-y-2">
-          <p className="text-[10px] text-zinc-600 uppercase font-medium tracking-wider">Tokens por Agente</p>
+          <p className="text-xs text-zinc-500 uppercase font-medium tracking-wider">Tokens por Agente</p>
           {byAgent.map((agent) => {
             const pct = (agent.totalTokens / maxAgentTokens) * 100
             const color = AGENT_COLORS[agent.agentType] ?? "#71717a"
             return (
               <div key={agent.agentType} className="space-y-0.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-zinc-400">{AGENT_LABELS[agent.agentType] ?? agent.agentType}</span>
-                  <span className="text-[10px] font-mono text-zinc-500">
+                  <span className="text-xs text-zinc-400">{AGENT_LABELS[agent.agentType] ?? agent.agentType}</span>
+                  <span className="text-xs font-mono text-zinc-500">
                     {agent.totalTokens > 1000 ? `${(agent.totalTokens / 1000).toFixed(1)}k` : agent.totalTokens}
                   </span>
                 </div>
@@ -118,7 +118,7 @@ export function AgentCostTracker({ totalTokens, totalRuns, byAgent, dailyUsage }
         {/* Mini area chart */}
         {dailyUsage.length > 0 && (
           <div>
-            <p className="text-[10px] text-zinc-600 uppercase font-medium tracking-wider mb-2">Custo Diario (30d)</p>
+            <p className="text-xs text-zinc-500 uppercase font-medium tracking-wider mb-2">Custo Diario (30d)</p>
             <ResponsiveContainer width="100%" height={80}>
               <AreaChart data={dailyUsage} margin={{ top: 2, right: 2, left: 2, bottom: 0 }}>
                 <defs>
@@ -145,21 +145,21 @@ export function AgentCostTracker({ totalTokens, totalRuns, byAgent, dailyUsage }
         {/* Budget section */}
         <div className="rounded-lg bg-zinc-800/20 border border-zinc-700/30 p-3 space-y-2">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] text-zinc-600 uppercase font-medium tracking-wider">Orcamento Mensal</p>
-            <span className="text-[10px] font-mono text-zinc-500">${MONTHLY_BUDGET.toFixed(0)}/mes</span>
+            <p className="text-xs text-zinc-500 uppercase font-medium tracking-wider">Orcamento Mensal</p>
+            <span className="text-xs font-mono text-zinc-500">${MONTHLY_BUDGET.toFixed(0)}/mes</span>
           </div>
-          <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden" role="progressbar" aria-valuenow={Math.round(budgetPct)} aria-valuemin={0} aria-valuemax={100} aria-label={`Orcamento mensal: ${budgetPct.toFixed(0)}% utilizado`}>
             <div
               className={`h-full rounded-full transition-all ${overBudget ? "bg-amber-500" : "bg-emerald-500"}`}
               style={{ width: `${budgetPct}%` }}
             />
           </div>
           <div className="flex items-center justify-between">
-            <span className={`text-[10px] font-mono ${overBudget ? "text-amber-400" : "text-zinc-500"}`}>
+            <span className={`text-xs font-mono ${overBudget ? "text-amber-400" : "text-zinc-500"}`}>
               {budgetPct.toFixed(0)}% utilizado
             </span>
             {overBudget && (
-              <span className="flex items-center gap-1 text-[10px] text-amber-400 font-medium">
+              <span className="flex items-center gap-1 text-xs text-amber-400 font-medium">
                 <AlertTriangle className="w-3 h-3" />
                 Atencao: &gt;80% do orcamento
               </span>

@@ -25,7 +25,7 @@ function formatFee(fee: number | null, type: string | null): string {
 export function TransferTimeline({ transfers }: TransferTimelineProps) {
   if (transfers.length === 0) {
     return (
-      <div className="text-center py-6 text-zinc-600 text-sm">
+      <div className="text-center py-6 text-zinc-500 text-sm">
         Nenhum historico de transferencia disponivel
       </div>
     );
@@ -66,7 +66,7 @@ export function TransferTimeline({ transfers }: TransferTimelineProps) {
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <span className="text-zinc-400">{t.fromClub ?? "—"}</span>
-                <ArrowRight className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
+                <ArrowRight className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
                 <span className="text-white font-medium">{t.toClub ?? "—"}</span>
               </div>
             </div>

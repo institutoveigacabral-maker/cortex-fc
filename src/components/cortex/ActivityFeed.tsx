@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import {
   Activity,
   FileText,
@@ -41,24 +42,25 @@ const typeConfig: Record<
   settings: { color: "text-zinc-400", dotColor: "bg-zinc-500", icon: Settings },
 }
 
-function relativeTime(dateStr: string): string {
-  const now = new Date()
-  const date = new Date(dateStr)
-  const diffMs = now.getTime() - date.getTime()
-  const diffMin = Math.floor(diffMs / 60000)
-
-  if (diffMin < 1) return "agora"
-  if (diffMin < 60) return `${diffMin}min atras`
-  const diffHours = Math.floor(diffMin / 60)
-  if (diffHours < 24) return `${diffHours}h atras`
-  const diffDays = Math.floor(diffHours / 24)
-  if (diffDays < 30) return `${diffDays}d atras`
-  const diffMonths = Math.floor(diffDays / 30)
-  return `${diffMonths}m atras`
-}
-
 export function ActivityFeed({ activities, maxItems = 10 }: ActivityFeedProps) {
   const [visibleCount, setVisibleCount] = useState(maxItems)
+  const t = useTranslations("common")
+
+  function relativeTime(dateStr: string): string {
+    const now = new Date()
+    const date = new Date(dateStr)
+    const diffMs = now.getTime() - date.getTime()
+    const diffMin = Math.floor(diffMs / 60000)
+
+    if (diffMin < 1) return t("now")
+    if (diffMin < 60) return t("minutesAgo", { count: diffMin })
+    const diffHours = Math.floor(diffMin / 60)
+    if (diffHours < 24) return t("hoursAgo", { count: diffHours })
+    const diffDays = Math.floor(diffHours / 24)
+    if (diffDays < 30) return t("daysAgo", { count: diffDays })
+    const diffMonths = Math.floor(diffDays / 30)
+    return t("monthsAgo", { count: diffMonths })
+  }
 
   const visibleActivities = activities.slice(0, visibleCount)
   const hasMore = activities.length > visibleCount
@@ -70,10 +72,10 @@ export function ActivityFeed({ activities, maxItems = 10 }: ActivityFeedProps) {
           <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center ring-1 ring-emerald-500/20">
             <Activity className="w-4 h-4 text-emerald-400" />
           </div>
-          <h3 className="text-sm font-semibold text-zinc-300">Atividade Recente</h3>
+          <h3 className="text-sm font-semibold text-zinc-300">{t("recentActivity")}</h3>
         </div>
         <p className="text-sm text-zinc-500 text-center py-8">
-          Nenhuma atividade recente
+          {t("noRecentActivity")}
         </p>
       </div>
     )
@@ -85,7 +87,7 @@ export function ActivityFeed({ activities, maxItems = 10 }: ActivityFeedProps) {
         <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center ring-1 ring-emerald-500/20">
           <Activity className="w-4 h-4 text-emerald-400" />
         </div>
-        <h3 className="text-sm font-semibold text-zinc-300">Atividade Recente</h3>
+        <h3 className="text-sm font-semibold text-zinc-300">{t("recentActivity")}</h3>
       </div>
 
       <div className="relative">
@@ -121,7 +123,7 @@ export function ActivityFeed({ activities, maxItems = 10 }: ActivityFeedProps) {
                         {activity.description}
                       </p>
                     </div>
-                    <p className="text-[11px] text-zinc-600 whitespace-nowrap flex-shrink-0 mt-0.5">
+                    <p className="text-xs text-zinc-500 whitespace-nowrap flex-shrink-0 mt-0.5">
                       {activity.userName} &bull; {relativeTime(activity.createdAt)}
                     </p>
                   </div>

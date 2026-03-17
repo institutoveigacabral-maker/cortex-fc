@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef, useCallback } from "react"
+import { useFocusTrap } from "@/hooks/useFocusTrap"
 import {
   Monitor,
   Bot,
@@ -114,6 +115,9 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
   const [agentFilter, setAgentFilter] = useState<string>("ALL")
   const [statusFilter, setStatusFilter] = useState<"ALL" | "success" | "error">("ALL")
   const [selectedRun, setSelectedRun] = useState<AgentRun | null>(null)
+  const drawerRef = useRef<HTMLDivElement>(null)
+  const closeDrawer = useCallback(() => setSelectedRun(null), [])
+  useFocusTrap(drawerRef, !!selectedRun, closeDrawer)
 
   const filteredRuns = useMemo(() => {
     return runs.filter((r) => {
@@ -196,7 +200,7 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
                 <Bot className="w-5 h-5 text-emerald-400" />
               </div>
               <div>
-                <p className="text-[10px] text-zinc-600 uppercase font-medium tracking-wider">Total Runs</p>
+                <p className="text-xs text-zinc-500 uppercase font-medium tracking-wider">Total Runs</p>
                 <p className="text-xl font-bold text-zinc-100 font-mono">{metrics.totalRuns}</p>
               </div>
             </div>
@@ -210,7 +214,7 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
                 <Hash className="w-5 h-5 text-cyan-400" />
               </div>
               <div>
-                <p className="text-[10px] text-zinc-600 uppercase font-medium tracking-wider">Tokens</p>
+                <p className="text-xs text-zinc-500 uppercase font-medium tracking-wider">Tokens</p>
                 <p className="text-xl font-bold text-zinc-100 font-mono">
                   {metrics.totalTokens > 1000
                     ? `${(metrics.totalTokens / 1000).toFixed(1)}k`
@@ -228,7 +232,7 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
                 <Timer className="w-5 h-5 text-amber-400" />
               </div>
               <div>
-                <p className="text-[10px] text-zinc-600 uppercase font-medium tracking-wider">Duracao Media</p>
+                <p className="text-xs text-zinc-500 uppercase font-medium tracking-wider">Duracao Media</p>
                 <p className="text-xl font-bold text-zinc-100 font-mono">
                   {metrics.avgDuration > 1000
                     ? `${(metrics.avgDuration / 1000).toFixed(1)}s`
@@ -246,7 +250,7 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
                 <Zap className="w-5 h-5 text-blue-400" />
               </div>
               <div>
-                <p className="text-[10px] text-zinc-600 uppercase font-medium tracking-wider">Custo Est.</p>
+                <p className="text-xs text-zinc-500 uppercase font-medium tracking-wider">Custo Est.</p>
                 <p className="text-xl font-bold text-zinc-100 font-mono">
                   ${estimatedCost.toFixed(2)}
                 </p>
@@ -270,7 +274,7 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
                 }`} />
               </div>
               <div>
-                <p className="text-[10px] text-zinc-600 uppercase font-medium tracking-wider">Success Rate</p>
+                <p className="text-xs text-zinc-500 uppercase font-medium tracking-wider">Success Rate</p>
                 <p className="text-xl font-bold text-zinc-100 font-mono">{successRate}%</p>
               </div>
             </div>
@@ -303,8 +307,8 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
                     </p>
                     <p className="text-lg font-bold font-mono text-zinc-100 mt-1">{agent.count}</p>
                     <div className="flex items-center justify-between mt-1">
-                      <span className="text-[10px] text-zinc-600">{pct}%</span>
-                      <span className="text-[10px] text-zinc-600 font-mono">
+                      <span className="text-xs text-zinc-500">{pct}%</span>
+                      <span className="text-xs text-zinc-500 font-mono">
                         {Number(agent.avgDuration ?? 0) > 1000
                           ? `${(Number(agent.avgDuration) / 1000).toFixed(1)}s`
                           : `${Math.round(Number(agent.avgDuration ?? 0))}ms`}
@@ -362,7 +366,8 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
                 <button
                   key={agent}
                   onClick={() => setAgentFilter(agent)}
-                  className={`px-2.5 py-1 text-[11px] rounded-lg border transition-all font-medium ${
+                  aria-pressed={isActive}
+                  className={`min-h-[36px] px-3 py-1.5 text-xs rounded-lg border transition-all font-medium ${
                     isActive
                       ? colors
                         ? `${colors.bg} ${colors.border} ${colors.text}`
@@ -381,7 +386,8 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
               <button
                 key={s}
                 onClick={() => setStatusFilter(s)}
-                className={`px-2.5 py-1 text-[11px] rounded-lg border transition-all font-medium ${
+                aria-pressed={statusFilter === s}
+                className={`min-h-[36px] px-3 py-1.5 text-xs rounded-lg border transition-all font-medium ${
                   statusFilter === s
                     ? s === "success"
                       ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400"
@@ -411,17 +417,19 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
       {/* Runs Table */}
       <Card className="bg-zinc-900/80 border-zinc-800/80 animate-slide-up">
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          {/* Desktop: Table */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-sm">
+              <caption className="sr-only">Historico de execucoes dos agentes de IA</caption>
               <thead>
                 <tr className="border-b border-zinc-800">
-                  <th className="text-left py-3 px-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Agente</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Status</th>
-                  <th className="text-right py-3 px-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Tokens</th>
-                  <th className="text-right py-3 px-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Duracao</th>
-                  <th className="text-right py-3 px-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Custo</th>
-                  <th className="text-right py-3 px-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Data</th>
-                  <th className="text-right py-3 px-4 text-xs font-medium text-zinc-500 uppercase tracking-wider"></th>
+                  <th scope="col" className="text-left py-3 px-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Agente</th>
+                  <th scope="col" className="text-left py-3 px-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Status</th>
+                  <th scope="col" className="text-right py-3 px-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Tokens</th>
+                  <th scope="col" className="text-right py-3 px-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Duracao</th>
+                  <th scope="col" className="text-right py-3 px-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Custo</th>
+                  <th scope="col" className="text-right py-3 px-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Data</th>
+                  <th scope="col" className="text-right py-3 px-4 text-xs font-medium text-zinc-500 uppercase tracking-wider"></th>
                 </tr>
               </thead>
               <tbody>
@@ -431,17 +439,17 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
                   return (
                     <tr
                       key={run.id}
-                      className="border-b border-zinc-800/50 hover:bg-zinc-800/30 transition-all cursor-pointer"
+                      className="border-b border-zinc-800/50 hover:bg-zinc-800/30 transition-all cursor-pointer min-h-[48px]"
                       style={{ animationDelay: `${idx * 30}ms` }}
                       onClick={() => setSelectedRun(selectedRun?.id === run.id ? null : run)}
                     >
-                      <td className="py-3 px-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold border ${colors.bg} ${colors.border} ${colors.text}`}>
+                      <td className="py-3.5 px-4">
+                        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-bold border ${colors.bg} ${colors.border} ${colors.text}`}>
                           <Bot className="w-3 h-3" />
                           {AGENT_LABELS[run.agentType] ?? run.agentType}
                         </span>
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-3.5 px-4">
                         {run.success ? (
                           <span className="inline-flex items-center gap-1 text-emerald-400 text-xs">
                             <CheckCircle className="w-3 h-3" />
@@ -454,23 +462,23 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
                           </span>
                         )}
                       </td>
-                      <td className="py-3 px-4 text-right text-xs font-mono text-zinc-400">
+                      <td className="py-3.5 px-4 text-right text-xs font-mono text-zinc-400">
                         {run.tokensUsed != null ? run.tokensUsed.toLocaleString() : "—"}
                       </td>
-                      <td className="py-3 px-4 text-right text-xs font-mono text-zinc-400">
+                      <td className="py-3.5 px-4 text-right text-xs font-mono text-zinc-400">
                         {run.durationMs != null
                           ? run.durationMs > 1000
                             ? `${(run.durationMs / 1000).toFixed(1)}s`
                             : `${run.durationMs}ms`
                           : "—"}
                       </td>
-                      <td className="py-3 px-4 text-right text-xs font-mono text-zinc-400">
+                      <td className="py-3.5 px-4 text-right text-xs font-mono text-zinc-400">
                         ${cost.toFixed(4)}
                       </td>
-                      <td className="py-3 px-4 text-right text-xs text-zinc-600">
+                      <td className="py-3.5 px-4 text-right text-xs text-zinc-500">
                         {formatDate(run.createdAt)}
                       </td>
-                      <td className="py-3 px-4 text-right">
+                      <td className="py-3.5 px-4 text-right">
                         {selectedRun?.id === run.id ? (
                           <ChevronUp className="w-3.5 h-3.5 text-zinc-500" />
                         ) : (
@@ -484,19 +492,72 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
             </table>
           </div>
 
+          {/* Mobile: Cards */}
+          <div className="md:hidden space-y-3 p-4">
+            {filteredRuns.map((run, idx) => {
+              const colors = AGENT_COLORS[run.agentType] ?? AGENT_COLORS.ORACLE
+              const cost = (run.tokensUsed ?? 0) * COST_PER_TOKEN
+              return (
+                <div
+                  key={run.id}
+                  className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-4 card-hover animate-slide-up cursor-pointer transition-all"
+                  style={{ animationDelay: `${Math.min(idx, 7) * 80}ms` }}
+                  onClick={() => setSelectedRun(selectedRun?.id === run.id ? null : run)}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border ${colors.bg} ${colors.border} ${colors.text}`}>
+                      <Bot className="w-3.5 h-3.5" />
+                      {AGENT_LABELS[run.agentType] ?? run.agentType}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      {run.success ? (
+                        <span className="inline-flex items-center gap-1 text-emerald-400 text-xs">
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          OK
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-red-400 text-xs">
+                          <XCircle className="w-3.5 h-3.5" />
+                          Erro
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 mt-3 pt-3 border-t border-zinc-800/50">
+                    <span className="text-xs font-mono text-zinc-400">
+                      <Hash className="w-3 h-3 inline mr-0.5" />
+                      {run.tokensUsed != null ? run.tokensUsed.toLocaleString() : "—"}
+                    </span>
+                    <span className="text-xs font-mono text-zinc-400">
+                      <Clock className="w-3 h-3 inline mr-0.5" />
+                      {run.durationMs != null
+                        ? run.durationMs > 1000
+                          ? `${(run.durationMs / 1000).toFixed(1)}s`
+                          : `${run.durationMs}ms`
+                        : "—"}
+                    </span>
+                    <span className="text-xs text-zinc-500 ml-auto">
+                      {formatDate(run.createdAt)}
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
           {filteredRuns.length === 0 && (
             <div className="py-12 text-center">
-              <Monitor className="w-8 h-8 text-zinc-700 mx-auto mb-3" />
+              <Monitor className="w-8 h-8 text-zinc-500 mx-auto mb-3" />
               <p className="text-sm text-zinc-500">Nenhuma execucao encontrada</p>
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Detail Drawer */}
+      {/* Detail Drawer — Desktop: side drawer */}
       {selectedRun && (
-        <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/40 backdrop-blur-sm animate-fade-in">
-          <div className="bg-zinc-900 border-l border-zinc-800 w-full max-w-xl h-full overflow-y-auto shadow-2xl animate-slide-left p-6 space-y-5">
+        <div className="hidden md:flex fixed inset-0 z-50 items-center justify-end bg-black/40 backdrop-blur-sm animate-fade-in" role="dialog" aria-modal="true" aria-labelledby="agent-drawer-title">
+          <div ref={drawerRef} className="bg-zinc-900 border-l border-zinc-800 w-full max-w-xl h-full overflow-y-auto shadow-2xl animate-slide-left p-6 space-y-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className={`w-9 h-9 rounded-lg flex items-center justify-center border ${
@@ -505,15 +566,16 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
                   <Bot className={`w-4.5 h-4.5 ${AGENT_COLORS[selectedRun.agentType]?.text ?? "text-zinc-400"}`} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-zinc-100">
+                  <h3 id="agent-drawer-title" className="text-sm font-semibold text-zinc-100">
                     {AGENT_LABELS[selectedRun.agentType] ?? selectedRun.agentType}
                   </h3>
-                  <p className="text-[10px] text-zinc-600 font-mono">{selectedRun.id.slice(0, 8)}...</p>
+                  <p className="text-xs text-zinc-500 font-mono">{selectedRun.id.slice(0, 8)}...</p>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedRun(null)}
                 className="text-zinc-500 hover:text-zinc-300 transition-colors"
+                aria-label="Fechar"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -522,7 +584,7 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
             {/* Meta */}
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-lg bg-zinc-800/30 border border-zinc-700/30 p-3">
-                <p className="text-[10px] text-zinc-600 uppercase font-medium">Status</p>
+                <p className="text-xs text-zinc-500 uppercase font-medium">Status</p>
                 {selectedRun.success ? (
                   <p className="text-sm font-semibold text-emerald-400 mt-1 flex items-center gap-1">
                     <CheckCircle className="w-3.5 h-3.5" /> Sucesso
@@ -534,17 +596,17 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
                 )}
               </div>
               <div className="rounded-lg bg-zinc-800/30 border border-zinc-700/30 p-3">
-                <p className="text-[10px] text-zinc-600 uppercase font-medium">Data</p>
+                <p className="text-xs text-zinc-500 uppercase font-medium">Data</p>
                 <p className="text-sm text-zinc-300 mt-1">{formatDate(selectedRun.createdAt)}</p>
               </div>
               <div className="rounded-lg bg-zinc-800/30 border border-zinc-700/30 p-3">
-                <p className="text-[10px] text-zinc-600 uppercase font-medium">Tokens</p>
+                <p className="text-xs text-zinc-500 uppercase font-medium">Tokens</p>
                 <p className="text-sm text-zinc-300 font-mono mt-1">
                   {selectedRun.tokensUsed?.toLocaleString() ?? "—"}
                 </p>
               </div>
               <div className="rounded-lg bg-zinc-800/30 border border-zinc-700/30 p-3">
-                <p className="text-[10px] text-zinc-600 uppercase font-medium">Duracao</p>
+                <p className="text-xs text-zinc-500 uppercase font-medium">Duracao</p>
                 <p className="text-sm text-zinc-300 font-mono mt-1">
                   {selectedRun.durationMs != null
                     ? `${(selectedRun.durationMs / 1000).toFixed(2)}s`
@@ -554,13 +616,13 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
             </div>
 
             <div className="rounded-lg bg-zinc-800/30 border border-zinc-700/30 p-3">
-              <p className="text-[10px] text-zinc-600 uppercase font-medium mb-1">Modelo</p>
+              <p className="text-xs text-zinc-500 uppercase font-medium mb-1">Modelo</p>
               <p className="text-xs text-zinc-300 font-mono">{selectedRun.modelUsed}</p>
             </div>
 
             {selectedRun.error && (
               <div className="rounded-lg bg-red-500/5 border border-red-500/20 p-3">
-                <p className="text-[10px] text-red-500 uppercase font-medium mb-1 flex items-center gap-1">
+                <p className="text-xs text-red-500 uppercase font-medium mb-1 flex items-center gap-1">
                   <AlertTriangle className="w-3 h-3" /> Erro
                 </p>
                 <p className="text-xs text-red-400">{selectedRun.error}</p>
@@ -570,7 +632,7 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
             {/* Input Context */}
             <div>
               <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wider mb-2">Input Context</p>
-              <pre className="rounded-lg bg-zinc-950 border border-zinc-800 p-3 text-[11px] text-zinc-400 font-mono overflow-x-auto max-h-48 overflow-y-auto whitespace-pre-wrap">
+              <pre className="rounded-lg bg-zinc-950 border border-zinc-800 p-3 text-xs text-zinc-400 font-mono overflow-x-auto max-h-48 overflow-y-auto whitespace-pre-wrap">
                 {JSON.stringify(selectedRun.inputContext, null, 2)}
               </pre>
             </div>
@@ -579,7 +641,105 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
             {selectedRun.outputResult && (
               <div>
                 <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wider mb-2">Output Result</p>
-                <pre className="rounded-lg bg-zinc-950 border border-zinc-800 p-3 text-[11px] text-zinc-400 font-mono overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap">
+                <pre className="rounded-lg bg-zinc-950 border border-zinc-800 p-3 text-xs text-zinc-400 font-mono overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap">
+                  {JSON.stringify(selectedRun.outputResult, null, 2)}
+                </pre>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Detail Drawer — Mobile: fullscreen bottom sheet */}
+      {selectedRun && (
+        <div className="md:hidden fixed inset-0 z-50 bg-zinc-900 flex flex-col animate-slide-up" role="dialog" aria-modal="true" aria-labelledby="agent-drawer-title-mobile">
+          {/* Fixed header */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 flex-shrink-0 pt-[calc(0.75rem+env(safe-area-inset-top,0px))]">
+            <div className="flex items-center gap-3">
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center border ${
+                AGENT_COLORS[selectedRun.agentType]?.bg ?? ""
+              } ${AGENT_COLORS[selectedRun.agentType]?.border ?? ""}`}>
+                <Bot className={`w-4.5 h-4.5 ${AGENT_COLORS[selectedRun.agentType]?.text ?? "text-zinc-400"}`} />
+              </div>
+              <div>
+                <h3 id="agent-drawer-title-mobile" className="text-sm font-semibold text-zinc-100">
+                  {AGENT_LABELS[selectedRun.agentType] ?? selectedRun.agentType}
+                </h3>
+                <p className="text-xs text-zinc-500 font-mono">{selectedRun.id.slice(0, 8)}...</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setSelectedRun(null)}
+              className="text-zinc-500 hover:text-zinc-300 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              aria-label="Fechar"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Scrollable body */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-5 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
+            {/* Meta */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-lg bg-zinc-800/30 border border-zinc-700/30 p-3">
+                <p className="text-xs text-zinc-500 uppercase font-medium">Status</p>
+                {selectedRun.success ? (
+                  <p className="text-sm font-semibold text-emerald-400 mt-1 flex items-center gap-1">
+                    <CheckCircle className="w-3.5 h-3.5" /> Sucesso
+                  </p>
+                ) : (
+                  <p className="text-sm font-semibold text-red-400 mt-1 flex items-center gap-1">
+                    <XCircle className="w-3.5 h-3.5" /> Erro
+                  </p>
+                )}
+              </div>
+              <div className="rounded-lg bg-zinc-800/30 border border-zinc-700/30 p-3">
+                <p className="text-xs text-zinc-500 uppercase font-medium">Data</p>
+                <p className="text-sm text-zinc-300 mt-1">{formatDate(selectedRun.createdAt)}</p>
+              </div>
+              <div className="rounded-lg bg-zinc-800/30 border border-zinc-700/30 p-3">
+                <p className="text-xs text-zinc-500 uppercase font-medium">Tokens</p>
+                <p className="text-sm text-zinc-300 font-mono mt-1">
+                  {selectedRun.tokensUsed?.toLocaleString() ?? "—"}
+                </p>
+              </div>
+              <div className="rounded-lg bg-zinc-800/30 border border-zinc-700/30 p-3">
+                <p className="text-xs text-zinc-500 uppercase font-medium">Duracao</p>
+                <p className="text-sm text-zinc-300 font-mono mt-1">
+                  {selectedRun.durationMs != null
+                    ? `${(selectedRun.durationMs / 1000).toFixed(2)}s`
+                    : "—"}
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-zinc-800/30 border border-zinc-700/30 p-3">
+              <p className="text-xs text-zinc-500 uppercase font-medium mb-1">Modelo</p>
+              <p className="text-xs text-zinc-300 font-mono">{selectedRun.modelUsed}</p>
+            </div>
+
+            {selectedRun.error && (
+              <div className="rounded-lg bg-red-500/5 border border-red-500/20 p-3">
+                <p className="text-xs text-red-500 uppercase font-medium mb-1 flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3" /> Erro
+                </p>
+                <p className="text-xs text-red-400">{selectedRun.error}</p>
+              </div>
+            )}
+
+            {/* Input Context */}
+            <div>
+              <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wider mb-2">Input Context</p>
+              <pre className="rounded-lg bg-zinc-950 border border-zinc-800 p-3 text-xs text-zinc-400 font-mono overflow-x-auto max-h-48 overflow-y-auto whitespace-pre-wrap">
+                {JSON.stringify(selectedRun.inputContext, null, 2)}
+              </pre>
+            </div>
+
+            {/* Output Result */}
+            {selectedRun.outputResult && (
+              <div>
+                <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wider mb-2">Output Result</p>
+                <pre className="rounded-lg bg-zinc-950 border border-zinc-800 p-3 text-xs text-zinc-400 font-mono overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap">
                   {JSON.stringify(selectedRun.outputResult, null, 2)}
                 </pre>
               </div>

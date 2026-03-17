@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -95,7 +95,7 @@ function GlassmorphicTooltip({
             style={{ backgroundColor: color }}
           />
           <span className="text-zinc-500">Trend (3j):</span>
-          <span className="text-zinc-300 font-mono text-[11px]">
+          <span className="text-zinc-300 font-mono text-xs">
             {trendEntry.value?.toFixed(2)}
           </span>
         </div>
@@ -106,7 +106,15 @@ function GlassmorphicTooltip({
 
 export function PerformanceChart({ data, metric: initialMetric = "rating" }: PerformanceChartProps) {
   const [activeMetric, setActiveMetric] = useState<MetricKey>(initialMetric);
+  const [isMobile, setIsMobile] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const config = METRIC_CONFIG[activeMetric];
 
@@ -126,7 +134,7 @@ export function PerformanceChart({ data, metric: initialMetric = "rating" }: Per
 
   if (chartData.length === 0) {
     return (
-      <div className="h-48 flex items-center justify-center text-zinc-600 text-sm">
+      <div className="h-48 flex items-center justify-center text-zinc-500 text-sm">
         Sem dados de {config.name} disponiveis
       </div>
     );
@@ -157,7 +165,8 @@ export function PerformanceChart({ data, metric: initialMetric = "rating" }: Per
       {/* Chart Container */}
       <div ref={chartRef} className="relative">
         <ChartExport containerRef={chartRef} filename={`performance-${activeMetric}`} />
-        <ResponsiveContainer width="100%" height={200}>
+        <div className="h-[160px] md:h-[200px]">
+        <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={enrichedData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -168,9 +177,11 @@ export function PerformanceChart({ data, metric: initialMetric = "rating" }: Per
             <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
             <XAxis
               dataKey="date"
-              tick={{ fill: "#71717a", fontSize: 10 }}
+              tick={{ fill: "#71717a", fontSize: isMobile ? 8 : 10, angle: isMobile ? -45 : 0, textAnchor: isMobile ? "end" : "middle" }}
               tickLine={false}
               axisLine={{ stroke: "#27272a" }}
+              interval={isMobile ? "equidistantPreserveStart" : 0}
+              height={isMobile ? 40 : 30}
             />
             <YAxis
               domain={config.domain}
@@ -221,6 +232,7 @@ export function PerformanceChart({ data, metric: initialMetric = "rating" }: Per
             />
           </ComposedChart>
         </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );

@@ -3,15 +3,16 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import {
   Bot,
-  X,
   Loader2,
   CheckCircle,
   XCircle,
   Search,
   ExternalLink,
+  X,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { AdaptiveModal } from "@/components/ui/adaptive-modal"
 
 interface AgentLaunchModalProps {
   isOpen: boolean
@@ -85,8 +86,6 @@ export function AgentLaunchModal({ isOpen, onClose, agentType, agentName }: Agen
       if (searchTimeout.current) clearTimeout(searchTimeout.current)
     }
   }, [searchQuery, searchPlayers])
-
-  if (!isOpen) return null
 
   const handleSelectPlayer = (player: PlayerResult) => {
     setSelectedPlayer(player)
@@ -162,24 +161,13 @@ export function AgentLaunchModal({ isOpen, onClose, agentType, agentName }: Agen
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-zinc-900/95 border border-zinc-700 rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl animate-scale-in">
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-zinc-800">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-              <Bot className="w-4.5 h-4.5 text-emerald-400" />
-            </div>
-            <div>
-              <h2 className="text-sm font-semibold text-zinc-100">Executar {agentName}</h2>
-              <p className="text-xs text-zinc-500">Configurar e lancar agente</p>
-            </div>
-          </div>
-          <button onClick={handleClose} className="text-zinc-500 hover:text-zinc-300 transition-colors">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
+    <AdaptiveModal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={`Executar ${agentName}`}
+      titleId="agent-launch-modal-title"
+      size="lg"
+    >
         <div className="p-5 space-y-5">
           {!success && !error ? (
             <>
@@ -193,21 +181,22 @@ export function AgentLaunchModal({ isOpen, onClose, agentType, agentName }: Agen
                   <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
                     <span className="text-sm text-emerald-400 font-medium">{selectedPlayer.name}</span>
                     {selectedPlayer.position && (
-                      <span className="text-[10px] text-zinc-500">{selectedPlayer.position}</span>
+                      <span className="text-xs text-zinc-500">{selectedPlayer.position}</span>
                     )}
                     {selectedPlayer.currentClub && (
-                      <span className="text-[10px] text-zinc-600">- {selectedPlayer.currentClub}</span>
+                      <span className="text-xs text-zinc-500">- {selectedPlayer.currentClub}</span>
                     )}
                     <button
                       onClick={() => setSelectedPlayer(null)}
                       className="ml-auto text-zinc-500 hover:text-zinc-300"
+                      aria-label="Remover jogador selecionado"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 ) : (
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-600" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
                     <Input
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
@@ -224,7 +213,7 @@ export function AgentLaunchModal({ isOpen, onClose, agentType, agentName }: Agen
                           >
                             <span className="font-medium">{p.name}</span>
                             {p.position && (
-                              <span className="text-[10px] text-zinc-500">{p.position}</span>
+                              <span className="text-xs text-zinc-500">{p.position}</span>
                             )}
                           </button>
                         ))}
@@ -244,7 +233,7 @@ export function AgentLaunchModal({ isOpen, onClose, agentType, agentName }: Agen
                   onChange={(e) => setContext(e.target.value)}
                   rows={3}
                   placeholder="Informacoes adicionais para o agente..."
-                  className="w-full rounded-lg bg-zinc-800/40 border border-zinc-700/40 text-zinc-200 text-sm p-3 resize-none focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 placeholder:text-zinc-600"
+                  className="w-full rounded-lg bg-zinc-800/40 border border-zinc-700/40 text-zinc-200 text-sm p-3 resize-none focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 placeholder:text-zinc-500"
                 />
               </div>
 
@@ -258,7 +247,7 @@ export function AgentLaunchModal({ isOpen, onClose, agentType, agentName }: Agen
                           ? "bg-emerald-500 text-white"
                           : idx === currentStep
                             ? "bg-emerald-500/20 border border-emerald-500/50 text-emerald-400"
-                            : "bg-zinc-800 border border-zinc-700 text-zinc-600"
+                            : "bg-zinc-800 border border-zinc-700 text-zinc-500"
                       }`}>
                         {idx < currentStep ? (
                           <CheckCircle className="w-3.5 h-3.5" />
@@ -269,7 +258,7 @@ export function AgentLaunchModal({ isOpen, onClose, agentType, agentName }: Agen
                         )}
                       </div>
                       <span className={`text-xs transition-colors ${
-                        idx <= currentStep ? "text-zinc-300" : "text-zinc-600"
+                        idx <= currentStep ? "text-zinc-300" : "text-zinc-500"
                       }`}>
                         {step.label}
                       </span>
@@ -350,7 +339,6 @@ export function AgentLaunchModal({ isOpen, onClose, agentType, agentName }: Agen
             </div>
           )}
         </div>
-      </div>
-    </div>
+    </AdaptiveModal>
   )
 }

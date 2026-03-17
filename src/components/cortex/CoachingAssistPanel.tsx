@@ -183,12 +183,12 @@ export function CoachingAssistPanel({ playerId, playerName, position, age, curre
               {/* Tactical Integration Bar */}
               <div className="flex items-center gap-4 p-3 rounded-lg bg-zinc-800/30 border border-zinc-700/30">
                 <div className="text-center">
-                  <p className="text-[10px] text-zinc-600 uppercase">Fit Atual</p>
+                  <p className="text-xs text-zinc-500 uppercase">Fit Atual</p>
                   <p className="text-lg font-bold font-mono text-amber-400">{result.tacticalIntegration.currentFit}%</p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-zinc-600" />
+                <ChevronRight className="w-4 h-4 text-zinc-500" />
                 <div className="text-center">
-                  <p className="text-[10px] text-zinc-600 uppercase">Fit Projetado</p>
+                  <p className="text-xs text-zinc-500 uppercase">Fit Projetado</p>
                   <p className="text-lg font-bold font-mono text-emerald-400">{result.tacticalIntegration.projectedFit}%</p>
                 </div>
                 <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden ml-3">
@@ -210,11 +210,11 @@ export function CoachingAssistPanel({ playerId, playerName, position, age, curre
                     <div key={i} className="rounded-lg border border-zinc-800/50 bg-zinc-800/20 p-3">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs font-semibold text-zinc-200">{phase.phase}</span>
-                        <span className="text-[10px] text-zinc-500 font-mono bg-zinc-800 px-2 py-0.5 rounded">{phase.duration}</span>
+                        <span className="text-xs text-zinc-500 font-mono bg-zinc-800 px-2 py-0.5 rounded">{phase.duration}</span>
                       </div>
                       <div className="space-y-1">
                         {phase.objectives.map((obj, j) => (
-                          <p key={j} className="text-[11px] text-zinc-400 pl-3 border-l border-violet-500/30">
+                          <p key={j} className="text-xs text-zinc-400 pl-3 border-l border-violet-500/30">
                             {obj}
                           </p>
                         ))}
@@ -222,7 +222,7 @@ export function CoachingAssistPanel({ playerId, playerName, position, age, curre
                       {phase.kpis.length > 0 && (
                         <div className="flex flex-wrap gap-1.5 mt-2">
                           {phase.kpis.map((kpi, k) => (
-                            <span key={k} className="text-[10px] text-violet-400 bg-violet-500/10 border border-violet-500/20 px-2 py-0.5 rounded">
+                            <span key={k} className="text-xs text-violet-400 bg-violet-500/10 border border-violet-500/20 px-2 py-0.5 rounded">
                               {kpi}
                             </span>
                           ))}
@@ -238,22 +238,22 @@ export function CoachingAssistPanel({ playerId, playerName, position, age, curre
                 <div className="rounded-lg bg-zinc-800/30 border border-zinc-700/30 p-3">
                   <div className="flex items-center gap-1.5 mb-2">
                     <Dumbbell className="w-3 h-3 text-cyan-500" />
-                    <span className="text-[10px] text-zinc-500 uppercase font-semibold">Fisico</span>
+                    <span className="text-xs text-zinc-500 uppercase font-semibold">Fisico</span>
                   </div>
                   {result.physicalPlan.focus.map((f, i) => (
-                    <p key={i} className="text-[11px] text-zinc-400 mb-0.5">- {f}</p>
+                    <p key={i} className="text-xs text-zinc-400 mb-0.5">- {f}</p>
                   ))}
-                  <p className="text-[10px] text-zinc-600 mt-1.5 italic">{result.physicalPlan.loadManagement}</p>
+                  <p className="text-xs text-zinc-500 mt-1.5 italic">{result.physicalPlan.loadManagement}</p>
                 </div>
                 <div className="rounded-lg bg-zinc-800/30 border border-zinc-700/30 p-3">
                   <div className="flex items-center gap-1.5 mb-2">
                     <Brain className="w-3 h-3 text-amber-500" />
-                    <span className="text-[10px] text-zinc-500 uppercase font-semibold">Mental</span>
+                    <span className="text-xs text-zinc-500 uppercase font-semibold">Mental</span>
                   </div>
                   {result.mentalDevelopment.areas.map((a, i) => (
-                    <p key={i} className="text-[11px] text-zinc-400 mb-0.5">- {a}</p>
+                    <p key={i} className="text-xs text-zinc-400 mb-0.5">- {a}</p>
                   ))}
-                  <p className="text-[10px] text-zinc-600 mt-1.5 italic">{result.mentalDevelopment.approach}</p>
+                  <p className="text-xs text-zinc-500 mt-1.5 italic">{result.mentalDevelopment.approach}</p>
                 </div>
               </div>
 
@@ -271,7 +271,7 @@ export function CoachingAssistPanel({ playerId, playerName, position, age, curre
                         <div key={i} className="relative pl-6 text-xs">
                           <div className="absolute left-1 top-1.5 w-2 h-2 rounded-full bg-violet-500/50 border border-violet-400" />
                           <p className="text-zinc-300">{m.milestone}</p>
-                          <p className="text-[10px] text-zinc-600">{m.expectedDate} — {m.metric}</p>
+                          <p className="text-xs text-zinc-500">{m.expectedDate} — {m.metric}</p>
                         </div>
                       ))}
                     </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useCallback } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight, Users } from "lucide-react"
@@ -45,7 +45,7 @@ function SimilarityBadge({ value }: { value: number }) {
 
   return (
     <span
-      className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold border ${color}`}
+      className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-mono font-semibold border ${color}`}
     >
       {value}%
     </span>
@@ -57,12 +57,13 @@ function DecisionDot({ decision }: { decision: string }) {
   const abbrev = decisionAbbrev[decision] ?? decision.slice(0, 3)
 
   return (
-    <span className="inline-flex items-center gap-1">
+    <span className="inline-flex items-center gap-1" role="status" aria-label={`Decisao: ${decision}`}>
       <span
         className={`w-1.5 h-1.5 rounded-full ${colors.bg} border ${colors.border}`}
         style={{ backgroundColor: colors.fill }}
+        aria-hidden="true"
       />
-      <span className={`text-[9px] font-mono ${colors.text}`}>{abbrev}</span>
+      <span className={`text-[9px] font-mono ${colors.text}`} aria-hidden="true">{abbrev}</span>
     </span>
   )
 }
@@ -73,7 +74,7 @@ export function SimilarPlayers({ players, currentPlayerId }: SimilarPlayersProps
   if (players.length === 0) {
     return (
       <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 text-center">
-        <Users className="w-6 h-6 text-zinc-700 mx-auto mb-2" />
+        <Users className="w-6 h-6 text-zinc-500 mx-auto mb-2" />
         <p className="text-sm text-zinc-500">Nenhum jogador similar encontrado</p>
       </div>
     )
@@ -85,6 +86,20 @@ export function SimilarPlayers({ players, currentPlayerId }: SimilarPlayersProps
     scrollRef.current.scrollBy({ left: amount, behavior: "smooth" })
   }
 
+  const handleScrollKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!scrollRef.current) return
+    // Get card width from first child
+    const firstCard = scrollRef.current.querySelector("a") as HTMLElement | null
+    const cardWidth = firstCard ? firstCard.offsetWidth + 12 : 200 // 12 = gap-3
+    if (e.key === "ArrowLeft") {
+      e.preventDefault()
+      scrollRef.current.scrollBy({ left: -cardWidth, behavior: "smooth" })
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault()
+      scrollRef.current.scrollBy({ left: cardWidth, behavior: "smooth" })
+    }
+  }, [])
+
   return (
     <div className="relative group">
       {/* Header */}
@@ -93,7 +108,7 @@ export function SimilarPlayers({ players, currentPlayerId }: SimilarPlayersProps
           <Users className="w-4 h-4 text-cyan-500" />
           Jogadores Similares
         </h3>
-        <span className="text-[10px] font-mono text-zinc-600 bg-zinc-800 px-2 py-0.5 rounded-full">
+        <span className="text-xs font-mono text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded-full">
           {players.length} encontrados
         </span>
       </div>
@@ -102,14 +117,14 @@ export function SimilarPlayers({ players, currentPlayerId }: SimilarPlayersProps
       <button
         onClick={() => scroll("left")}
         className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-zinc-800/90 border border-zinc-700/50 flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/90 transition-all opacity-0 group-hover:opacity-100 hidden md:flex shadow-lg"
-        aria-label="Scroll left"
+        aria-label="Rolar para esquerda"
       >
         <ChevronLeft className="w-4 h-4" />
       </button>
       <button
         onClick={() => scroll("right")}
         className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-zinc-800/90 border border-zinc-700/50 flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/90 transition-all opacity-0 group-hover:opacity-100 hidden md:flex shadow-lg"
-        aria-label="Scroll right"
+        aria-label="Rolar para direita"
       >
         <ChevronRight className="w-4 h-4" />
       </button>
@@ -117,7 +132,11 @@ export function SimilarPlayers({ players, currentPlayerId }: SimilarPlayersProps
       {/* Scrollable row */}
       <div
         ref={scrollRef}
-        className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2"
+        tabIndex={0}
+        role="region"
+        aria-label="Jogadores similares, use setas para navegar"
+        onKeyDown={handleScrollKeyDown}
+        className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500/50 focus-visible:rounded-lg"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {players.map((player) => (
@@ -153,7 +172,7 @@ export function SimilarPlayers({ players, currentPlayerId }: SimilarPlayersProps
                   <p className="text-xs text-zinc-200 font-medium truncate leading-tight">
                     {player.name}
                   </p>
-                  <p className="text-[10px] text-zinc-500 truncate leading-tight mt-0.5">
+                  <p className="text-xs text-zinc-500 truncate leading-tight mt-0.5">
                     {player.positionDetail ?? player.positionCluster}
                     {player.currentClub ? ` · ${player.currentClub}` : ""}
                   </p>
@@ -168,7 +187,7 @@ export function SimilarPlayers({ players, currentPlayerId }: SimilarPlayersProps
 
               {/* SCN+ if available */}
               {player.scnPlus != null && (
-                <div className="text-[10px] text-zinc-500">
+                <div className="text-xs text-zinc-500">
                   SCN+{" "}
                   <span className="font-mono text-cyan-400">
                     {player.scnPlus.toFixed(1)}

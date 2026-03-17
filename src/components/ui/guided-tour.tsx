@@ -321,7 +321,7 @@ function GuidedTour({ steps, tourId, onComplete }: GuidedTourProps) {
           {/* Step indicator */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-zinc-500 font-mono">
+              <span className="text-xs text-zinc-500 font-mono">
                 {currentStep + 1} de {steps.length}
               </span>
               <div className="flex gap-1">
@@ -344,13 +344,13 @@ function GuidedTour({ steps, tourId, onComplete }: GuidedTourProps) {
             <div className="flex items-center gap-2">
               <button
                 onClick={closeTour}
-                className="px-3 py-1.5 text-[11px] text-zinc-500 hover:text-zinc-300 rounded-md transition-colors"
+                className="px-3 py-1.5 text-xs text-zinc-500 hover:text-zinc-300 rounded-md transition-colors"
               >
                 Pular
               </button>
               <button
                 onClick={nextStep}
-                className="px-3 py-1.5 text-[11px] font-medium text-white bg-emerald-600 hover:bg-emerald-500 rounded-md transition-colors"
+                className="px-3 py-1.5 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-500 rounded-md transition-colors"
               >
                 {isLast ? "Concluir" : "Proximo"}
               </button>

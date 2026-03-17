@@ -105,7 +105,7 @@ export function RiskAlertsSummary({
                 >
                   {pill.value}
                 </p>
-                <p className="text-[11px] text-zinc-500 font-medium truncate">
+                <p className="text-xs text-zinc-500 font-medium truncate">
                   {pill.label}
                 </p>
               </div>

@@ -14,27 +14,40 @@ export function formatDate(date: Date | string, locale: Locale = "pt-BR"): strin
   // en: 03/16/2026
 }
 
-export function formatDateRelative(date: Date | string, locale: Locale = "pt-BR"): string {
+export interface RelativeTimeStrings {
+  now: string
+  minutesAgo: string
+  hoursAgo: string
+  daysAgo: string
+  monthsAgo: string
+}
+
+const defaultRelativeStrings: RelativeTimeStrings = {
+  now: "agora",
+  minutesAgo: "{count}min atras",
+  hoursAgo: "{count}h atras",
+  daysAgo: "{count}d atras",
+  monthsAgo: "{count}m atras",
+}
+
+export function formatDateRelative(
+  date: Date | string,
+  strings: RelativeTimeStrings = defaultRelativeStrings,
+  locale: Locale = "pt-BR"
+): string {
   const d = typeof date === "string" ? new Date(date) : date
   const now = new Date()
   const diffMs = now.getTime() - d.getTime()
   const diffMin = Math.floor(diffMs / 60000)
   const diffHour = Math.floor(diffMs / 3600000)
   const diffDay = Math.floor(diffMs / 86400000)
+  const diffMonth = Math.floor(diffDay / 30)
 
-  if (locale === "pt-BR") {
-    if (diffMin < 1) return "agora"
-    if (diffMin < 60) return `${diffMin}min atras`
-    if (diffHour < 24) return `${diffHour}h atras`
-    if (diffDay < 7) return `${diffDay}d atras`
-    return formatDate(d, locale)
-  }
-
-  // English
-  if (diffMin < 1) return "just now"
-  if (diffMin < 60) return `${diffMin}m ago`
-  if (diffHour < 24) return `${diffHour}h ago`
-  if (diffDay < 7) return `${diffDay}d ago`
+  if (diffMin < 1) return strings.now
+  if (diffMin < 60) return strings.minutesAgo.replace("{count}", String(diffMin))
+  if (diffHour < 24) return strings.hoursAgo.replace("{count}", String(diffHour))
+  if (diffDay < 30) return strings.daysAgo.replace("{count}", String(diffDay))
+  if (diffMonth < 12) return strings.monthsAgo.replace("{count}", String(diffMonth))
   return formatDate(d, locale)
 }
 

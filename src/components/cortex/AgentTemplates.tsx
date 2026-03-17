@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useCallback } from "react"
 import {
   Brain,
   Search,
@@ -11,6 +11,7 @@ import {
   Bot,
 } from "lucide-react"
 import { AgentLaunchModal } from "./AgentLaunchModal"
+import { useRovingTabIndex } from "@/hooks/useRovingTabIndex"
 
 interface AgentTemplate {
   type: "ORACLE" | "ANALISTA" | "SCOUT" | "BOARD_ADVISOR" | "CFO_MODELER" | "COACHING_ASSIST"
@@ -134,17 +135,30 @@ const COLOR_MAP: Record<string, { icon: string; bg: string; border: string; pill
 
 export function AgentTemplates() {
   const [launchModal, setLaunchModal] = useState<{ type: string; name: string } | null>(null)
+  const gridRef = useRef<HTMLDivElement>(null)
+
+  const handleCardSelect = useCallback((index: number) => {
+    const t = TEMPLATES[index]
+    if (t) setLaunchModal({ type: t.type, name: t.name })
+  }, [])
+
+  useRovingTabIndex(gridRef, "[data-roving-item]", {
+    orientation: "grid",
+    loop: true,
+    onSelect: handleCardSelect,
+  })
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" role="grid" aria-label="Templates de agentes">
         {TEMPLATES.map((t, idx) => {
           const colors = COLOR_MAP[t.color]
           const Icon = t.icon
           return (
             <div
               key={t.type}
-              className={`group rounded-xl border border-zinc-800/80 bg-zinc-900/80 p-5 card-hover transition-all duration-300 ${t.borderGlow} hover:shadow-lg animate-slide-up`}
+              data-roving-item
+              className={`group rounded-xl border border-zinc-800/80 bg-zinc-900/80 p-5 card-hover transition-all duration-300 ${t.borderGlow} hover:shadow-lg animate-slide-up focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-zinc-900`}
               style={{ animationDelay: `${idx * 60}ms` }}
             >
               {/* Icon + Title */}
@@ -163,7 +177,7 @@ export function AgentTemplates() {
                 {t.capabilities.map((cap) => (
                   <span
                     key={cap}
-                    className={`inline-block px-2 py-0.5 text-[10px] font-medium rounded-md border ${colors.pill}`}
+                    className={`inline-block px-2 py-0.5 text-xs font-medium rounded-md border ${colors.pill}`}
                   >
                     {cap}
                   </span>
@@ -172,7 +186,7 @@ export function AgentTemplates() {
 
               {/* Footer */}
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-zinc-600 font-mono">
+                <span className="text-xs text-zinc-500 font-mono">
                   Avg: {t.avgDuration} | {t.avgTokens}
                 </span>
                 <button

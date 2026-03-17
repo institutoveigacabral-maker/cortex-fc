@@ -68,7 +68,7 @@ function SliderField({ label, tooltip, value, max = 10, onChange, color = "emera
           {aiFilled && <AIBadge />}
           <Tooltip>
             <TooltipTrigger asChild>
-              <Info className="w-3 h-3 text-zinc-600 cursor-help" />
+              <Info className="w-3 h-3 text-zinc-500 cursor-help" />
             </TooltipTrigger>
             <TooltipContent className="bg-zinc-800 text-zinc-200 border-zinc-700 max-w-xs text-xs">
               {tooltip}
@@ -124,7 +124,7 @@ function AILoadingOverlay({ messageIndex }: { messageIndex: number }) {
             style={{ width: `${Math.min(95, ((messageIndex + 1) / AI_PROGRESS_MESSAGES.length) * 100)}%` }}
           />
         </div>
-        <p className="text-xs text-zinc-600">Isso pode levar 10-30 segundos</p>
+        <p className="text-xs text-zinc-500">Isso pode levar 10-30 segundos</p>
       </div>
     </div>
   )
@@ -527,7 +527,7 @@ export default function NewAnalysisPage() {
               Configure os parametros e execute o ORACLE
             </p>
             {lastSaved && !showResult && (
-              <span className="text-[10px] text-zinc-600 font-mono">
+              <span className="text-xs text-zinc-500 font-mono">
                 Rascunho salvo
               </span>
             )}
@@ -546,7 +546,7 @@ export default function NewAnalysisPage() {
                   ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
                   : step > s.id
                   ? "bg-zinc-800 text-emerald-400 cursor-pointer"
-                  : "bg-zinc-900 text-zinc-600"
+                  : "bg-zinc-900 text-zinc-500"
               }`}
             >
               {step > s.id ? (
@@ -602,12 +602,12 @@ export default function NewAnalysisPage() {
                               : "border-zinc-800 hover:border-zinc-700 bg-zinc-900/50"
                           }`}
                         >
-                          <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-500 flex-shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-xs font-bold text-zinc-500 flex-shrink-0">
                             {player.name.split(" ").map(n => n[0]).slice(0, 2).join("")}
                           </div>
                           <div className="min-w-0">
                             <p className="text-sm font-medium text-zinc-200 truncate">{player.name}</p>
-                            <p className="text-[11px] text-zinc-500">
+                            <p className="text-xs text-zinc-500">
                               {player.positionDetail ?? player.positionCluster} &middot; {player.currentClub?.name ?? "Sem clube"}
                             </p>
                           </div>
@@ -650,7 +650,7 @@ export default function NewAnalysisPage() {
                     Analise de <span className="text-emerald-400 font-semibold">{selectedPlayer?.name}</span> para{" "}
                     <span className="text-blue-400 font-semibold">{selectedClubName}</span>
                   </p>
-                  <p className="text-xs text-zinc-600 mt-1">
+                  <p className="text-xs text-zinc-500 mt-1">
                     O ORACLE ira avaliar fit tatico, economico e cultural para este contexto especifico.
                   </p>
                 </div>
@@ -680,7 +680,7 @@ export default function NewAnalysisPage() {
                       {aiError}
                     </p>
                   )}
-                  <p className="text-[10px] text-zinc-600 text-center">
+                  <p className="text-xs text-zinc-500 text-center">
                     Ou continue manualmente usando os botoes de navegacao
                   </p>
                 </div>
@@ -711,7 +711,7 @@ export default function NewAnalysisPage() {
                     <Label className="text-xs text-zinc-400">C — Custo Total (M EUR)</Label>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Info className="w-3 h-3 text-zinc-600 cursor-help" />
+                        <Info className="w-3 h-3 text-zinc-500 cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent className="bg-zinc-800 text-zinc-200 border-zinc-700 max-w-xs text-xs">
                         Custo total projetado da aquisicao em milhoes de euros (taxa de transferencia + bonus + comissoes)
@@ -755,7 +755,7 @@ export default function NewAnalysisPage() {
                     <Label className="text-xs text-zinc-400">Va — Valor em Risco (M EUR)</Label>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Info className="w-3 h-3 text-zinc-600 cursor-help" />
+                        <Info className="w-3 h-3 text-zinc-500 cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent className="bg-zinc-800 text-zinc-200 border-zinc-700 max-w-xs text-xs">
                         Exposicao financeira negativa: quanto pode ser perdido no pior cenario
@@ -819,15 +819,15 @@ export default function NewAnalysisPage() {
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div className="bg-zinc-800/50 rounded-lg p-4">
                       <p className="text-2xl font-bold font-mono text-emerald-400">{clampedVx.toFixed(2)}</p>
-                      <p className="text-xs text-zinc-600 mt-1">Vx (Valor)</p>
+                      <p className="text-xs text-zinc-500 mt-1">Vx (Valor)</p>
                     </div>
                     <div className="bg-zinc-800/50 rounded-lg p-4">
                       <p className="text-2xl font-bold font-mono text-red-400">{clampedRx.toFixed(2)}</p>
-                      <p className="text-xs text-zinc-600 mt-1">Rx (Risco)</p>
+                      <p className="text-xs text-zinc-500 mt-1">Rx (Risco)</p>
                     </div>
                     <div className="bg-zinc-800/50 rounded-lg p-4">
                       <p className="text-2xl font-bold font-mono text-cyan-400">{algorithms.SCN_plus}</p>
-                      <p className="text-xs text-zinc-600 mt-1">SCN+</p>
+                      <p className="text-xs text-zinc-500 mt-1">SCN+</p>
                     </div>
                   </div>
 
@@ -860,7 +860,7 @@ export default function NewAnalysisPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       {aiRecommendedActions.length > 0 && (
                         <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-lg p-3">
-                          <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-wider mb-2">Proximos Passos</p>
+                          <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2">Proximos Passos</p>
                           <ul className="space-y-1">
                             {aiRecommendedActions.map((action, i) => (
                               <li key={i} className="text-xs text-zinc-400 flex items-start gap-1.5">
@@ -873,7 +873,7 @@ export default function NewAnalysisPage() {
                       )}
                       {aiRisks.length > 0 && (
                         <div className="bg-red-500/5 border border-red-500/20 rounded-lg p-3">
-                          <p className="text-[10px] font-semibold text-red-400 uppercase tracking-wider mb-2">Riscos Identificados</p>
+                          <p className="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2">Riscos Identificados</p>
                           <ul className="space-y-1">
                             {aiRisks.map((risk, i) => (
                               <li key={i} className="text-xs text-zinc-400 flex items-start gap-1.5">
@@ -886,7 +886,7 @@ export default function NewAnalysisPage() {
                       )}
                       {aiComparables.length > 0 && (
                         <div className="bg-cyan-500/5 border border-cyan-500/20 rounded-lg p-3">
-                          <p className="text-[10px] font-semibold text-cyan-400 uppercase tracking-wider mb-2">Comparaveis</p>
+                          <p className="text-xs font-semibold text-cyan-400 uppercase tracking-wider mb-2">Comparaveis</p>
                           <ul className="space-y-1">
                             {aiComparables.map((comp, i) => (
                               <li key={i} className="text-xs text-zinc-400 flex items-start gap-1.5">
@@ -965,7 +965,7 @@ export default function NewAnalysisPage() {
                 {selectedPlayer && (
                   <div className="text-center pb-3 border-b border-zinc-800">
                     <p className="text-sm font-semibold text-zinc-200">{selectedPlayer.name}</p>
-                    <p className="text-[11px] text-zinc-500">
+                    <p className="text-xs text-zinc-500">
                       {selectedPlayer.positionDetail ?? selectedPlayer.positionCluster} &middot; {selectedPlayer.currentClub?.name ?? "Sem clube"}
                     </p>
                   </div>
@@ -976,25 +976,25 @@ export default function NewAnalysisPage() {
                     <p className="text-lg font-bold font-mono text-emerald-400">
                       {clampedVx.toFixed(2)}
                     </p>
-                    <p className="text-[10px] text-zinc-600">Vx</p>
+                    <p className="text-xs text-zinc-500">Vx</p>
                   </div>
                   <div className="bg-zinc-800/50 rounded-lg p-3">
                     <p className="text-lg font-bold font-mono text-red-400">
                       {clampedRx.toFixed(2)}
                     </p>
-                    <p className="text-[10px] text-zinc-600">Rx</p>
+                    <p className="text-xs text-zinc-500">Rx</p>
                   </div>
                 </div>
 
                 <div className="text-center">
-                  <p className="text-[10px] text-zinc-600 mb-1">Decisao Preliminar</p>
+                  <p className="text-xs text-zinc-500 mb-1">Decisao Preliminar</p>
                   <DecisionBadge decision={decision} size="md" />
                 </div>
 
                 <Separator className="bg-zinc-800" />
 
                 <div className="text-center">
-                  <p className="text-[10px] text-zinc-600 mb-1">SCN+ Estimado</p>
+                  <p className="text-xs text-zinc-500 mb-1">SCN+ Estimado</p>
                   <p className="text-lg font-bold font-mono text-cyan-400">{algorithms.SCN_plus}</p>
                 </div>
 

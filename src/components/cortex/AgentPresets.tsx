@@ -172,7 +172,7 @@ export function AgentPresets({
               <X className="w-3.5 h-3.5" />
             </Button>
           </div>
-          <div className="flex items-center gap-2 text-[10px] text-zinc-600">
+          <div className="flex items-center gap-2 text-xs text-zinc-500">
             <span>Agente: {AGENT_LABELS[saveFormData.agentType] ?? saveFormData.agentType}</span>
             {saveFormData.playerName && (
               <>
@@ -186,14 +186,14 @@ export function AgentPresets({
 
       {/* Limit warning */}
       {nearLimit && presets.length < MAX_PRESETS && (
-        <div className="flex items-center gap-1.5 text-[10px] text-amber-400/80">
+        <div className="flex items-center gap-1.5 text-xs text-amber-400/80">
           <AlertTriangle className="w-3 h-3" />
           {MAX_PRESETS - presets.length} preset(s) restante(s) — maximo {MAX_PRESETS}
         </div>
       )}
 
       {presets.length >= MAX_PRESETS && (
-        <div className="flex items-center gap-1.5 text-[10px] text-red-400/80">
+        <div className="flex items-center gap-1.5 text-xs text-red-400/80">
           <AlertTriangle className="w-3 h-3" />
           Limite de {MAX_PRESETS} presets atingido. Exclua um para salvar novos.
         </div>
@@ -202,8 +202,8 @@ export function AgentPresets({
       {/* Presets list */}
       {presets.length === 0 ? (
         <div className="glass rounded-xl p-6 text-center">
-          <Bookmark className="w-6 h-6 text-zinc-700 mx-auto mb-2" />
-          <p className="text-xs text-zinc-600">
+          <Bookmark className="w-6 h-6 text-zinc-500 mx-auto mb-2" />
+          <p className="text-xs text-zinc-500">
             Salve suas configuracoes frequentes como presets
           </p>
         </div>
@@ -234,12 +234,12 @@ export function AgentPresets({
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
                       {preset.defaultPlayerName && (
-                        <span className="text-[10px] text-zinc-500 truncate">
+                        <span className="text-xs text-zinc-500 truncate">
                           {preset.defaultPlayerName}
                         </span>
                       )}
                       {preset.context && (
-                        <span className="text-[10px] text-zinc-600 truncate max-w-[200px]">
+                        <span className="text-xs text-zinc-500 truncate max-w-[200px]">
                           {preset.context.slice(0, 60)}{preset.context.length > 60 ? "..." : ""}
                         </span>
                       )}
@@ -255,9 +255,10 @@ export function AgentPresets({
                   className={`flex-shrink-0 p-1.5 rounded-lg transition-all ${
                     isConfirmingDelete
                       ? "bg-red-500/20 border border-red-500/30 text-red-400"
-                      : "opacity-0 group-hover:opacity-100 text-zinc-600 hover:text-red-400 hover:bg-red-500/10"
+                      : "opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-red-400 hover:bg-red-500/10"
                   }`}
                   title={isConfirmingDelete ? "Clique novamente para confirmar" : "Excluir preset"}
+                  aria-label={isConfirmingDelete ? "Confirmar exclusao do preset" : "Excluir preset"}
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>

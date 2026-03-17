@@ -76,7 +76,7 @@ export function AnalysisClient({ analyses }: Props) {
     }
   }
 
-  function renderSortHeader(field: SortField, children: React.ReactNode) {
+  function SortHeader({ field, children }: { field: SortField; children: React.ReactNode }) {
     const isActive = sortField === field
     return (
       <button
@@ -100,7 +100,7 @@ export function AnalysisClient({ analyses }: Props) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" aria-busy="false">
       {/* Upgrade Banner */}
       <UpgradePrompt
         feature="Voce esta no plano gratuito. Upgrade para analises ilimitadas."
@@ -138,7 +138,7 @@ export function AnalysisClient({ analyses }: Props) {
           <select
             value={clubFilter}
             onChange={(e) => setClubFilter(e.target.value)}
-            className="h-8 rounded-lg border border-zinc-700/50 bg-zinc-800/60 backdrop-blur-sm px-3 text-xs text-zinc-300 outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
+            className="min-h-[36px] rounded-lg border border-zinc-700/50 bg-zinc-800/60 backdrop-blur-sm px-3 text-xs text-zinc-300 outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
           >
             <option value="">Todos Clubes</option>
             {clubs.map((c) => (
@@ -148,7 +148,7 @@ export function AnalysisClient({ analyses }: Props) {
           <select
             value={positionFilter}
             onChange={(e) => setPositionFilter(e.target.value)}
-            className="h-8 rounded-lg border border-zinc-700/50 bg-zinc-800/60 backdrop-blur-sm px-3 text-xs text-zinc-300 outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
+            className="min-h-[36px] rounded-lg border border-zinc-700/50 bg-zinc-800/60 backdrop-blur-sm px-3 text-xs text-zinc-300 outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
           >
             <option value="">Todas Posicoes</option>
             {positions.map((p) => (
@@ -158,7 +158,7 @@ export function AnalysisClient({ analyses }: Props) {
           <select
             value={decisionFilter}
             onChange={(e) => setDecisionFilter(e.target.value)}
-            className="h-8 rounded-lg border border-zinc-700/50 bg-zinc-800/60 backdrop-blur-sm px-3 text-xs text-zinc-300 outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
+            className="min-h-[36px] rounded-lg border border-zinc-700/50 bg-zinc-800/60 backdrop-blur-sm px-3 text-xs text-zinc-300 outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
           >
             <option value="">Todas Decisoes</option>
             {decisions.map((d) => (
@@ -170,7 +170,7 @@ export function AnalysisClient({ analyses }: Props) {
               variant="ghost"
               size="sm"
               onClick={() => { setClubFilter(""); setPositionFilter(""); setDecisionFilter("") }}
-              className="text-zinc-500 hover:text-emerald-400 text-xs h-8 hover:bg-emerald-500/10 transition-all"
+              className="text-zinc-500 hover:text-emerald-400 text-xs min-h-[36px] hover:bg-emerald-500/10 transition-all"
             >
               <Filter className="w-3 h-3 mr-1" />
               Limpar
@@ -192,7 +192,7 @@ export function AnalysisClient({ analyses }: Props) {
           <CardTitle className="text-sm text-zinc-300">
             Mapa VxRx — Espaco Decisorio
           </CardTitle>
-          <p className="text-xs text-zinc-600">
+          <p className="text-xs text-zinc-500">
             Cada ponto representa uma analise neural. Passe o mouse para detalhes.
           </p>
         </CardHeader>
@@ -215,34 +215,35 @@ export function AnalysisClient({ analyses }: Props) {
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
+              <caption className="sr-only">Todas as analises de jogadores com metricas e decisoes</caption>
               <thead>
                 <tr className="border-b border-zinc-800 bg-zinc-900/50">
-                  <th className="text-left py-3.5 px-4">
-                    {renderSortHeader("name", "Jogador")}
+                  <th scope="col" className="text-left py-3.5 px-4" aria-sort={sortField === "name" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
+                    <SortHeader field="name">Jogador</SortHeader>
                   </th>
-                  <th className="text-left py-3.5 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th scope="col" className="text-left py-3.5 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     Posicao
                   </th>
-                  <th className="text-left py-3.5 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th scope="col" className="text-left py-3.5 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     Clube
                   </th>
-                  <th className="text-center py-3.5 px-3">
-                    {renderSortHeader("vx", "Vx")}
+                  <th scope="col" className="text-center py-3.5 px-3" aria-sort={sortField === "vx" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
+                    <SortHeader field="vx">Vx</SortHeader>
                   </th>
-                  <th className="text-center py-3.5 px-3">
-                    {renderSortHeader("rx", "Rx")}
+                  <th scope="col" className="text-center py-3.5 px-3" aria-sort={sortField === "rx" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
+                    <SortHeader field="rx">Rx</SortHeader>
                   </th>
-                  <th className="text-center py-3.5 px-3">
-                    {renderSortHeader("scn", "SCN+")}
+                  <th scope="col" className="text-center py-3.5 px-3" aria-sort={sortField === "scn" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
+                    <SortHeader field="scn">SCN+</SortHeader>
                   </th>
-                  <th className="text-center py-3.5 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th scope="col" className="text-center py-3.5 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     Decisao
                   </th>
-                  <th className="text-center py-3.5 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th scope="col" className="text-center py-3.5 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     Confianca
                   </th>
-                  <th className="text-right py-3.5 px-4">
-                    {renderSortHeader("date", "Data")}
+                  <th scope="col" className="text-right py-3.5 px-4" aria-sort={sortField === "date" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
+                    <SortHeader field="date">Data</SortHeader>
                   </th>
                 </tr>
               </thead>
@@ -250,12 +251,12 @@ export function AnalysisClient({ analyses }: Props) {
                 {filtered.map((analysis, idx) => (
                   <tr
                     key={analysis.id}
-                    className={`border-b border-zinc-800/30 transition-all duration-200 hover:bg-emerald-500/[0.03] group ${
+                    className={`border-b border-zinc-800/30 transition-all duration-200 hover:bg-emerald-500/[0.03] group min-h-[48px] ${
                       idx % 2 === 0 ? "bg-transparent" : "bg-zinc-800/[0.15]"
                     }`}
                     style={{ animationDelay: `${idx * 30}ms` }}
                   >
-                    <td className="py-3 px-4">
+                    <td className="py-3.5 px-4">
                       <Link
                         href={`/players/${analysis.player?.id}`}
                         className="text-zinc-200 font-medium hover:text-emerald-400 transition-colors"
@@ -263,29 +264,29 @@ export function AnalysisClient({ analyses }: Props) {
                         {analysis.player?.name ?? "---"}
                       </Link>
                     </td>
-                    <td className="py-3 px-3 text-zinc-500 text-xs">
+                    <td className="py-3.5 px-3 text-zinc-500 text-xs">
                       {analysis.player?.position}
                     </td>
-                    <td className="py-3 px-3 text-zinc-500 text-xs">{analysis.player?.club}</td>
-                    <td className="py-3 px-3 text-center">
+                    <td className="py-3.5 px-3 text-zinc-500 text-xs">{analysis.player?.club}</td>
+                    <td className="py-3.5 px-3 text-center">
                       <span className="font-mono text-emerald-400 text-xs px-2 py-0.5 rounded-md bg-emerald-500/[0.08]">
                         {analysis.vx.toFixed(2)}
                       </span>
                     </td>
-                    <td className="py-3 px-3 text-center">
+                    <td className="py-3.5 px-3 text-center">
                       <span className="font-mono text-red-400 text-xs px-2 py-0.5 rounded-md bg-red-500/[0.08]">
                         {analysis.rx.toFixed(2)}
                       </span>
                     </td>
-                    <td className="py-3 px-3 text-center">
+                    <td className="py-3.5 px-3 text-center">
                       <span className="font-mono text-cyan-400 text-xs font-semibold px-2 py-0.5 rounded-md bg-cyan-500/[0.08]">
                         {analysis.algorithms.SCN_plus}
                       </span>
                     </td>
-                    <td className="py-3 px-3 text-center">
+                    <td className="py-3.5 px-3 text-center">
                       <DecisionBadge decision={analysis.decision} size="sm" />
                     </td>
-                    <td className="py-3 px-3 text-center">
+                    <td className="py-3.5 px-3 text-center">
                       <div className="flex items-center justify-center gap-1.5">
                         <div className="w-8 h-1.5 rounded-full bg-zinc-800 overflow-hidden">
                           <div
@@ -296,7 +297,7 @@ export function AnalysisClient({ analyses }: Props) {
                         <span className="text-zinc-500 text-xs font-mono">{analysis.confidence}%</span>
                       </div>
                     </td>
-                    <td className="py-3 px-4 text-right text-zinc-600 text-xs">
+                    <td className="py-3.5 px-4 text-right text-zinc-500 text-xs">
                       {analysis.date}
                     </td>
                   </tr>

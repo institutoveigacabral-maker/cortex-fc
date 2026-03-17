@@ -150,7 +150,7 @@ function LeagueCard({
         className={`absolute top-3 right-3 p-1 rounded-md transition-all ${
           isFav
             ? "text-amber-400 hover:text-amber-300"
-            : "text-zinc-700 hover:text-zinc-500 opacity-0 group-hover:opacity-100"
+            : "text-zinc-500 hover:text-zinc-500 opacity-0 group-hover:opacity-100"
         }`}
         title={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
       >
@@ -167,7 +167,7 @@ function LeagueCard({
           />
         ) : (
           <div className="w-12 h-12 rounded-lg bg-zinc-800 flex items-center justify-center">
-            <Shield className="w-6 h-6 text-zinc-600" />
+            <Shield className="w-6 h-6 text-zinc-500" />
           </div>
         )}
         <div className="text-center">
@@ -208,13 +208,13 @@ function TeamCard({
             {team.team.name}
           </p>
           <div className="flex items-center justify-center gap-1 mt-1">
-            <MapPin className="w-3 h-3 text-zinc-600" />
+            <MapPin className="w-3 h-3 text-zinc-500" />
             <span className="text-xs text-zinc-500">{team.venue.city}</span>
           </div>
           {team.team.founded > 0 && (
             <div className="flex items-center justify-center gap-1 mt-0.5">
-              <Calendar className="w-3 h-3 text-zinc-600" />
-              <span className="text-[10px] text-zinc-600">Fundado em {team.team.founded}</span>
+              <Calendar className="w-3 h-3 text-zinc-500" />
+              <span className="text-xs text-zinc-500">Fundado em {team.team.founded}</span>
             </div>
           )}
         </div>
@@ -242,7 +242,7 @@ function PlayerCard({ player }: { player: SquadPlayer }) {
             />
           </div>
           {player.number != null && (
-            <span className="absolute -bottom-1 -right-1 bg-zinc-800 border border-zinc-700 text-zinc-300 text-[10px] font-mono font-bold w-6 h-6 rounded-full flex items-center justify-center">
+            <span className="absolute -bottom-1 -right-1 bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs font-mono font-bold w-6 h-6 rounded-full flex items-center justify-center">
               {player.number}
             </span>
           )}
@@ -253,7 +253,7 @@ function PlayerCard({ player }: { player: SquadPlayer }) {
           </p>
           <p className="text-xs text-zinc-500 mt-0.5">{player.age} anos</p>
           <span
-            className={`inline-block mt-2 px-2 py-0.5 rounded-full text-[10px] font-medium border ${posClass}`}
+            className={`inline-block mt-2 px-2 py-0.5 rounded-full text-xs font-medium border ${posClass}`}
           >
             {posLabel}
           </span>
@@ -459,7 +459,7 @@ export default function ExplorePage() {
 
       {/* Breadcrumb */}
       {step !== "leagues" && (
-        <div className="flex items-center gap-2 text-xs text-zinc-600">
+        <div className="flex items-center gap-2 text-xs text-zinc-500">
           <button onClick={() => { setStep("leagues"); setSelectedLeague(null); setSelectedTeam(null); setTeams([]); setSquad(null) }} className="hover:text-zinc-400 transition-colors">
             Ligas
           </button>
@@ -512,7 +512,7 @@ export default function ExplorePage() {
                 setLeagueQuery(e.target.value)
                 searchLeagues(e.target.value)
               }}
-              className="pl-9 bg-zinc-900/80 border-zinc-800 text-zinc-200 placeholder:text-zinc-600"
+              className="pl-9 bg-zinc-900/80 border-zinc-800 text-zinc-200 placeholder:text-zinc-500"
             />
             {leagueSearchLoading && (
               <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 animate-spin" />
@@ -569,7 +569,7 @@ export default function ExplorePage() {
           )}
 
           {leagueQuery.length >= 3 && searchedLeagues.length === 0 && !leagueSearchLoading && (
-            <div className="text-center py-12 text-zinc-600">
+            <div className="text-center py-12 text-zinc-500">
               <Shield className="w-8 h-8 mx-auto mb-2 opacity-40" />
               <p className="text-sm">Nenhuma liga encontrada para &quot;{leagueQuery}&quot;</p>
             </div>
@@ -611,7 +611,7 @@ export default function ExplorePage() {
                 placeholder="Filtrar times..."
                 value={teamQuery}
                 onChange={(e) => setTeamQuery(e.target.value)}
-                className="pl-9 bg-zinc-900/80 border-zinc-800 text-zinc-200 placeholder:text-zinc-600"
+                className="pl-9 bg-zinc-900/80 border-zinc-800 text-zinc-200 placeholder:text-zinc-500"
               />
             </div>
           )}
@@ -629,14 +629,14 @@ export default function ExplorePage() {
           )}
 
           {!loading && teams.length > 0 && filteredTeams.length === 0 && (
-            <div className="text-center py-12 text-zinc-600">
+            <div className="text-center py-12 text-zinc-500">
               <Shield className="w-8 h-8 mx-auto mb-2 opacity-40" />
               <p className="text-sm">Nenhum time encontrado para &quot;{teamQuery}&quot;</p>
             </div>
           )}
 
           {!loading && teams.length === 0 && !error && (
-            <div className="text-center py-12 text-zinc-600">
+            <div className="text-center py-12 text-zinc-500">
               <Users className="w-8 h-8 mx-auto mb-2 opacity-40" />
               <p className="text-sm">Nenhum time encontrado nesta liga</p>
             </div>
@@ -689,7 +689,7 @@ export default function ExplorePage() {
           {/* Position filter */}
           {!loading && squad && squad.players.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
-              <Filter className="w-4 h-4 text-zinc-600" />
+              <Filter className="w-4 h-4 text-zinc-500" />
               {["All", "Goalkeeper", "Defender", "Midfielder", "Attacker"].map((pos) => {
                 const label = pos === "All" ? "Todos" : POSITION_LABELS[pos] ?? pos
                 const count =
@@ -730,14 +730,14 @@ export default function ExplorePage() {
           )}
 
           {!loading && squad && squad.players.length === 0 && (
-            <div className="text-center py-12 text-zinc-600">
+            <div className="text-center py-12 text-zinc-500">
               <Users className="w-8 h-8 mx-auto mb-2 opacity-40" />
               <p className="text-sm">Elenco nao disponivel para este time</p>
             </div>
           )}
 
           {!loading && squad && squad.players.length > 0 && filteredPlayers.length === 0 && (
-            <div className="text-center py-12 text-zinc-600">
+            <div className="text-center py-12 text-zinc-500">
               <Users className="w-8 h-8 mx-auto mb-2 opacity-40" />
               <p className="text-sm">Nenhum jogador nesta posicao</p>
             </div>

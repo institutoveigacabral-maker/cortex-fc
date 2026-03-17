@@ -70,7 +70,7 @@ export function TabNav({ tabs, defaultTab, children, className }: TabNavProps) {
                 {tab.count != null && (
                   <span
                     className={cn(
-                      "ml-1 min-w-[20px] h-5 flex items-center justify-center rounded-full text-[11px] font-mono px-1.5",
+                      "ml-1 min-w-[20px] h-5 flex items-center justify-center rounded-full text-xs font-mono px-1.5",
                       activeTab === tab.id
                         ? "bg-emerald-500/20 text-emerald-400"
                         : "bg-zinc-800 text-zinc-500"

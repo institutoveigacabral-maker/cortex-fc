@@ -113,7 +113,7 @@ function CompareContent({ players }: { players: ComparePlayer[] }) {
         <Card className="bg-zinc-900/80 border-zinc-800">
           <CardContent className="py-16 text-center">
             <div className="w-16 h-16 rounded-2xl bg-zinc-800/50 flex items-center justify-center mx-auto mb-4">
-              <GitCompare className="w-8 h-8 text-zinc-700" />
+              <GitCompare className="w-8 h-8 text-zinc-500" />
             </div>
             <p className="text-zinc-400 text-sm">
               Nenhum jogador selecionado para comparacao.
@@ -187,7 +187,7 @@ function CompareContent({ players }: { players: ComparePlayer[] }) {
                   <p className="text-xs text-zinc-500">
                     {player.position} &middot; {player.club} &middot; {player.age} anos
                   </p>
-                  <p className="text-xs text-zinc-600">{player.nationality}</p>
+                  <p className="text-xs text-zinc-500">{player.nationality}</p>
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   <span className="text-lg font-bold font-mono text-zinc-100">
@@ -215,13 +215,14 @@ function CompareContent({ players }: { players: ComparePlayer[] }) {
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
+              <caption className="sr-only">Comparacao de metricas chave entre jogadores</caption>
               <thead>
                 <tr className="border-b border-zinc-800 bg-zinc-900/50">
-                  <th className="text-left py-2.5 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th scope="col" className="text-left py-2.5 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     Metrica
                   </th>
                   {players.map((p, idx) => (
-                    <th key={p.id} className="text-center py-2.5 px-3 text-xs font-semibold" style={{ color: radarColors[idx] }}>
+                    <th scope="col" key={p.id} className="text-center py-2.5 px-3 text-xs font-semibold" style={{ color: radarColors[idx] }}>
                       {p.name.split(" ").pop()}
                     </th>
                   ))}
@@ -271,7 +272,7 @@ function CompareContent({ players }: { players: ComparePlayer[] }) {
             <Shield className="w-4 h-4 text-emerald-400" />
             Camadas Neurais --- 7 Dimensoes
           </CardTitle>
-          <p className="text-xs text-zinc-600">
+          <p className="text-xs text-zinc-500">
             Perfil completo de cada jogador nas 7 camadas do sistema Cortex
           </p>
         </CardHeader>
@@ -293,7 +294,7 @@ function CompareContent({ players }: { players: ComparePlayer[] }) {
                 )}
                 {!player.layers && (
                   <div className="w-[280px] h-[280px] flex items-center justify-center">
-                    <p className="text-zinc-600 text-xs">Sem dados neurais</p>
+                    <p className="text-zinc-500 text-xs">Sem dados neurais</p>
                   </div>
                 )}
               </div>
@@ -304,13 +305,14 @@ function CompareContent({ players }: { players: ComparePlayer[] }) {
           {players.every((p) => p.layers) && (
             <div className="mt-6 overflow-x-auto">
               <table className="w-full text-sm">
+                <caption className="sr-only">Comparacao de camadas neurais entre jogadores</caption>
                 <thead>
                   <tr className="border-b border-zinc-800 bg-zinc-900/50">
-                    <th className="text-left py-2.5 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                    <th scope="col" className="text-left py-2.5 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                       Camada
                     </th>
                     {players.map((p, idx) => (
-                      <th key={p.id} className="text-center py-2.5 px-3 text-xs font-semibold" style={{ color: radarColors[idx] }}>
+                      <th scope="col" key={p.id} className="text-center py-2.5 px-3 text-xs font-semibold" style={{ color: radarColors[idx] }}>
                         {p.name.split(" ").pop()}
                       </th>
                     ))}
@@ -377,7 +379,7 @@ function CompareContent({ players }: { players: ComparePlayer[] }) {
           <CardTitle className="text-sm font-semibold text-zinc-300">
             Algoritmos Proprietarios
           </CardTitle>
-          <p className="text-xs text-zinc-600">
+          <p className="text-xs text-zinc-500">
             Scores dos 7 algoritmos do sistema Cortex para cada jogador
           </p>
         </CardHeader>
@@ -400,7 +402,7 @@ function CompareContent({ players }: { players: ComparePlayer[] }) {
                 {player.algorithms ? (
                   <AlgorithmBars scores={player.algorithms} />
                 ) : (
-                  <div className="py-8 text-center text-zinc-600 text-xs">
+                  <div className="py-8 text-center text-zinc-500 text-xs">
                     Sem dados de algoritmos
                   </div>
                 )}
@@ -418,7 +420,7 @@ function CompareContent({ players }: { players: ComparePlayer[] }) {
             <CardTitle className="text-sm font-semibold text-zinc-300">
               Posicao no Espaco Decisorio VxRx
             </CardTitle>
-            <p className="text-xs text-zinc-600">
+            <p className="text-xs text-zinc-500">
               Onde cada alvo se posiciona na matriz de valor vs risco
             </p>
           </CardHeader>
@@ -465,13 +467,13 @@ function CompareContent({ players }: { players: ComparePlayer[] }) {
                     {player.reasoning}
                   </p>
                 ) : (
-                  <p className="text-xs text-zinc-600">Sem parecer disponivel.</p>
+                  <p className="text-xs text-zinc-500">Sem parecer disponivel.</p>
                 )}
                 {player.decision && (
                   <div className="mt-3 flex items-center gap-2">
                     <DecisionBadge decision={player.decision} size="sm" />
                     {player.confidence && (
-                      <span className="text-[10px] font-mono text-zinc-500">
+                      <span className="text-xs font-mono text-zinc-500">
                         {player.confidence}% confianca
                       </span>
                     )}

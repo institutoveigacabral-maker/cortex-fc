@@ -19,7 +19,7 @@ export function ScoutingFunnel({ data }: ScoutingFunnelProps) {
 
   if (data.length === 0) {
     return (
-      <div className="h-48 flex items-center justify-center text-zinc-600 text-sm">
+      <div className="h-48 flex items-center justify-center text-zinc-500 text-sm">
         Sem dados de pipeline
       </div>
     )
@@ -42,7 +42,7 @@ export function ScoutingFunnel({ data }: ScoutingFunnelProps) {
             {conversionRate && (
               <div className="flex items-center justify-center gap-2 py-1">
                 <div className="h-px flex-1 max-w-[60px] bg-zinc-800" />
-                <span className="text-[10px] font-mono text-zinc-600">
+                <span className="text-xs font-mono text-zinc-500">
                   {conversionRate}% conversao
                 </span>
                 <div className="h-px flex-1 max-w-[60px] bg-zinc-800" />
@@ -70,7 +70,7 @@ export function ScoutingFunnel({ data }: ScoutingFunnelProps) {
                     <span className="text-lg font-mono font-bold text-zinc-100">
                       {stage.count}
                     </span>
-                    <span className="text-[11px] font-mono text-zinc-500">
+                    <span className="text-xs font-mono text-zinc-500">
                       {percentage}%
                     </span>
                   </div>

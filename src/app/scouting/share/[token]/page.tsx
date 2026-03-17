@@ -90,7 +90,7 @@ export default async function SharedShortlistPage({
               >
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center flex-shrink-0 border border-zinc-700/50">
-                    <User className="w-6 h-6 text-zinc-600" />
+                    <User className="w-6 h-6 text-zinc-500" />
                   </div>
 
                   <div className="flex-1 min-w-0">
@@ -140,7 +140,7 @@ export default async function SharedShortlistPage({
                     )}
 
                     <div className="flex items-center gap-2 mt-3">
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                         t.priority === "high"
                           ? "bg-red-500/10 text-red-400"
                           : t.priority === "medium"
@@ -150,7 +150,7 @@ export default async function SharedShortlistPage({
                         {t.priority === "high" ? "Alta" : t.priority === "medium" ? "Media" : "Baixa"} prioridade
                       </span>
                       {t.targetPrice && (
-                        <span className="text-[10px] text-zinc-600 font-mono">
+                        <span className="text-xs text-zinc-500 font-mono">
                           Preco alvo: &euro;{t.targetPrice}M
                         </span>
                       )}
@@ -163,12 +163,12 @@ export default async function SharedShortlistPage({
         </div>
 
         {targets.length === 0 && (
-          <div className="text-center py-16 text-zinc-600">
+          <div className="text-center py-16 text-zinc-500">
             Nenhum jogador encontrado nesta shortlist.
           </div>
         )}
 
-        <p className="text-center text-[10px] text-zinc-700 mt-10">
+        <p className="text-center text-xs text-zinc-500 mt-10">
           Gerado por CORTEX FC — Analytics Futebolístico Neural
         </p>
       </div>

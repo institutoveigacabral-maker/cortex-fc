@@ -8,12 +8,12 @@ import {
   CheckCircle,
   XCircle,
   Bot,
-  X,
   Loader2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
+import { AdaptiveModal } from "@/components/ui/adaptive-modal"
 import type { CfoOutput } from "@/types/cortex"
 
 interface Props {
@@ -32,8 +32,6 @@ export function CfoModal({ playerId, playerName, marketValue, isOpen, onClose }:
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<CfoOutput | null>(null)
   const [error, setError] = useState("")
-
-  if (!isOpen) return null
 
   const handleSubmit = async () => {
     setLoading(true)
@@ -78,24 +76,13 @@ export function CfoModal({ playerId, playerName, marketValue, isOpen, onClose }:
         : AlertTriangle
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl animate-scale-in">
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-zinc-800">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-              <Banknote className="w-4.5 h-4.5 text-emerald-400" />
-            </div>
-            <div>
-              <h2 className="text-sm font-semibold text-zinc-100">CFO Modeler</h2>
-              <p className="text-xs text-zinc-500">Simular Contratacao — {playerName}</p>
-            </div>
-          </div>
-          <button onClick={onClose} className="text-zinc-500 hover:text-zinc-300 transition-colors">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
+    <AdaptiveModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={`CFO Modeler — ${playerName}`}
+      titleId="cfo-modal-title"
+      size="lg"
+    >
         <div className="p-5 space-y-5">
           {!result ? (
             <>
@@ -196,7 +183,7 @@ export function CfoModal({ playerId, playerName, marketValue, isOpen, onClose }:
               <div className="grid grid-cols-2 gap-3">
                 <Card className="bg-zinc-800/30 border-zinc-700/30">
                   <CardContent className="p-3">
-                    <p className="text-[10px] text-zinc-600 uppercase font-medium">ROI Projetado</p>
+                    <p className="text-xs text-zinc-500 uppercase font-medium">ROI Projetado</p>
                     <p className="text-xl font-bold font-mono text-emerald-400 mt-1">
                       {result.roiProjection}%
                     </p>
@@ -204,7 +191,7 @@ export function CfoModal({ playerId, playerName, marketValue, isOpen, onClose }:
                 </Card>
                 <Card className="bg-zinc-800/30 border-zinc-700/30">
                   <CardContent className="p-3">
-                    <p className="text-[10px] text-zinc-600 uppercase font-medium">Amortizacao/Ano</p>
+                    <p className="text-xs text-zinc-500 uppercase font-medium">Amortizacao/Ano</p>
                     <p className="text-xl font-bold font-mono text-amber-400 mt-1">
                       &euro;{result.amortizationPerYear}M
                     </p>
@@ -212,7 +199,7 @@ export function CfoModal({ playerId, playerName, marketValue, isOpen, onClose }:
                 </Card>
                 <Card className="bg-zinc-800/30 border-zinc-700/30">
                   <CardContent className="p-3">
-                    <p className="text-[10px] text-zinc-600 uppercase font-medium">Custo Total</p>
+                    <p className="text-xs text-zinc-500 uppercase font-medium">Custo Total</p>
                     <p className="text-xl font-bold font-mono text-red-400 mt-1">
                       &euro;{result.totalCostOverContract}M
                     </p>
@@ -220,7 +207,7 @@ export function CfoModal({ playerId, playerName, marketValue, isOpen, onClose }:
                 </Card>
                 <Card className="bg-zinc-800/30 border-zinc-700/30">
                   <CardContent className="p-3">
-                    <p className="text-[10px] text-zinc-600 uppercase font-medium">Salario/Receita</p>
+                    <p className="text-xs text-zinc-500 uppercase font-medium">Salario/Receita</p>
                     <p className="text-xl font-bold font-mono text-zinc-300 mt-1">
                       {result.salaryAsPercentOfRevenue}%
                     </p>
@@ -246,7 +233,6 @@ export function CfoModal({ playerId, playerName, marketValue, isOpen, onClose }:
             </>
           )}
         </div>
-      </div>
-    </div>
+    </AdaptiveModal>
   )
 }

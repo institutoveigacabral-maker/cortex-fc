@@ -114,7 +114,7 @@ export default function PricingPage() {
             </div>
             <div>
               <span className="text-sm font-bold text-zinc-100 tracking-tight">CORTEX FC</span>
-              <span className="text-[10px] text-zinc-600 font-mono tracking-widest ml-2">NEURAL ANALYTICS</span>
+              <span className="text-xs text-zinc-500 font-mono tracking-widest ml-2">NEURAL ANALYTICS</span>
             </div>
           </Link>
           <div className="flex items-center gap-4">
@@ -221,7 +221,7 @@ export default function PricingPage() {
                     <span className="text-zinc-500 text-sm">/mês</span>
                   </div>
                   {isAnnual && (
-                    <p className="text-xs text-zinc-600 mt-1">
+                    <p className="text-xs text-zinc-500 mt-1">
                       Cobrado anualmente (€{plan.yearlyPrice * 12}/ano)
                     </p>
                   )}
@@ -247,7 +247,7 @@ export default function PricingPage() {
                   >
                     {plan.cta}
                   </Link>
-                  <p className="text-center text-xs text-zinc-600 mt-2">
+                  <p className="text-center text-xs text-zinc-500 mt-2">
                     {plan.ctaSubtext}
                   </p>
                 </div>

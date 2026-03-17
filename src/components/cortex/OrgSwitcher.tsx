@@ -63,6 +63,8 @@ export function OrgSwitcher({ currentOrgId, currentOrgName }: Props) {
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors px-2 py-1 rounded-md hover:bg-zinc-800/50"
+        aria-label={`Trocar organizacao. Atual: ${currentOrgName}`}
+        aria-expanded={open}
       >
         <Building2 className="w-3 h-3" />
         <span className="max-w-[120px] truncate">{currentOrgName}</span>
@@ -74,7 +76,7 @@ export function OrgSwitcher({ currentOrgId, currentOrgName }: Props) {
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute top-full left-0 mt-1 z-50 w-56 bg-zinc-900 border border-zinc-800 rounded-lg shadow-xl py-1 animate-fade-in">
             <div className="px-3 py-1.5 border-b border-zinc-800">
-              <p className="text-[10px] text-zinc-600 uppercase font-medium tracking-wider">Organizacoes</p>
+              <p className="text-xs text-zinc-500 uppercase font-medium tracking-wider">Organizacoes</p>
             </div>
             {orgs.map((org) => (
               <button
@@ -85,7 +87,7 @@ export function OrgSwitcher({ currentOrgId, currentOrgName }: Props) {
               >
                 <div className="text-left">
                   <p className="text-zinc-200 font-medium">{org.orgName}</p>
-                  <p className="text-[10px] text-zinc-600 capitalize">{org.role} — {org.orgTier.replace("_", " ")}</p>
+                  <p className="text-xs text-zinc-500 capitalize">{org.role} — {org.orgTier.replace("_", " ")}</p>
                 </div>
                 {org.orgId === currentOrgId && (
                   <Check className="w-3.5 h-3.5 text-emerald-400" />

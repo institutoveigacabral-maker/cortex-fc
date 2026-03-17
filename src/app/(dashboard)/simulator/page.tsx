@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { ScrollFade } from "@/components/ui/scroll-fade"
 
 interface Transfer {
   id: string
@@ -230,8 +231,8 @@ export default function SimulatorPage() {
           {activeScenario.transfers.length === 0 ? (
             <Card className="glass rounded-xl">
               <CardContent className="flex flex-col items-center justify-center py-16">
-                <ArrowRightLeft className="w-10 h-10 text-zinc-700 mb-3" />
-                <p className="text-sm text-zinc-600">
+                <ArrowRightLeft className="w-10 h-10 text-zinc-500 mb-3" />
+                <p className="text-sm text-zinc-500">
                   Adicione contratacoes e vendas para simular
                 </p>
               </CardContent>
@@ -252,7 +253,7 @@ export default function SimulatorPage() {
                     <div className="flex items-start gap-4">
                       <Badge
                         className={cn(
-                          "text-[10px] mt-1",
+                          "text-xs mt-1",
                           t.direction === "in"
                             ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                             : "bg-red-500/10 text-red-400 border-red-500/20"
@@ -263,7 +264,7 @@ export default function SimulatorPage() {
 
                       <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-3">
                         <div className="col-span-2 md:col-span-1">
-                          <Label className="text-[10px] text-zinc-600 uppercase">Jogador</Label>
+                          <Label className="text-xs text-zinc-500 uppercase">Jogador</Label>
                           <Input
                             value={t.playerName}
                             onChange={(e) => updateTransfer(t.id, { playerName: e.target.value })}
@@ -272,7 +273,7 @@ export default function SimulatorPage() {
                           />
                         </div>
                         <div>
-                          <Label className="text-[10px] text-zinc-600 uppercase">Posicao</Label>
+                          <Label className="text-xs text-zinc-500 uppercase">Posicao</Label>
                           <select
                             value={t.position}
                             onChange={(e) => updateTransfer(t.id, { position: e.target.value })}
@@ -284,7 +285,7 @@ export default function SimulatorPage() {
                           </select>
                         </div>
                         <div>
-                          <Label className="text-[10px] text-zinc-600 uppercase">
+                          <Label className="text-xs text-zinc-500 uppercase">
                             {t.direction === "in" ? "Custo (€M)" : "Receita (€M)"}
                           </Label>
                           <Input
@@ -296,7 +297,7 @@ export default function SimulatorPage() {
                           />
                         </div>
                         <div>
-                          <Label className="text-[10px] text-zinc-600 uppercase">Salario/ano (€M)</Label>
+                          <Label className="text-xs text-zinc-500 uppercase">Salario/ano (€M)</Label>
                           <Input
                             type="number"
                             value={t.salary || ""}
@@ -306,7 +307,7 @@ export default function SimulatorPage() {
                           />
                         </div>
                         <div>
-                          <Label className="text-[10px] text-zinc-600 uppercase">Contrato (anos)</Label>
+                          <Label className="text-xs text-zinc-500 uppercase">Contrato (anos)</Label>
                           <Input
                             type="number"
                             value={t.contractYears}
@@ -315,7 +316,7 @@ export default function SimulatorPage() {
                           />
                         </div>
                         <div>
-                          <Label className="text-[10px] text-zinc-600 uppercase">SCN+</Label>
+                          <Label className="text-xs text-zinc-500 uppercase">SCN+</Label>
                           <Input
                             type="number"
                             value={t.scnPlus ?? ""}
@@ -325,7 +326,7 @@ export default function SimulatorPage() {
                           />
                         </div>
                         <div>
-                          <Label className="text-[10px] text-zinc-600 uppercase">Idade</Label>
+                          <Label className="text-xs text-zinc-500 uppercase">Idade</Label>
                           <Input
                             type="number"
                             value={t.age ?? ""}
@@ -338,7 +339,7 @@ export default function SimulatorPage() {
 
                       <button
                         onClick={() => removeTransfer(t.id)}
-                        className="p-1.5 rounded-lg hover:bg-red-500/10 text-zinc-600 hover:text-red-400 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-red-500/10 text-zinc-500 hover:text-red-400 transition-colors"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -364,14 +365,14 @@ export default function SimulatorPage() {
             <CardContent className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-lg bg-zinc-800/30 p-3">
-                  <p className="text-[10px] text-zinc-600 uppercase">Gasto Total</p>
+                  <p className="text-xs text-zinc-500 uppercase">Gasto Total</p>
                   <p className="text-lg font-bold text-red-400 font-mono">{fmt(fin.totalSpend)}</p>
-                  <p className="text-[10px] text-zinc-600">{fin.inCount} contratacoes</p>
+                  <p className="text-xs text-zinc-500">{fin.inCount} contratacoes</p>
                 </div>
                 <div className="rounded-lg bg-zinc-800/30 p-3">
-                  <p className="text-[10px] text-zinc-600 uppercase">Receita Vendas</p>
+                  <p className="text-xs text-zinc-500 uppercase">Receita Vendas</p>
                   <p className="text-lg font-bold text-emerald-400 font-mono">{fmt(fin.totalRevenue)}</p>
-                  <p className="text-[10px] text-zinc-600">{fin.outCount} saidas</p>
+                  <p className="text-xs text-zinc-500">{fin.outCount} saidas</p>
                 </div>
               </div>
 
@@ -418,19 +419,19 @@ export default function SimulatorPage() {
             <CardContent className="space-y-3">
               <div className="grid grid-cols-3 gap-3">
                 <div className="rounded-lg bg-zinc-800/30 p-3 text-center">
-                  <p className="text-[10px] text-zinc-600 uppercase">SCN+ Entradas</p>
+                  <p className="text-xs text-zinc-500 uppercase">SCN+ Entradas</p>
                   <p className="text-lg font-bold text-emerald-400 font-mono">
                     {tact.avgScnIn > 0 ? tact.avgScnIn.toFixed(1) : "—"}
                   </p>
                 </div>
                 <div className="rounded-lg bg-zinc-800/30 p-3 text-center">
-                  <p className="text-[10px] text-zinc-600 uppercase">SCN+ Saidas</p>
+                  <p className="text-xs text-zinc-500 uppercase">SCN+ Saidas</p>
                   <p className="text-lg font-bold text-red-400 font-mono">
                     {tact.avgScnOut > 0 ? tact.avgScnOut.toFixed(1) : "—"}
                   </p>
                 </div>
                 <div className="rounded-lg bg-zinc-800/30 p-3 text-center">
-                  <p className="text-[10px] text-zinc-600 uppercase">Delta SCN+</p>
+                  <p className="text-xs text-zinc-500 uppercase">Delta SCN+</p>
                   <p className={cn(
                     "text-lg font-bold font-mono",
                     tact.scnDelta > 0 ? "text-emerald-400" : tact.scnDelta < 0 ? "text-red-400" : "text-zinc-500"
@@ -448,7 +449,7 @@ export default function SimulatorPage() {
                       <span className="text-xs text-zinc-500">Reforcos em:</span>
                       <div className="flex gap-1">
                         {tact.positionsIn.map((p) => (
-                          <Badge key={p} className="text-[10px] bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
+                          <Badge key={p} className="text-xs bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
                             {p}
                           </Badge>
                         ))}
@@ -461,7 +462,7 @@ export default function SimulatorPage() {
                       <span className="text-xs text-zinc-500">Saidas em:</span>
                       <div className="flex gap-1">
                         {tact.positionsOut.map((p) => (
-                          <Badge key={p} className="text-[10px] bg-red-500/10 text-red-400 border-red-500/20">
+                          <Badge key={p} className="text-xs bg-red-500/10 text-red-400 border-red-500/20">
                             {p}
                           </Badge>
                         ))}
@@ -484,13 +485,14 @@ export default function SimulatorPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto">
+                <ScrollFade>
                   <table className="w-full text-xs">
+                    <caption className="sr-only">Comparacao financeira entre cenarios de contratacao</caption>
                     <thead>
                       <tr className="border-b border-zinc-800">
-                        <th className="text-left py-2 text-zinc-600 font-medium">Metrica</th>
+                        <th scope="col" className="text-left py-2 text-zinc-500 font-medium">Metrica</th>
                         {scenarios.map((s) => (
-                          <th key={s.id} className="text-right py-2 text-zinc-500 font-medium">
+                          <th scope="col" key={s.id} className="text-right py-2 text-zinc-500 font-medium">
                             {s.name}
                           </th>
                         ))}
@@ -521,7 +523,7 @@ export default function SimulatorPage() {
                       ))}
                     </tbody>
                   </table>
-                </div>
+                </ScrollFade>
               </CardContent>
             </Card>
           )}

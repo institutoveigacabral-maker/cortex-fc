@@ -112,7 +112,7 @@ export default async function ReportDetailPage({
       {/* Print-only branding header */}
       <div className="print-header hidden">
         <h2 className="text-xl font-bold text-zinc-900">CORTEX FC</h2>
-        <p className="text-sm text-zinc-600 mt-1">Parecer ORACLE — Relatorio Neural</p>
+        <p className="text-sm text-zinc-500 mt-1">Parecer ORACLE — Relatorio Neural</p>
       </div>
 
       {/* Back button */}
@@ -129,7 +129,7 @@ export default async function ReportDetailPage({
           <div className="flex flex-col md:flex-row gap-6">
             {/* Photo placeholder */}
             <div className="w-28 h-28 rounded-xl bg-zinc-800 flex items-center justify-center flex-shrink-0 border border-zinc-700">
-              <User className="w-14 h-14 text-zinc-600" />
+              <User className="w-14 h-14 text-zinc-500" />
             </div>
 
             {/* Player info */}
@@ -150,28 +150,28 @@ export default async function ReportDetailPage({
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                 <div className="flex items-center gap-2 text-sm">
-                  <Globe className="w-4 h-4 text-zinc-600" />
+                  <Globe className="w-4 h-4 text-zinc-500" />
                   <div>
                     <p className="text-zinc-500 text-xs">Nacionalidade</p>
                     <p className="text-zinc-300">{analysis.player?.nationality ?? "—"}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="w-4 h-4 text-zinc-600" />
+                  <Calendar className="w-4 h-4 text-zinc-500" />
                   <div>
                     <p className="text-zinc-500 text-xs">Idade</p>
                     <p className="text-zinc-300">{analysis.player?.age ?? "—"} anos</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                  <MapPin className="w-4 h-4 text-zinc-600" />
+                  <MapPin className="w-4 h-4 text-zinc-500" />
                   <div>
                     <p className="text-zinc-500 text-xs">Clube</p>
                     <p className="text-zinc-300">{analysis.player?.club ?? "—"}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                  <Banknote className="w-4 h-4 text-zinc-600" />
+                  <Banknote className="w-4 h-4 text-zinc-500" />
                   <div>
                     <p className="text-zinc-500 text-xs">Valor de Mercado</p>
                     <p className="text-zinc-300 font-mono">&euro;{analysis.player?.marketValue ?? 0}M</p>
@@ -179,7 +179,7 @@ export default async function ReportDetailPage({
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 mt-3 text-xs text-zinc-600">
+              <div className="flex items-center gap-4 mt-3 text-xs text-zinc-500">
                 <span>Posicao: {analysis.player?.position ?? "—"}</span>
                 <span>Contrato ate: {analysis.player?.contractEnd ?? "—"}</span>
                 <span>Data do relatorio: {analysis.date}</span>
@@ -201,13 +201,13 @@ export default async function ReportDetailPage({
           <p className="text-sm text-zinc-300 leading-relaxed">{analysis.reasoning}</p>
           <div className="flex items-center gap-4 mt-4 pt-4 border-t border-zinc-800">
             <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-zinc-600 uppercase">Confianca</span>
+              <span className="text-xs text-zinc-500 uppercase">Confianca</span>
               <span className="text-xs font-mono text-emerald-400 font-semibold">
                 {analysis.confidence}%
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-zinc-600 uppercase">SCN+</span>
+              <span className="text-xs text-zinc-500 uppercase">SCN+</span>
               <span className="text-xs font-mono text-cyan-400 font-semibold">
                 {analysis.algorithms.SCN_plus}
               </span>
@@ -229,20 +229,20 @@ export default async function ReportDetailPage({
                 <p className="text-3xl font-bold font-mono text-emerald-400">
                   {analysis.vx.toFixed(2)}
                 </p>
-                <p className="text-xs text-zinc-600 mt-1">Vx (Valor)</p>
+                <p className="text-xs text-zinc-500 mt-1">Vx (Valor)</p>
               </div>
               <div className="text-center">
                 <p className="text-3xl font-bold font-mono text-red-400">
                   {analysis.rx.toFixed(2)}
                 </p>
-                <p className="text-xs text-zinc-600 mt-1">Rx (Risco)</p>
+                <p className="text-xs text-zinc-500 mt-1">Rx (Risco)</p>
               </div>
             </div>
             <Separator className="bg-zinc-800 my-4" />
             <div className="text-center">
               <p className="text-xs text-zinc-500 mb-2">Decisao ORACLE</p>
               <DecisionBadge decision={analysis.decision} size="lg" />
-              <p className="text-xs text-zinc-600 mt-2 font-mono">
+              <p className="text-xs text-zinc-500 mt-2 font-mono">
                 Confianca: {analysis.confidence}%
               </p>
             </div>

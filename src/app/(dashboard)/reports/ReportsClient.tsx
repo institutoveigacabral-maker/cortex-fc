@@ -139,7 +139,7 @@ export function ReportsClient({ analyses }: Props) {
                     <p className="text-2xl font-bold text-zinc-100 mt-1 font-mono">
                       {stat.value}
                     </p>
-                    <p className="text-[11px] text-zinc-600 mt-1">{stat.subtitle}</p>
+                    <p className="text-xs text-zinc-500 mt-1">{stat.subtitle}</p>
                   </div>
                   <div className={`w-11 h-11 rounded-xl ${stat.bgColor} border ${stat.borderColor} flex items-center justify-center shadow-lg ${stat.glowColor}`}>
                     <Icon className={`w-5 h-5 ${stat.color}`} />
@@ -243,14 +243,14 @@ export function ReportsClient({ analyses }: Props) {
 
           {/* Date range */}
           <div className="flex items-center gap-2 ml-auto">
-            <span className="text-xs text-zinc-600">De:</span>
+            <span className="text-xs text-zinc-500">De:</span>
             <Input
               type="date"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
               className="w-36 h-8 bg-zinc-800/40 border-zinc-700/40 text-zinc-300 text-xs rounded-lg focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20"
             />
-            <span className="text-xs text-zinc-600">Ate:</span>
+            <span className="text-xs text-zinc-500">Ate:</span>
             <Input
               type="date"
               value={dateTo}
@@ -303,27 +303,27 @@ export function ReportsClient({ analyses }: Props) {
 
                 <div className="flex items-center gap-3 mb-4 p-2.5 rounded-lg bg-zinc-800/30 border border-zinc-800/50">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] text-zinc-600 uppercase font-medium">Vx</span>
+                    <span className="text-xs text-zinc-500 uppercase font-medium">Vx</span>
                     <span className="text-xs font-mono text-emerald-400 font-semibold">
                       {analysis.vx.toFixed(2)}
                     </span>
                   </div>
                   <div className="w-px h-3 bg-zinc-700/50" />
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] text-zinc-600 uppercase font-medium">Rx</span>
+                    <span className="text-xs text-zinc-500 uppercase font-medium">Rx</span>
                     <span className="text-xs font-mono text-red-400 font-semibold">
                       {analysis.rx.toFixed(2)}
                     </span>
                   </div>
                   <div className="w-px h-3 bg-zinc-700/50" />
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] text-zinc-600 uppercase font-medium">SCN+</span>
+                    <span className="text-xs text-zinc-500 uppercase font-medium">SCN+</span>
                     <span className="text-xs font-mono text-cyan-400 font-semibold">
                       {analysis.algorithms.SCN_plus}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 ml-auto">
-                    <TrendingUp className="w-3 h-3 text-zinc-600" />
+                    <TrendingUp className="w-3 h-3 text-zinc-500" />
                     <span className="text-xs font-mono text-zinc-400">
                       {analysis.confidence}%
                     </span>
@@ -331,7 +331,7 @@ export function ReportsClient({ analyses }: Props) {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-zinc-600">{analysis.date}</span>
+                  <span className="text-xs text-zinc-500">{analysis.date}</span>
                   <Link href={`/reports/${analysis.id}`}>
                     <Button
                       variant="ghost"

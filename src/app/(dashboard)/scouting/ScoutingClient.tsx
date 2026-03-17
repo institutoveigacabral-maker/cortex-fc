@@ -33,6 +33,7 @@ import { NeuralRadar } from "@/components/cortex/NeuralRadar"
 import { EmptyStateCTA } from "@/components/cortex/EmptyStateCTA"
 import type { ScoutingPlayerUI } from "@/lib/db-transforms"
 import type { CortexDecision } from "@/types/cortex"
+import { ScrollFade } from "@/components/ui/scroll-fade"
 
 // ============================================
 // Types
@@ -471,12 +472,12 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
               <Icon className={`w-4 h-4 transition-colors ${isActive ? "text-emerald-400" : ""}`} />
               {tab.label}
               {tab.id === "alerts" && alerts.length > 0 && (
-                <span className="ml-1 w-5 h-5 rounded-full bg-red-500/20 text-red-400 text-[10px] font-bold flex items-center justify-center">
+                <span className="ml-1 w-5 h-5 rounded-full bg-red-500/20 text-red-400 text-xs font-bold flex items-center justify-center">
                   {alerts.length}
                 </span>
               )}
               {tab.id === "compare" && selectedForCompare.length > 0 && (
-                <span className="ml-1 w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold flex items-center justify-center">
+                <span className="ml-1 w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center justify-center">
                   {selectedForCompare.length}
                 </span>
               )}
@@ -495,7 +496,7 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                 placeholder="Buscar alvo por nome, clube ou posicao..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 bg-zinc-800/40 border-zinc-700/40 text-zinc-200 placeholder:text-zinc-600 rounded-lg"
+                className="pl-9 bg-zinc-800/40 border-zinc-700/40 text-zinc-200 placeholder:text-zinc-500 rounded-lg"
               />
             </div>
             <div className="flex gap-2 items-center flex-wrap">
@@ -517,14 +518,14 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                   onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
                   className="w-20 h-9 bg-zinc-800/40 border-zinc-700/40 text-zinc-300 text-xs font-mono rounded-lg"
                 />
-                <span className="text-zinc-600">-</span>
+                <span className="text-zinc-500">-</span>
                 <Input
                   type="number"
                   value={priceRange[1]}
                   onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
                   className="w-20 h-9 bg-zinc-800/40 border-zinc-700/40 text-zinc-300 text-xs font-mono rounded-lg"
                 />
-                <span className="text-xs text-zinc-600">&euro;</span>
+                <span className="text-xs text-zinc-500">&euro;</span>
               </div>
               {(search || positionFilter || priceRange[0] > 0 || priceRange[1] < 200) && (
                 <Button
@@ -555,7 +556,7 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <p className="text-xs text-zinc-600">Selecione 2-3 para comparar</p>
+              <p className="text-xs text-zinc-500">Selecione 2-3 para comparar</p>
               <Button
                 size="sm"
                 onClick={() => setAddingPlayer(true)}
@@ -599,7 +600,7 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                       >
                         <div>
                           <p className="text-sm text-white">{p.name}</p>
-                          <p className="text-[10px] text-zinc-500">{p.position} — {p.club}</p>
+                          <p className="text-xs text-zinc-500">{p.position} — {p.club}</p>
                         </div>
                         <Plus className="w-4 h-4 text-emerald-500" />
                       </button>
@@ -614,22 +615,23 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
           <Card className="bg-zinc-900/80 border-zinc-800/80 overflow-hidden relative">
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
             <CardContent className="p-0">
-              <div className="overflow-x-auto">
+              <ScrollFade>
                 <table className="w-full text-sm">
+                  <caption className="sr-only">Lista de alvos de scouting com metricas de avaliacao</caption>
                   <thead>
                     <tr className="border-b border-zinc-800 bg-zinc-900/60">
-                      <th className="text-left py-3.5 px-4 w-10">
+                      <th scope="col" className="text-left py-3.5 px-4 w-10">
                         <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Sel</span>
                       </th>
-                      <th className="text-left py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Jogador</span></th>
-                      <th className="text-left py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Posicao</span></th>
-                      <th className="text-left py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Clube</span></th>
-                      <th className="text-center py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Idade</span></th>
-                      <th className="text-right py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Valor</span></th>
-                      <th className="text-center py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Vx</span></th>
-                      <th className="text-center py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Rx</span></th>
-                      <th className="text-center py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">SCN+</span></th>
-                      <th className="text-center py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Decisao</span></th>
+                      <th scope="col" className="text-left py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Jogador</span></th>
+                      <th scope="col" className="text-left py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Posicao</span></th>
+                      <th scope="col" className="text-left py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Clube</span></th>
+                      <th scope="col" className="text-center py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Idade</span></th>
+                      <th scope="col" className="text-right py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Valor</span></th>
+                      <th scope="col" className="text-center py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Vx</span></th>
+                      <th scope="col" className="text-center py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Rx</span></th>
+                      <th scope="col" className="text-center py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">SCN+</span></th>
+                      <th scope="col" className="text-center py-3.5 px-3"><span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Decisao</span></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -663,7 +665,7 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                               </div>
                               <div>
                                 <span className="text-zinc-200 font-medium group-hover/link:text-emerald-400 transition-colors">{player.name}</span>
-                                <p className="text-[11px] text-zinc-600">{player.nationality}</p>
+                                <p className="text-xs text-zinc-500">{player.nationality}</p>
                               </div>
                             </Link>
                           </td>
@@ -674,27 +676,27 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                           <td className="py-3 px-3 text-center">
                             {player.vx !== undefined ? (
                               <span className="font-mono text-emerald-400 text-xs px-1.5 py-0.5 rounded bg-emerald-500/[0.08]">{player.vx.toFixed(2)}</span>
-                            ) : <span className="text-zinc-700 text-xs">--</span>}
+                            ) : <span className="text-zinc-500 text-xs">--</span>}
                           </td>
                           <td className="py-3 px-3 text-center">
                             {player.rx !== undefined ? (
                               <span className="font-mono text-red-400 text-xs px-1.5 py-0.5 rounded bg-red-500/[0.08]">{player.rx.toFixed(2)}</span>
-                            ) : <span className="text-zinc-700 text-xs">--</span>}
+                            ) : <span className="text-zinc-500 text-xs">--</span>}
                           </td>
                           <td className="py-3 px-3 text-center">
                             {player.scn !== undefined ? (
                               <span className="font-mono text-cyan-400 text-xs font-semibold px-1.5 py-0.5 rounded bg-cyan-500/[0.08]">{player.scn}</span>
-                            ) : <span className="text-zinc-700 text-xs">--</span>}
+                            ) : <span className="text-zinc-500 text-xs">--</span>}
                           </td>
                           <td className="py-3 px-3 text-center">
-                            {player.decision ? <DecisionBadge decision={player.decision} size="sm" /> : <span className="text-zinc-700 text-xs">Sem analise</span>}
+                            {player.decision ? <DecisionBadge decision={player.decision} size="sm" /> : <span className="text-zinc-500 text-xs">Sem analise</span>}
                           </td>
                         </tr>
                       )
                     })}
                   </tbody>
                 </table>
-              </div>
+              </ScrollFade>
               {filtered.length === 0 && (
                 <EmptyStateCTA
                   icon={<Search className="w-6 h-6" />}
@@ -746,7 +748,7 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                   <div className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border ${config.borderColor} ${config.bgColor}`}>
                     <Icon className={`w-4 h-4 ${config.color}`} />
                     <span className={`text-sm font-semibold ${config.color}`}>{config.label}</span>
-                    <Badge variant="secondary" className={`ml-auto ${config.bgColor} ${config.color} border ${config.borderColor} text-[10px] px-2 py-0.5 font-bold`}>
+                    <Badge variant="secondary" className={`ml-auto ${config.bgColor} ${config.color} border ${config.borderColor} text-xs px-2 py-0.5 font-bold`}>
                       {stageTargets.length}
                     </Badge>
                   </div>
@@ -762,7 +764,7 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                         }`}
                       >
                         <div className="flex items-start gap-2">
-                          <GripVertical className="w-3 h-3 text-zinc-700 mt-1 shrink-0" />
+                          <GripVertical className="w-3 h-3 text-zinc-500 mt-1 shrink-0" />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between">
                               <Link href={`/players/${target.playerId}`}>
@@ -772,22 +774,22 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                               </Link>
                               <button
                                 onClick={() => deleteTarget(target.id)}
-                                className="opacity-0 group-hover:opacity-100 text-zinc-600 hover:text-red-400 transition-all"
+                                className="opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-red-400 transition-all"
                               >
                                 <Trash2 className="w-3 h-3" />
                               </button>
                             </div>
-                            <p className="text-[11px] text-zinc-500 mt-0.5">
+                            <p className="text-xs text-zinc-500 mt-0.5">
                               {target.playerPosition ?? target.playerCluster} — {target.clubName ?? "—"}
                             </p>
                             <div className="flex items-center gap-2 mt-2 flex-wrap">
-                              <span className="text-[10px] text-zinc-400 font-mono">&euro;{target.playerMarketValue ?? 0}M</span>
+                              <span className="text-xs text-zinc-400 font-mono">&euro;{target.playerMarketValue ?? 0}M</span>
                               {target.analysis && (
                                 <>
-                                  <span className="text-[10px] font-mono text-emerald-400 px-1 py-0.5 rounded bg-emerald-500/[0.08]">
+                                  <span className="text-xs font-mono text-emerald-400 px-1 py-0.5 rounded bg-emerald-500/[0.08]">
                                     Vx {target.analysis.vx.toFixed(2)}
                                   </span>
-                                  <span className="text-[10px] font-mono text-red-400 px-1 py-0.5 rounded bg-red-500/[0.08]">
+                                  <span className="text-xs font-mono text-red-400 px-1 py-0.5 rounded bg-red-500/[0.08]">
                                     Rx {target.analysis.rx.toFixed(2)}
                                   </span>
                                 </>
@@ -811,7 +813,7 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                                         : p === "medium"
                                         ? "bg-amber-500/20 text-amber-400"
                                         : "bg-zinc-500/20 text-zinc-400"
-                                      : "text-zinc-700 hover:text-zinc-500"
+                                      : "text-zinc-500 hover:text-zinc-500"
                                   }`}
                                 >
                                   {p === "high" ? "Alta" : p === "medium" ? "Media" : "Baixa"}
@@ -823,7 +825,7 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                       </Card>
                     ))}
                     {stageTargets.length === 0 && (
-                      <div className="py-8 text-center text-zinc-700 text-xs border border-dashed border-zinc-800/50 rounded-xl bg-zinc-900/30">
+                      <div className="py-8 text-center text-zinc-500 text-xs border border-dashed border-zinc-800/50 rounded-xl bg-zinc-900/30">
                         Arraste alvos aqui
                       </div>
                     )}
@@ -894,7 +896,7 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                   placeholder="Ex: ball-playing CB, pressing forward, creative playmaker..."
                   value={scoutForm.style}
                   onChange={(e) => setScoutForm({ ...scoutForm, style: e.target.value })}
-                  className="bg-zinc-800/40 border-zinc-700/40 text-zinc-200 placeholder:text-zinc-600"
+                  className="bg-zinc-800/40 border-zinc-700/40 text-zinc-200 placeholder:text-zinc-500"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -904,7 +906,7 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                     placeholder="Premier League, La Liga..."
                     value={scoutForm.leaguePreference}
                     onChange={(e) => setScoutForm({ ...scoutForm, leaguePreference: e.target.value })}
-                    className="bg-zinc-800/40 border-zinc-700/40 text-zinc-200 placeholder:text-zinc-600 text-xs"
+                    className="bg-zinc-800/40 border-zinc-700/40 text-zinc-200 placeholder:text-zinc-500 text-xs"
                   />
                 </div>
                 <div>
@@ -913,7 +915,7 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                     placeholder="lideranca, velocidade, passe longo..."
                     value={scoutForm.mustHaveTraits}
                     onChange={(e) => setScoutForm({ ...scoutForm, mustHaveTraits: e.target.value })}
-                    className="bg-zinc-800/40 border-zinc-700/40 text-zinc-200 placeholder:text-zinc-600 text-xs"
+                    className="bg-zinc-800/40 border-zinc-700/40 text-zinc-200 placeholder:text-zinc-500 text-xs"
                   />
                 </div>
               </div>
@@ -961,24 +963,24 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                           }`}>
                             {c.fitScore}
                           </span>
-                          <p className="text-[9px] text-zinc-600 uppercase">Fit Score</p>
+                          <p className="text-[9px] text-zinc-500 uppercase">Fit Score</p>
                         </div>
                       </div>
                       <p className="text-xs text-zinc-400 font-mono mb-2">&euro;{c.marketValue}M</p>
                       <div className="space-y-1.5">
                         <div>
-                          <p className="text-[10px] text-emerald-500 uppercase mb-0.5">Pontos fortes</p>
+                          <p className="text-xs text-emerald-500 uppercase mb-0.5">Pontos fortes</p>
                           <div className="flex flex-wrap gap-1">
                             {c.strengths.map((s, j) => (
-                              <span key={j} className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400">{s}</span>
+                              <span key={j} className="text-xs px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400">{s}</span>
                             ))}
                           </div>
                         </div>
                         <div>
-                          <p className="text-[10px] text-red-500 uppercase mb-0.5">Riscos</p>
+                          <p className="text-xs text-red-500 uppercase mb-0.5">Riscos</p>
                           <div className="flex flex-wrap gap-1">
                             {c.risks.map((r, j) => (
-                              <span key={j} className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/10 text-red-400">{r}</span>
+                              <span key={j} className="text-xs px-1.5 py-0.5 rounded bg-red-500/10 text-red-400">{r}</span>
                             ))}
                           </div>
                         </div>
@@ -1027,15 +1029,15 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
           </div>
 
           {alertsLoading && (
-            <div className="py-12 text-center text-zinc-600 text-sm">Carregando alertas...</div>
+            <div className="py-12 text-center text-zinc-500 text-sm">Carregando alertas...</div>
           )}
 
           {!alertsLoading && alerts.length === 0 && (
             <Card className="bg-zinc-900/80 border-zinc-800">
               <CardContent className="py-12 text-center">
-                <Bell className="w-8 h-8 text-zinc-700 mx-auto mb-3" />
+                <Bell className="w-8 h-8 text-zinc-500 mx-auto mb-3" />
                 <p className="text-zinc-500 text-sm">Nenhum alerta ativo no momento</p>
-                <p className="text-zinc-600 text-xs mt-1">Adicione jogadores ao pipeline para receber alertas</p>
+                <p className="text-zinc-500 text-xs mt-1">Adicione jogadores ao pipeline para receber alertas</p>
               </CardContent>
             </Card>
           )}
@@ -1085,7 +1087,7 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
           {selectedPlayers.length < 2 ? (
             <Card className="bg-zinc-900/80 border-zinc-800">
               <CardContent className="py-16 text-center">
-                <GitCompare className="w-8 h-8 text-zinc-700 mx-auto mb-4" />
+                <GitCompare className="w-8 h-8 text-zinc-500 mx-auto mb-4" />
                 <p className="text-zinc-400 text-sm">
                   Selecione 2-3 jogadores na aba &quot;Alvos&quot; para comparar
                 </p>
@@ -1123,7 +1125,7 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                         {player.layers ? (
                           <NeuralRadar layers={player.layers} playerName={player.name} scnScore={player.scn} size={260} />
                         ) : (
-                          <div className="w-[260px] h-[260px] flex items-center justify-center text-zinc-600 text-xs">Sem dados neurais</div>
+                          <div className="w-[260px] h-[260px] flex items-center justify-center text-zinc-500 text-xs">Sem dados neurais</div>
                         )}
                         <div className="mt-2">
                           {player.decision && <DecisionBadge decision={player.decision} size="sm" />}
@@ -1140,13 +1142,14 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                   <CardTitle className="text-sm font-semibold text-zinc-300">Metricas Comparativas</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="overflow-x-auto">
+                  <ScrollFade>
                     <table className="w-full text-sm">
+                      <caption className="sr-only">Comparacao de metricas entre jogadores selecionados no scouting</caption>
                       <thead>
                         <tr className="border-b border-zinc-800">
-                          <th className="text-left py-2.5 px-3 text-xs text-zinc-500 uppercase">Metrica</th>
+                          <th scope="col" className="text-left py-2.5 px-3 text-xs text-zinc-500 uppercase">Metrica</th>
                           {selectedPlayers.map((p) => (
-                            <th key={p.id} className="text-center py-2.5 px-3 text-xs text-zinc-300">{p.name}</th>
+                            <th scope="col" key={p.id} className="text-center py-2.5 px-3 text-xs text-zinc-300">{p.name}</th>
                           ))}
                         </tr>
                       </thead>
@@ -1168,7 +1171,7 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
                         ))}
                       </tbody>
                     </table>
-                  </div>
+                  </ScrollFade>
                 </CardContent>
               </Card>
             </>

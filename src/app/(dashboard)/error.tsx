@@ -42,7 +42,7 @@ export default function DashboardError({
           Tentar novamente
         </Button>
         {error.digest && (
-          <p className="text-zinc-700 text-[10px] font-mono mt-4">
+          <p className="text-zinc-500 text-xs font-mono mt-4">
             Codigo: {error.digest}
           </p>
         )}

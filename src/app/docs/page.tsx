@@ -138,12 +138,13 @@ export default function DocsPage() {
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
+                <caption className="sr-only">Limites de requisicoes por tier de assinatura</caption>
                 <thead>
                   <tr className="border-b border-zinc-800">
-                    <th className="text-left py-2 text-zinc-500 font-medium">Tier</th>
-                    <th className="text-center py-2 text-zinc-500 font-medium">Req/min (default)</th>
-                    <th className="text-center py-2 text-zinc-500 font-medium">Custom Rate</th>
-                    <th className="text-center py-2 text-zinc-500 font-medium">ORACLE/min</th>
+                    <th scope="col" className="text-left py-2 text-zinc-500 font-medium">Tier</th>
+                    <th scope="col" className="text-center py-2 text-zinc-500 font-medium">Req/min (default)</th>
+                    <th scope="col" className="text-center py-2 text-zinc-500 font-medium">Custom Rate</th>
+                    <th scope="col" className="text-center py-2 text-zinc-500 font-medium">ORACLE/min</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -175,7 +176,7 @@ export default function DocsPage() {
                 <Card key={ep.path} className="bg-zinc-900/80 border-zinc-800">
                   <CardContent className="p-5">
                     <div className="flex items-start gap-3 mb-3">
-                      <span className={`px-2 py-0.5 rounded border text-[11px] font-bold font-mono ${METHOD_COLORS[ep.method]}`}>
+                      <span className={`px-2 py-0.5 rounded border text-xs font-bold font-mono ${METHOD_COLORS[ep.method]}`}>
                         {ep.method}
                       </span>
                       <code className="text-sm text-zinc-200 font-mono">{ep.path}</code>
@@ -183,12 +184,12 @@ export default function DocsPage() {
                     <p className="text-xs text-zinc-400 mb-3">{ep.description}</p>
                     <div className="space-y-2">
                       <div className="rounded bg-zinc-950 border border-zinc-800 p-3">
-                        <p className="text-[10px] text-zinc-600 uppercase font-medium mb-1">Parametros</p>
-                        <code className="text-[11px] text-zinc-400 font-mono">{ep.params}</code>
+                        <p className="text-xs text-zinc-500 uppercase font-medium mb-1">Parametros</p>
+                        <code className="text-xs text-zinc-400 font-mono">{ep.params}</code>
                       </div>
                       <div className="rounded bg-zinc-950 border border-zinc-800 p-3">
-                        <p className="text-[10px] text-zinc-600 uppercase font-medium mb-1">Response</p>
-                        <code className="text-[11px] text-emerald-400 font-mono">{ep.response}</code>
+                        <p className="text-xs text-zinc-500 uppercase font-medium mb-1">Response</p>
+                        <code className="text-xs text-emerald-400 font-mono">{ep.response}</code>
                       </div>
                     </div>
                   </CardContent>
@@ -215,7 +216,7 @@ export default function DocsPage() {
                 { event: "agent_run_complete", desc: "Disparado quando qualquer agente IA finaliza execucao" },
               ].map((ev) => (
                 <div key={ev.event} className="flex items-start gap-3 p-3 rounded bg-zinc-800/30">
-                  <code className="text-[11px] text-red-400 font-mono bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">
+                  <code className="text-xs text-red-400 font-mono bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">
                     {ev.event}
                   </code>
                   <span className="text-xs text-zinc-400">{ev.desc}</span>
@@ -223,8 +224,8 @@ export default function DocsPage() {
               ))}
             </div>
             <div className="mt-4 rounded-lg bg-zinc-950 border border-zinc-800 p-4">
-              <p className="text-[10px] text-zinc-600 uppercase font-medium mb-2">Webhook Payload</p>
-              <pre className="text-[11px] text-zinc-400 font-mono">
+              <p className="text-xs text-zinc-500 uppercase font-medium mb-2">Webhook Payload</p>
+              <pre className="text-xs text-zinc-400 font-mono">
 {`{
   "event": "analysis_complete",
   "timestamp": "2026-03-15T12:00:00Z",
@@ -238,7 +239,7 @@ export default function DocsPage() {
 
         {/* Footer */}
         <div className="text-center py-8 border-t border-zinc-800/60">
-          <p className="text-xs text-zinc-600">
+          <p className="text-xs text-zinc-500">
             CORTEX FC API v1.0.0 — Neural Football Analytics
           </p>
           <Link href="/dashboard" className="text-xs text-emerald-500 hover:text-emerald-400 mt-1 inline-block">

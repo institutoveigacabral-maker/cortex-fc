@@ -127,7 +127,7 @@ export default async function InvitePage({
           <p className="text-lg font-semibold text-emerald-400 mb-1">
             {org?.name ?? "Organizacao"}
           </p>
-          <p className="text-xs text-zinc-600 mb-6">
+          <p className="text-xs text-zinc-500 mb-6">
             Cargo: <span className="text-zinc-400 capitalize">{invite.role}</span>
           </p>
 

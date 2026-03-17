@@ -50,7 +50,7 @@ export default async function AnalyticsPage() {
       {!hasData ? (
         <Card className="bg-zinc-900/80 border-zinc-800">
           <CardContent className="flex flex-col items-center justify-center py-20">
-            <TrendingUp className="w-12 h-12 text-zinc-700 mb-4" />
+            <TrendingUp className="w-12 h-12 text-zinc-500 mb-4" />
             <p className="text-zinc-500 text-sm">{t("noData")}</p>
           </CardContent>
         </Card>

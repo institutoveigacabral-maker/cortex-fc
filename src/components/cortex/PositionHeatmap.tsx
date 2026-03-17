@@ -285,12 +285,12 @@ export function PositionHeatmap({ positionCluster, positionDetail }: PositionHea
 
       {/* Position label */}
       {positionDetail && (
-        <span className="text-[11px] text-zinc-400 font-medium tracking-wide">
+        <span className="text-xs text-zinc-400 font-medium tracking-wide">
           {positionDetail}
         </span>
       )}
       {!positionDetail && positionCluster && (
-        <span className="text-[11px] text-zinc-500 font-medium tracking-wide">
+        <span className="text-xs text-zinc-500 font-medium tracking-wide">
           {positionCluster}
         </span>
       )}

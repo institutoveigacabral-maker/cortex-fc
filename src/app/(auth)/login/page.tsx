@@ -44,7 +44,7 @@ export default function LoginPage() {
               <Brain className="w-7 h-7 text-emerald-400" />
             </div>
             <h1 className="text-xl font-bold text-zinc-100 tracking-tight">CORTEX FC</h1>
-            <p className="text-[11px] text-zinc-600 font-mono tracking-widest mt-0.5">
+            <p className="text-xs text-zinc-500 font-mono tracking-widest mt-0.5">
               NEURAL ANALYTICS
             </p>
           </div>
@@ -57,7 +57,7 @@ export default function LoginPage() {
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                 <input
                   id="email"
                   type="email"
@@ -75,7 +75,7 @@ export default function LoginPage() {
                 Senha
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -87,7 +87,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-zinc-400 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-400 transition-colors"
                 >
                   {showPassword ? (
                     <EyeOff className="w-4 h-4" />
@@ -135,7 +135,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-zinc-800" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-zinc-900/80 px-3 text-zinc-600">ou</span>
+              <span className="bg-zinc-900/80 px-3 text-zinc-500">ou</span>
             </div>
           </div>
 

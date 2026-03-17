@@ -158,7 +158,57 @@ export function CommandPalette() {
 
   if (!open) return null
 
-  let flatIndex = -1
+  const renderItems = (itemMinH: string, showShortcuts: boolean, showHover: boolean) => {
+    let idx = -1
+    return groups.map((group) => {
+      const groupItems = filtered.filter((i) => i.group === group)
+      return (
+        <div key={group}>
+          <div className="px-4 py-1.5 text-xs text-zinc-500 uppercase tracking-wider font-medium">
+            {group}
+          </div>
+          {groupItems.map((item) => {
+            idx++
+            const currentIdx = idx
+            const isSelected = currentIdx === selectedIndex
+
+            return (
+              <button
+                key={item.id}
+                data-index={currentIdx}
+                onClick={() => execute(item)}
+                onMouseEnter={showHover ? () => setSelectedIndex(currentIdx) : undefined}
+                className={cn(
+                  `w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${itemMinH}`,
+                  isSelected
+                    ? "bg-emerald-500/10 text-emerald-300"
+                    : "text-zinc-400 hover:bg-zinc-800/50"
+                )}
+              >
+                <span className={cn(
+                  "flex-shrink-0",
+                  isSelected ? "text-emerald-400" : "text-zinc-500"
+                )}>
+                  {item.icon}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-medium">{item.label}</span>
+                  {item.description && (
+                    <span className="ml-2 text-xs text-zinc-500">{item.description}</span>
+                  )}
+                </div>
+                {showShortcuts && item.shortcut && (
+                  <kbd className="inline-flex px-1.5 py-0.5 rounded bg-zinc-800 text-xs text-zinc-500 font-mono border border-zinc-700/50">
+                    Cmd+{item.shortcut}
+                  </kbd>
+                )}
+              </button>
+            )
+          })}
+        </div>
+      )
+    })
+  }
 
   return (
     <>
@@ -168,11 +218,11 @@ export function CommandPalette() {
         onClick={() => setOpen(false)}
       />
 
-      {/* Palette */}
-      <div className="fixed inset-x-0 top-[15%] z-[201] flex justify-center px-4 animate-scale-in">
+      {/* Palette — Desktop: centered with max-w */}
+      <div className="hidden md:flex fixed inset-x-0 top-[15%] z-[201] justify-center px-4 animate-scale-in">
         <div role="dialog" aria-modal="true" aria-label={tc("quickSearch")} className="w-full max-w-lg bg-zinc-900 border border-zinc-700/50 rounded-xl shadow-2xl shadow-black/50 overflow-hidden">
           {/* Search input */}
-          <div className="flex items-center gap-3 px-4 py-3 border-b border-zinc-800">
+          <div className="flex items-center gap-3 px-4 h-12 border-b border-zinc-800">
             <Command className="w-4 h-4 text-zinc-500 flex-shrink-0" />
             <input
               ref={inputRef}
@@ -182,7 +232,7 @@ export function CommandPalette() {
               placeholder={tc("searchPlaceholder")}
               className="flex-1 bg-transparent text-sm text-zinc-200 placeholder-zinc-600 outline-none"
             />
-            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-zinc-800 text-[10px] text-zinc-500 font-mono border border-zinc-700/50">
+            <kbd className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-zinc-800 text-xs text-zinc-500 font-mono border border-zinc-700/50">
               ESC
             </kbd>
           </div>
@@ -190,63 +240,15 @@ export function CommandPalette() {
           {/* Results */}
           <div ref={listRef} className="max-h-[360px] overflow-y-auto py-2">
             {filtered.length === 0 && (
-              <div className="px-4 py-8 text-center text-zinc-600 text-sm">
+              <div className="px-4 py-8 text-center text-zinc-500 text-sm">
                 {tc("noResultsFor", { query })}
               </div>
             )}
-
-            {groups.map((group) => {
-              const groupItems = filtered.filter((i) => i.group === group)
-              return (
-                <div key={group}>
-                  <div className="px-4 py-1.5 text-[10px] text-zinc-600 uppercase tracking-wider font-medium">
-                    {group}
-                  </div>
-                  {groupItems.map((item) => {
-                    flatIndex++
-                    const idx = flatIndex
-                    const isSelected = idx === selectedIndex
-
-                    return (
-                      <button
-                        key={item.id}
-                        data-index={idx}
-                        onClick={() => execute(item)}
-                        onMouseEnter={() => setSelectedIndex(idx)}
-                        className={cn(
-                          "w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors",
-                          isSelected
-                            ? "bg-emerald-500/10 text-emerald-300"
-                            : "text-zinc-400 hover:bg-zinc-800/50"
-                        )}
-                      >
-                        <span className={cn(
-                          "flex-shrink-0",
-                          isSelected ? "text-emerald-400" : "text-zinc-600"
-                        )}>
-                          {item.icon}
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <span className="text-sm font-medium">{item.label}</span>
-                          {item.description && (
-                            <span className="ml-2 text-xs text-zinc-600">{item.description}</span>
-                          )}
-                        </div>
-                        {item.shortcut && (
-                          <kbd className="hidden sm:inline-flex px-1.5 py-0.5 rounded bg-zinc-800 text-[10px] text-zinc-500 font-mono border border-zinc-700/50">
-                            Cmd+{item.shortcut}
-                          </kbd>
-                        )}
-                      </button>
-                    )
-                  })}
-                </div>
-              )
-            })}
+            {renderItems("min-h-[44px]", true, true)}
           </div>
 
           {/* Footer */}
-          <div className="flex items-center gap-4 px-4 py-2 border-t border-zinc-800 text-[10px] text-zinc-600">
+          <div className="flex items-center gap-4 px-4 py-2 border-t border-zinc-800 text-xs text-zinc-500">
             <span className="flex items-center gap-1">
               <kbd className="px-1 py-0.5 rounded bg-zinc-800 font-mono border border-zinc-700/50">↑↓</kbd>
               {tc("navigate")}
@@ -259,6 +261,40 @@ export function CommandPalette() {
               <kbd className="px-1 py-0.5 rounded bg-zinc-800 font-mono border border-zinc-700/50">Esc</kbd>
               {tc("close")}
             </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Palette — Mobile: fullscreen */}
+      <div className="md:hidden fixed inset-0 z-[201] bg-zinc-900 flex flex-col animate-slide-up">
+        <div role="dialog" aria-modal="true" aria-label={tc("quickSearch")} className="flex flex-col h-full">
+          {/* Search input */}
+          <div className="flex items-center gap-3 px-4 min-h-[48px] border-b border-zinc-800 flex-shrink-0 pt-[env(safe-area-inset-top,0px)]">
+            <Command className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={tc("searchPlaceholder")}
+              className="flex-1 bg-transparent text-sm text-zinc-200 placeholder-zinc-600 outline-none"
+              autoFocus
+            />
+            <button
+              onClick={() => setOpen(false)}
+              className="text-xs text-zinc-500 hover:text-zinc-300 min-h-[44px] px-2"
+            >
+              Fechar
+            </button>
+          </div>
+
+          {/* Results */}
+          <div className="flex-1 overflow-y-auto py-2 pb-[env(safe-area-inset-bottom,0px)]">
+            {filtered.length === 0 && (
+              <div className="px-4 py-8 text-center text-zinc-500 text-sm">
+                {tc("noResultsFor", { query })}
+              </div>
+            )}
+            {renderItems("min-h-[48px]", false, false)}
           </div>
         </div>
       </div>

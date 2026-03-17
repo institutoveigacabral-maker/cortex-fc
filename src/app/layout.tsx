@@ -4,7 +4,9 @@ import { SessionProvider } from "next-auth/react"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { ToastProvider } from "@/components/ui/toast"
 import { IntlClientProvider } from "@/components/providers/IntlClientProvider"
+import { DensityProvider, type Density } from "@/components/providers/DensityProvider"
 import { getLocale, getMessages } from "next-intl/server"
+import { cookies } from "next/headers"
 import "./globals.css"
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -66,9 +68,14 @@ export default async function RootLayout({
 }>) {
   const locale = await getLocale()
   const messages = await getMessages()
+  const cookieStore = await cookies()
+  const densityCookie = cookieStore.get("NEXT_DENSITY")?.value as Density | undefined
+  const defaultDensity: Density = densityCookie && ["compact", "normal", "spacious"].includes(densityCookie)
+    ? densityCookie
+    : "normal"
 
   return (
-    <html lang={locale} className="dark">
+    <html lang={locale} className={`dark density-${defaultDensity}`}>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="dns-prefetch" href="https://media.api-sports.io" />
@@ -76,8 +83,13 @@ export default async function RootLayout({
         <meta name="theme-color" content="#10b981" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Cortex FC" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="format-detection" content="telephone=no" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.svg" />
       </head>
       <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased subpixel-antialiased`}>
+        <DensityProvider defaultDensity={defaultDensity}>
         <IntlClientProvider locale={locale} messages={messages as Record<string, unknown>}>
           <SessionProvider>
             <TooltipProvider delayDuration={300}>
@@ -90,6 +102,7 @@ export default async function RootLayout({
             </TooltipProvider>
           </SessionProvider>
         </IntlClientProvider>
+        </DensityProvider>
         <Analytics />
         <SpeedInsights />
       </body>

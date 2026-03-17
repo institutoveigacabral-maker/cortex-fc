@@ -67,7 +67,7 @@ export function AlgorithmBars({ scores, benchmarkScores, compact = false, classN
           >
             {/* Tooltip on hover */}
             {isHovered && (
-              <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-10 px-2.5 py-1 bg-zinc-800/95 border border-zinc-700/80 rounded-md text-[10px] text-zinc-300 whitespace-nowrap backdrop-blur-sm shadow-lg">
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-10 px-2.5 py-1 bg-zinc-800/95 border border-zinc-700/80 rounded-md text-xs text-zinc-300 whitespace-nowrap backdrop-blur-sm shadow-lg">
                 {algorithmLabels[key]}
                 {benchmarkValue !== undefined && (
                   <span className="ml-2 text-amber-400/80">
@@ -78,7 +78,7 @@ export function AlgorithmBars({ scores, benchmarkScores, compact = false, classN
             )}
 
             <div className={cn("flex justify-between items-center", compact ? "mb-0.5" : "mb-1.5")}>
-              <span className={cn("text-zinc-400 font-medium truncate pr-2", compact ? "text-[10px]" : "text-xs")}>
+              <span className={cn("text-zinc-400 font-medium truncate pr-2", "text-xs")}>
                 {algorithmLabels[key]}
               </span>
               <div className="flex items-center gap-1.5">
@@ -91,7 +91,7 @@ export function AlgorithmBars({ scores, benchmarkScores, compact = false, classN
                     animation: isSCN ? "scnPulse 2s ease-in-out infinite" : "none",
                   }}
                 />
-                <span className={cn("font-mono font-semibold tabular-nums", compact ? "text-[10px]" : "text-xs", getTextColor(value))}>
+                <span className={cn("font-mono font-semibold tabular-nums", "text-xs", getTextColor(value))}>
                   {value}
                 </span>
               </div>

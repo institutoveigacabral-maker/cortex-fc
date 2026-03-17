@@ -130,7 +130,7 @@ export function AgentRunComparison({ runs }: AgentRunComparisonProps) {
     excludeId?: string
   ) => (
     <div className="flex-1 min-w-0">
-      <label className="text-[10px] text-zinc-600 uppercase font-medium tracking-wider mb-1 block">
+      <label className="text-xs text-zinc-500 uppercase font-medium tracking-wider mb-1 block">
         {label}
       </label>
       <div className="relative">
@@ -151,7 +151,7 @@ export function AgentRunComparison({ runs }: AgentRunComparisonProps) {
               )
             })}
         </select>
-        <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-600 pointer-events-none" />
+        <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none" />
       </div>
     </div>
   )
@@ -160,7 +160,7 @@ export function AgentRunComparison({ runs }: AgentRunComparisonProps) {
     if (!run) {
       return (
         <div className="flex-1 rounded-xl bg-zinc-800/20 border border-zinc-700/20 p-4 flex items-center justify-center min-h-[120px]">
-          <p className="text-xs text-zinc-600">{label}</p>
+          <p className="text-xs text-zinc-500">{label}</p>
         </div>
       )
     }
@@ -170,16 +170,16 @@ export function AgentRunComparison({ runs }: AgentRunComparisonProps) {
     return (
       <div className="flex-1 rounded-xl bg-zinc-800/20 border border-zinc-700/20 p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold border ${colors.bg} ${colors.border} ${colors.text}`}>
+          <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-bold border ${colors.bg} ${colors.border} ${colors.text}`}>
             <Bot className="w-3 h-3" />
             {AGENT_LABELS[run.agentType] ?? run.agentType}
           </span>
           {run.success ? (
-            <span className="inline-flex items-center gap-1 text-emerald-400 text-[11px]">
+            <span className="inline-flex items-center gap-1 text-emerald-400 text-xs">
               <CheckCircle className="w-3 h-3" /> OK
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1 text-red-400 text-[11px]">
+            <span className="inline-flex items-center gap-1 text-red-400 text-xs">
               <XCircle className="w-3 h-3" /> Erro
             </span>
           )}
@@ -188,21 +188,21 @@ export function AgentRunComparison({ runs }: AgentRunComparisonProps) {
         <div className="grid grid-cols-2 gap-2">
           <div className="rounded-lg bg-zinc-900/50 p-2">
             <div className="flex items-center gap-1 mb-0.5">
-              <Timer className="w-3 h-3 text-zinc-600" />
-              <span className="text-[9px] text-zinc-600 uppercase">Duracao</span>
+              <Timer className="w-3 h-3 text-zinc-500" />
+              <span className="text-[9px] text-zinc-500 uppercase">Duracao</span>
             </div>
             <p className="text-xs font-mono text-zinc-300">{formatDuration(run.durationMs)}</p>
           </div>
           <div className="rounded-lg bg-zinc-900/50 p-2">
             <div className="flex items-center gap-1 mb-0.5">
-              <Hash className="w-3 h-3 text-zinc-600" />
-              <span className="text-[9px] text-zinc-600 uppercase">Tokens</span>
+              <Hash className="w-3 h-3 text-zinc-500" />
+              <span className="text-[9px] text-zinc-500 uppercase">Tokens</span>
             </div>
             <p className="text-xs font-mono text-zinc-300">{formatTokens(run.tokensUsed)}</p>
           </div>
         </div>
 
-        <div className="text-[10px] text-zinc-600">
+        <div className="text-xs text-zinc-500">
           {formatDate(run.createdAt)} | {run.id.slice(0, 8)}
         </div>
       </div>
@@ -218,8 +218,8 @@ export function AgentRunComparison({ runs }: AgentRunComparisonProps) {
 
       {runs.length < 2 ? (
         <div className="glass rounded-xl p-6 text-center">
-          <GitCompareArrows className="w-6 h-6 text-zinc-700 mx-auto mb-2" />
-          <p className="text-xs text-zinc-600">
+          <GitCompareArrows className="w-6 h-6 text-zinc-500 mx-auto mb-2" />
+          <p className="text-xs text-zinc-500">
             Necessario pelo menos 2 execucoes para comparar
           </p>
         </div>
@@ -229,7 +229,7 @@ export function AgentRunComparison({ runs }: AgentRunComparisonProps) {
           <div className="flex items-end gap-3">
             {renderRunSelector(runIdA, setRunIdA, "Execucao A", runIdB)}
             <div className="pb-1">
-              <GitCompareArrows className="w-4 h-4 text-zinc-600" />
+              <GitCompareArrows className="w-4 h-4 text-zinc-500" />
             </div>
             {renderRunSelector(runIdB, setRunIdB, "Execucao B", runIdA)}
           </div>
@@ -247,17 +247,17 @@ export function AgentRunComparison({ runs }: AgentRunComparisonProps) {
             <div className="glass rounded-xl p-4 space-y-2">
               <div className="flex items-center gap-1.5 mb-2">
                 <Zap className="w-3.5 h-3.5 text-emerald-500" />
-                <span className="text-[10px] text-zinc-400 uppercase font-semibold tracking-wider">
+                <span className="text-xs text-zinc-400 uppercase font-semibold tracking-wider">
                   Qual foi melhor?
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div className="rounded-lg bg-zinc-800/30 p-2">
-                  <p className="text-[9px] text-zinc-600 uppercase mb-1">Mais rapido</p>
+                  <p className="text-[9px] text-zinc-500 uppercase mb-1">Mais rapido</p>
                   <p className={`text-xs font-semibold ${
                     runA.durationMs != null && runB.durationMs != null
                       ? (runA.durationMs <= runB.durationMs ? "text-emerald-400" : "text-zinc-500")
-                      : "text-zinc-600"
+                      : "text-zinc-500"
                   }`}>
                     {runA.durationMs != null && runB.durationMs != null
                       ? (runA.durationMs <= runB.durationMs ? "A" : "B")
@@ -265,11 +265,11 @@ export function AgentRunComparison({ runs }: AgentRunComparisonProps) {
                   </p>
                 </div>
                 <div className="rounded-lg bg-zinc-800/30 p-2">
-                  <p className="text-[9px] text-zinc-600 uppercase mb-1">Mais economico</p>
+                  <p className="text-[9px] text-zinc-500 uppercase mb-1">Mais economico</p>
                   <p className={`text-xs font-semibold ${
                     runA.tokensUsed != null && runB.tokensUsed != null
                       ? (runA.tokensUsed <= runB.tokensUsed ? "text-emerald-400" : "text-zinc-500")
-                      : "text-zinc-600"
+                      : "text-zinc-500"
                   }`}>
                     {runA.tokensUsed != null && runB.tokensUsed != null
                       ? (runA.tokensUsed <= runB.tokensUsed ? "A" : "B")
@@ -277,7 +277,7 @@ export function AgentRunComparison({ runs }: AgentRunComparisonProps) {
                   </p>
                 </div>
                 <div className="rounded-lg bg-zinc-800/30 p-2">
-                  <p className="text-[9px] text-zinc-600 uppercase mb-1">Sucesso</p>
+                  <p className="text-[9px] text-zinc-500 uppercase mb-1">Sucesso</p>
                   <p className={`text-xs font-semibold ${
                     runA.success === runB.success
                       ? "text-zinc-500"
@@ -310,10 +310,10 @@ export function AgentRunComparison({ runs }: AgentRunComparisonProps) {
           {/* Diff view */}
           {diff && (
             <div className="space-y-2">
-              <p className="text-[10px] text-zinc-500 uppercase font-semibold tracking-wider">
+              <p className="text-xs text-zinc-500 uppercase font-semibold tracking-wider">
                 Diff do Output
               </p>
-              <pre className="rounded-xl bg-zinc-950 border border-zinc-800 p-3 text-[11px] font-mono overflow-x-auto max-h-72 overflow-y-auto">
+              <pre className="rounded-xl bg-zinc-950 border border-zinc-800 p-3 text-xs font-mono overflow-x-auto max-h-72 overflow-y-auto">
                 {diff.map((line, i) => (
                   <div
                     key={i}
@@ -325,7 +325,7 @@ export function AgentRunComparison({ runs }: AgentRunComparisonProps) {
                           : "text-zinc-500"
                     }
                   >
-                    <span className="select-none text-zinc-700 mr-2">
+                    <span className="select-none text-zinc-500 mr-2">
                       {line.type === "added" ? "+" : line.type === "removed" ? "-" : " "}
                     </span>
                     {line.line}

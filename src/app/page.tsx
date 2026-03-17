@@ -262,7 +262,7 @@ export default function LandingPage() {
                       key={i}
                       className="h-7 w-7 rounded-full bg-zinc-800 border-2 border-[#09090b] flex items-center justify-center"
                     >
-                      <Shield className="h-3 w-3 text-zinc-600" />
+                      <Shield className="h-3 w-3 text-zinc-500" />
                     </div>
                   ))}
                 </div>
@@ -312,24 +312,24 @@ export default function LandingPage() {
                   </div>
 
                   {/* Quadrant labels */}
-                  <span className="absolute top-2 left-3 text-[10px] text-emerald-500/60 font-mono">
+                  <span className="absolute top-2 left-3 text-xs text-emerald-500/60 font-mono">
                     CONTRATAR
                   </span>
-                  <span className="absolute top-2 right-3 text-[10px] text-red-500/60 font-mono">
+                  <span className="absolute top-2 right-3 text-xs text-red-500/60 font-mono">
                     RECUSAR
                   </span>
-                  <span className="absolute bottom-2 left-3 text-[10px] text-emerald-500/40 font-mono">
+                  <span className="absolute bottom-2 left-3 text-xs text-emerald-500/40 font-mono">
                     BLINDAR
                   </span>
-                  <span className="absolute bottom-2 right-3 text-[10px] text-amber-500/60 font-mono">
+                  <span className="absolute bottom-2 right-3 text-xs text-amber-500/60 font-mono">
                     MONITORAR
                   </span>
 
                   {/* Axis labels */}
-                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[9px] text-zinc-600 font-mono">
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[9px] text-zinc-500 font-mono">
                     Rx (Risco) →
                   </span>
-                  <span className="absolute left-1 top-1/2 -translate-y-1/2 -rotate-90 text-[9px] text-zinc-600 font-mono">
+                  <span className="absolute left-1 top-1/2 -translate-y-1/2 -rotate-90 text-[9px] text-zinc-500 font-mono">
                     Vx (Valor) →
                   </span>
 
@@ -363,7 +363,7 @@ export default function LandingPage() {
                       <p className={`text-lg font-bold ${stat.color}`}>
                         {stat.value}
                       </p>
-                      <p className="text-[10px] text-zinc-500">{stat.label}</p>
+                      <p className="text-xs text-zinc-500">{stat.label}</p>
                     </div>
                   ))}
                 </div>
@@ -380,7 +380,7 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <p className="text-xs font-semibold text-white">SCN+ 87.3</p>
-                    <p className="text-[10px] text-emerald-400">CONTRATAR</p>
+                    <p className="text-xs text-emerald-400">CONTRATAR</p>
                   </div>
                 </div>
               </div>
@@ -468,7 +468,7 @@ export default function LandingPage() {
                   <div className="mx-auto mb-6 h-14 w-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center relative z-10">
                     <item.icon className="h-6 w-6 text-emerald-400" />
                   </div>
-                  <p className="text-[10px] uppercase tracking-widest text-emerald-500/60 mb-2 font-mono">
+                  <p className="text-xs uppercase tracking-widest text-emerald-500/60 mb-2 font-mono">
                     Etapa {item.step}
                   </p>
                   <h3 className="text-lg font-semibold mb-3">{item.title}</h3>
@@ -613,7 +613,7 @@ export default function LandingPage() {
               </AnimatedSection>
             ))}
           </div>
-          <p className="text-xs text-zinc-600 text-center mt-6">
+          <p className="text-xs text-zinc-500 text-center mt-6">
             Depoimentos baseados em feedback de usuários beta
           </p>
         </div>
@@ -698,7 +698,7 @@ export default function LandingPage() {
                   }`}
                 >
                   {plan.badge && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-black text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-black text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">
                       {plan.badge}
                     </div>
                   )}
@@ -774,7 +774,7 @@ export default function LandingPage() {
                   </Link>
                 </div>
 
-                <p className="text-xs text-zinc-600">
+                <p className="text-xs text-zinc-500">
                   Sem compromisso. Setup em 24h.
                 </p>
               </div>
@@ -862,19 +862,19 @@ export default function LandingPage() {
 
           {/* Bottom bar */}
           <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-zinc-600">
+            <p className="text-xs text-zinc-500">
               &copy; 2026 Cortex FC. Todos os direitos reservados.
             </p>
             <div className="flex items-center gap-6">
               <a
                 href="#"
-                className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
+                className="text-xs text-zinc-500 hover:text-zinc-400 transition-colors"
               >
                 Termos de Uso
               </a>
               <a
                 href="#"
-                className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
+                className="text-xs text-zinc-500 hover:text-zinc-400 transition-colors"
               >
                 Privacidade
               </a>

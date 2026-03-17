@@ -3,10 +3,13 @@
   "short_name": "Cortex FC",
   "description": "Plataforma de inteligencia neural para analise e decisao no futebol profissional.",
   "start_url": "/dashboard",
+  "scope": "/",
+  "id": "cortex-fc",
   "display": "standalone",
   "background_color": "#09090b",
   "theme_color": "#10b981",
-  "orientation": "portrait-primary",
+  "orientation": "any",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/icons/icon-192.svg",
@@ -27,7 +30,59 @@
       "purpose": "any"
     }
   ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard Cortex FC"
+    },
+    {
+      "src": "/screenshots/mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Dashboard mobile"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "url": "/dashboard",
+      "icons": [{"src": "/icons/icon-192.svg", "sizes": "192x192"}]
+    },
+    {
+      "name": "Jogadores",
+      "short_name": "Jogadores",
+      "url": "/players",
+      "icons": [{"src": "/icons/icon-192.svg", "sizes": "192x192"}]
+    },
+    {
+      "name": "Nova Analise",
+      "short_name": "Analise",
+      "url": "/analysis/new",
+      "icons": [{"src": "/icons/icon-192.svg", "sizes": "192x192"}]
+    },
+    {
+      "name": "Scouting",
+      "short_name": "Scouting",
+      "url": "/scouting",
+      "icons": [{"src": "/icons/icon-192.svg", "sizes": "192x192"}]
+    }
+  ],
+  "share_target": {
+    "action": "/players",
+    "method": "GET",
+    "params": {
+      "title": "name",
+      "text": "search",
+      "url": "url"
+    }
+  },
   "categories": ["sports", "productivity"],
   "lang": "pt-BR",
-  "dir": "ltr"
+  "prefer_related_applications": false,
+  "handle_links": "preferred"
 }

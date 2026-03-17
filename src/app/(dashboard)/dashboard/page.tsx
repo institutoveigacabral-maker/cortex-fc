@@ -17,6 +17,7 @@ import { StaggeredStats } from "./StaggeredStats"
 import { DashboardTour } from "@/components/cortex/DashboardTour"
 import { WelcomeModal } from "@/components/cortex/WelcomeModal"
 import { getTranslations } from "next-intl/server"
+import { ScrollFade } from "@/components/ui/scroll-fade"
 
 export default async function DashboardPage() {
   const t = await getTranslations("dashboard")
@@ -159,7 +160,7 @@ export default async function DashboardPage() {
   const recentAnalyses = analyses.slice(0, 8)
 
   return (
-    <div className="animate-fade-in space-y-6">
+    <div className="animate-fade-in space-y-6" aria-busy="false">
       <WelcomeModal />
       {/* Page Header */}
       <div className="flex items-center justify-between animate-slide-down">
@@ -180,7 +181,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats Cards — Staggered Animation */}
-      <div data-tour="stats-cards">
+      <div data-tour="stats-cards" className="animate-content-in stagger-1">
         <StaggeredStats stats={statsCards.map((stat, index) => ({
           ...stat,
           borderColor: borderColors[index],
@@ -188,7 +189,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-slide-up stagger-3">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-content-in stagger-2">
         {/* VxRx Scatter Plot */}
         <Card data-tour="vxrx-scatter" className="lg:col-span-2 bg-zinc-900/80 border-zinc-800 card-hover">
           <CardHeader className="pb-2">
@@ -200,7 +201,7 @@ export default async function DashboardPage() {
                 <CardTitle className="text-sm font-semibold text-zinc-300">
                   {t("vxRxMap")}
                 </CardTitle>
-                <p className="text-xs text-zinc-600">
+                <p className="text-xs text-zinc-500">
                   {t("vxRxDescription")}
                 </p>
               </div>
@@ -233,7 +234,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Recent Analyses Table */}
-      <Card className="bg-zinc-900/80 border-zinc-800 animate-slide-up stagger-4">
+      <Card className="bg-zinc-900/80 border-zinc-800 animate-content-in stagger-3">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -252,29 +253,31 @@ export default async function DashboardPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
+          {/* Desktop: Table */}
+          <ScrollFade className="hidden md:block">
             <table className="w-full text-sm">
+              <caption className="sr-only">Analises recentes de jogadores</caption>
               <thead>
                 <tr className="border-b border-zinc-800">
-                  <th className="text-left py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th scope="col" className="text-left py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     {t("playerCol")}
                   </th>
-                  <th className="text-left py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th scope="col" className="text-left py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     {t("positionCol")}
                   </th>
-                  <th className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th scope="col" className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     Vx
                   </th>
-                  <th className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th scope="col" className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     Rx
                   </th>
-                  <th className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th scope="col" className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     SCN+
                   </th>
-                  <th className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th scope="col" className="text-center py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     {t("decisionCol")}
                   </th>
-                  <th className="text-right py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th scope="col" className="text-right py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     {t("dateCol")}
                   </th>
                 </tr>
@@ -293,12 +296,12 @@ export default async function DashboardPage() {
                   return (
                     <tr
                       key={analysis.id}
-                      className={`border-b border-zinc-800/50 hover:bg-zinc-800/30 transition-all duration-200 border-l-2 border-l-transparent hover:${decisionColor} animate-slide-up`}
+                      className={`border-b border-zinc-800/50 hover:bg-zinc-800/30 transition-all duration-200 border-l-2 border-l-transparent hover:${decisionColor} animate-slide-up min-h-[48px]`}
                       style={{ animationDelay: `${(index + 1) * 60}ms` }}
                     >
-                      <td className="py-3 px-3">
+                      <td className="py-3.5 px-3">
                         <Link href={`/players/${analysis.player?.id}`} className="flex items-center gap-2 group">
-                          <div className="w-7 h-7 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-500 flex-shrink-0 ring-1 ring-zinc-700 group-hover:ring-emerald-500/30 transition-all">
+                          <div className="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center text-xs font-bold text-zinc-500 flex-shrink-0 ring-1 ring-zinc-700 group-hover:ring-emerald-500/30 transition-all">
                             {(analysis.player?.name ?? "??").split(" ").map(n => n[0]).slice(0, 2).join("")}
                           </div>
                           <span className="text-zinc-200 font-medium group-hover:text-emerald-400 transition-colors">
@@ -306,25 +309,25 @@ export default async function DashboardPage() {
                           </span>
                         </Link>
                       </td>
-                      <td className="py-3 px-3 text-zinc-500 text-xs">
+                      <td className="py-3.5 px-3 text-zinc-500 text-xs">
                         {analysis.player?.positionDetail ?? analysis.player?.positionCluster ?? "—"}
                       </td>
-                      <td className="py-3 px-3 text-center">
+                      <td className="py-3.5 px-3 text-center">
                         <span className="font-mono text-emerald-400 text-xs">
                           {analysis.vx.toFixed(2)}
                         </span>
                       </td>
-                      <td className="py-3 px-3 text-center">
+                      <td className="py-3.5 px-3 text-center">
                         <span className="font-mono text-red-400 text-xs">
                           {analysis.rx.toFixed(2)}
                         </span>
                       </td>
-                      <td className="py-3 px-3 text-center">
+                      <td className="py-3.5 px-3 text-center">
                         <span className="font-mono text-cyan-400 text-xs font-semibold">
                           {algScores.SCN_plus}
                         </span>
                       </td>
-                      <td className="py-3 px-3 text-center">
+                      <td className="py-3.5 px-3 text-center">
                         <div className="flex items-center justify-center gap-1.5">
                           <span className={`w-1.5 h-1.5 rounded-full ${
                             analysis.decision === "CONTRATAR" || analysis.decision === "BLINDAR"
@@ -338,7 +341,7 @@ export default async function DashboardPage() {
                           <DecisionBadge decision={analysis.decision} size="sm" />
                         </div>
                       </td>
-                      <td className="py-3 px-3 text-right text-zinc-600 text-xs">
+                      <td className="py-3.5 px-3 text-right text-zinc-500 text-xs">
                         {formatDate(analysis.createdAt)}
                       </td>
                     </tr>
@@ -346,6 +349,45 @@ export default async function DashboardPage() {
                 })}
               </tbody>
             </table>
+          </ScrollFade>
+
+          {/* Mobile: Cards */}
+          <div className="md:hidden space-y-3">
+            {recentAnalyses.map((analysis, index) => {
+              const algScores = toAlgorithmScores(analysis)
+              const initials = (analysis.player?.name ?? "??").split(" ").map(n => n[0]).slice(0, 2).join("")
+              return (
+                <Link
+                  key={analysis.id}
+                  href={`/players/${analysis.player?.id}`}
+                  className="block bg-zinc-900/80 border border-zinc-800 rounded-xl p-4 card-hover animate-slide-up transition-all"
+                  style={{ animationDelay: `${Math.min(index, 7) * 80}ms` }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-xs font-bold text-zinc-500 flex-shrink-0 ring-1 ring-zinc-700">
+                        {initials}
+                      </div>
+                      <div>
+                        <span className="text-sm text-zinc-200 font-medium block">
+                          {analysis.player?.name ?? "Desconhecido"}
+                        </span>
+                        <span className="text-xs text-zinc-500">
+                          {analysis.player?.positionDetail ?? analysis.player?.positionCluster ?? "—"}
+                        </span>
+                      </div>
+                    </div>
+                    <DecisionBadge decision={analysis.decision} size="sm" />
+                  </div>
+                  <div className="flex items-center gap-4 mt-3 pt-3 border-t border-zinc-800/50">
+                    <span className="font-mono text-emerald-400 text-xs">Vx {analysis.vx.toFixed(2)}</span>
+                    <span className="font-mono text-red-400 text-xs">Rx {analysis.rx.toFixed(2)}</span>
+                    <span className="font-mono text-cyan-400 text-xs font-semibold">SCN+ {algScores.SCN_plus}</span>
+                    <span className="text-xs text-zinc-500 ml-auto">{formatDate(analysis.createdAt)}</span>
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         </CardContent>
       </Card>

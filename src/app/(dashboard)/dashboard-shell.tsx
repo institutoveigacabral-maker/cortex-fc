@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useSession, signOut } from "next-auth/react"
@@ -35,6 +35,8 @@ import { BottomNav } from "@/components/layout/bottom-nav"
 import { CommandPalette } from "@/components/ui/command-palette"
 import { Breadcrumb } from "@/components/ui/breadcrumb"
 import { LanguageSwitcher } from "@/components/ui/language-switcher"
+import { KeyboardShortcutsOverlay } from "@/components/cortex/KeyboardShortcutsOverlay"
+import { useGlobalShortcuts } from "@/hooks/useGlobalShortcuts"
 import {
   Tooltip,
   TooltipContent,
@@ -64,10 +66,14 @@ export default function DashboardShell({
 }) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [shortcutsOpen, setShortcutsOpen] = useState(false)
   const pathname = usePathname()
   const { data: session } = useSession()
   const t = useTranslations("nav")
   const tc = useTranslations("common")
+
+  const toggleShortcuts = useCallback(() => setShortcutsOpen((prev) => !prev), [])
+  useGlobalShortcuts(toggleShortcuts)
 
   const navItems = navItemDefs.map((item) => ({
     ...item,
@@ -90,13 +96,13 @@ export default function DashboardShell({
         {(!collapsed || mobileOpen) && (
           <div>
             <h1 className="text-sm font-bold text-zinc-100 tracking-tight">CORTEX FC</h1>
-            <p className="text-[10px] text-zinc-600 font-mono tracking-widest">NEURAL ANALYTICS</p>
+            <p className="text-xs text-zinc-500 font-mono tracking-widest">NEURAL ANALYTICS</p>
           </div>
         )}
       </div>
 
       {/* Navigation */}
-      <nav data-tour="sidebar-nav" className="relative flex-1 py-4 px-2 space-y-1">
+      <nav aria-label="Menu principal" data-tour="sidebar-nav" className="relative flex-1 py-4 px-2 space-y-1">
         {navItems.map((item, index) => {
           const isActive =
             item.href === "/dashboard"
@@ -170,6 +176,14 @@ export default function DashboardShell({
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-950">
+      {/* Skip navigation link — WCAG 2.1 AA */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[999] focus:px-4 focus:py-2 focus:bg-emerald-600 focus:text-white focus:rounded-lg focus:text-sm focus:font-medium focus:shadow-lg"
+      >
+        Pular para conteudo principal
+      </a>
+
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
@@ -222,7 +236,7 @@ export default function DashboardShell({
             >
               <Menu className="w-5 h-5" />
             </Button>
-            <span className="text-xs text-zinc-600 font-mono">v2.1.0</span>
+            <span className="text-xs text-zinc-500 font-mono">v2.1.0</span>
             <span className="text-zinc-800">|</span>
             <OrgSwitcher
               currentOrgId={session?.user?.orgId ?? ""}
@@ -237,7 +251,7 @@ export default function DashboardShell({
             >
               <Search className="w-3 h-3" />
               <span>{tc("searchEllipsis")}</span>
-              <kbd className="ml-1 px-1 py-0.5 rounded bg-zinc-700/50 text-[10px] font-mono text-zinc-600">⌘K</kbd>
+              <kbd className="ml-1 px-1 py-0.5 rounded bg-zinc-700/50 text-xs font-mono text-zinc-500">⌘K</kbd>
             </button>
           </div>
 
@@ -250,7 +264,7 @@ export default function DashboardShell({
               </div>
               <div className="hidden md:block">
                 <p className="text-xs font-medium text-zinc-300">{session?.user?.name || "..."}</p>
-                <p className="text-[10px] text-zinc-600">{session?.user?.role || "..."}</p>
+                <p className="text-xs text-zinc-500">{session?.user?.role || "..."}</p>
               </div>
             </div>
             <Button
@@ -265,7 +279,7 @@ export default function DashboardShell({
         </header>
 
         {/* Page Content — with page transition */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-20 md:pb-6">
+        <main id="main-content" role="main" className="flex-1 overflow-y-auto p-4 md:p-6 pb-20 md:pb-6">
           <Breadcrumb />
           <div key={pathname} className="page-transition">
             {children}
@@ -278,6 +292,15 @@ export default function DashboardShell({
 
       {/* Command Palette — Cmd+K */}
       <CommandPalette />
+
+      {/* Keyboard Shortcuts Overlay — Cmd+/ */}
+      <KeyboardShortcutsOverlay open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
+
+      {/* Shortcut hint — desktop only */}
+      <span className="hidden md:block fixed bottom-4 right-4 text-xs text-zinc-500">
+        <kbd className="bg-zinc-800 border border-zinc-700 rounded px-1.5 py-0.5 text-xs font-mono text-zinc-500">⌘/</kbd>{" "}
+        {tc("shortcutHint")}
+      </span>
     </div>
   )
 }

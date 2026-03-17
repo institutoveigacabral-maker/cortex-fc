@@ -50,7 +50,7 @@ export function StatCard({
             <p className="text-2xl font-bold text-zinc-100 mt-1 font-mono tracking-tight">
               <AnimatedNumber value={value} />
             </p>
-            <p className="text-[11px] text-zinc-600 mt-1">{change}</p>
+            <p className="text-xs text-zinc-500 mt-1">{change}</p>
           </div>
           <div className={`w-10 h-10 rounded-lg ${bgColor} flex items-center justify-center ring-1 ring-white/5`}>
             <Icon className={`w-5 h-5 ${color}`} />

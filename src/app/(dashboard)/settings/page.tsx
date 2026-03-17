@@ -25,6 +25,8 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { LanguageSection } from "./LanguageSection"
+import { DensitySection } from "./DensitySection"
+import { SoundSection } from "./SoundSection"
 import { OfflineDataManager } from "@/components/cortex/OfflineDataManager"
 
 export default function SettingsPage() {
@@ -88,6 +90,12 @@ export default function SettingsPage() {
         {/* Idioma / Language */}
         <LanguageSection />
 
+        {/* Densidade da Interface */}
+        <DensitySection />
+
+        {/* Efeitos Sonoros */}
+        <SoundSection />
+
         {/* Organizacao */}
         <Card className="glass rounded-xl card-hover animate-slide-up stagger-1 overflow-hidden relative">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
@@ -98,7 +106,7 @@ export default function SettingsPage() {
               </div>
               Organizacao
             </CardTitle>
-            <p className="text-xs text-zinc-600">
+            <p className="text-xs text-zinc-500">
               Informacoes do clube vinculado
             </p>
           </CardHeader>
@@ -146,7 +154,7 @@ export default function SettingsPage() {
               </div>
               API Keys
             </CardTitle>
-            <p className="text-xs text-zinc-600">
+            <p className="text-xs text-zinc-500">
               Chaves de integracao com servicos externos
             </p>
           </CardHeader>
@@ -209,7 +217,7 @@ export default function SettingsPage() {
               </div>
               Modelo IA
             </CardTitle>
-            <p className="text-xs text-zinc-600">
+            <p className="text-xs text-zinc-500">
               Configuracao do motor neural CORTEX
             </p>
           </CardHeader>
@@ -246,7 +254,7 @@ export default function SettingsPage() {
                 onChange={(e) => setMaxTokens(Number(e.target.value))}
                 className="w-full h-1.5 rounded-full appearance-none bg-zinc-700/50 accent-emerald-500 cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-500 [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-emerald-500/30 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-emerald-400"
               />
-              <div className="flex justify-between text-[10px] text-zinc-600 font-mono">
+              <div className="flex justify-between text-xs text-zinc-500 font-mono">
                 <span>256</span>
                 <span>8,192</span>
               </div>
@@ -269,7 +277,7 @@ export default function SettingsPage() {
                 onChange={(e) => setTemperature(Number(e.target.value))}
                 className="w-full h-1.5 rounded-full appearance-none bg-zinc-700/50 accent-emerald-500 cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-500 [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-emerald-500/30 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-emerald-400"
               />
-              <div className="flex justify-between text-[10px] text-zinc-600 font-mono">
+              <div className="flex justify-between text-xs text-zinc-500 font-mono">
                 <span>0.0</span>
                 <span>1.0</span>
               </div>
@@ -287,7 +295,7 @@ export default function SettingsPage() {
               </div>
               Notificacoes
             </CardTitle>
-            <p className="text-xs text-zinc-600">
+            <p className="text-xs text-zinc-500">
               Controle de alertas e notificacoes do sistema
             </p>
           </CardHeader>
@@ -304,7 +312,7 @@ export default function SettingsPage() {
               >
                 <div>
                   <p className="text-sm text-zinc-300">{item.label}</p>
-                  <p className="text-[11px] text-zinc-600 mt-0.5">{item.desc}</p>
+                  <p className="text-xs text-zinc-500 mt-0.5">{item.desc}</p>
                 </div>
                 <button
                   onClick={() => toggleNotification(item.key)}
@@ -348,7 +356,7 @@ export default function SettingsPage() {
                     Club Professional
                   </span>
                 </div>
-                <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[10px] shadow-sm shadow-emerald-500/10">
+                <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-xs shadow-sm shadow-emerald-500/10">
                   ATIVO
                 </Badge>
               </div>
@@ -379,11 +387,11 @@ export default function SettingsPage() {
                     Holding Multi-Club
                   </span>
                 </div>
-                <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 text-[10px]">
+                <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 text-xs">
                   UPGRADE
                 </Badge>
               </div>
-              <p className="text-[11px] text-zinc-600 mb-3">
+              <p className="text-xs text-zinc-500 mb-3">
                 Gerencie multiplos clubes com painel unificado, benchmarking cruzado e analise de sinergia entre elencos.
               </p>
               <Link href="/pricing" className="block w-full">
@@ -408,7 +416,7 @@ export default function SettingsPage() {
               </div>
               Dados & Exportacao
             </CardTitle>
-            <p className="text-xs text-zinc-600">
+            <p className="text-xs text-zinc-500">
               Gerenciamento de dados e backups do sistema
             </p>
           </CardHeader>
@@ -422,7 +430,7 @@ export default function SettingsPage() {
               </div>
               <div className="text-left">
                 <p className="text-sm">Exportar Dados (CSV)</p>
-                <p className="text-[10px] text-zinc-600">Jogadores, analises e relatorios</p>
+                <p className="text-xs text-zinc-500">Jogadores, analises e relatorios</p>
               </div>
             </Button>
             <Button
@@ -434,7 +442,7 @@ export default function SettingsPage() {
               </div>
               <div className="text-left">
                 <p className="text-sm">Backup Completo</p>
-                <p className="text-[10px] text-zinc-600">Gerar snapshot completo do sistema</p>
+                <p className="text-xs text-zinc-500">Gerar snapshot completo do sistema</p>
               </div>
             </Button>
             <Button
@@ -446,7 +454,7 @@ export default function SettingsPage() {
               </div>
               <div className="text-left">
                 <p className="text-sm">Limpar Cache</p>
-                <p className="text-[10px] text-zinc-600">Limpar dados temporarios e cache local</p>
+                <p className="text-xs text-zinc-500">Limpar dados temporarios e cache local</p>
               </div>
             </Button>
           </CardContent>

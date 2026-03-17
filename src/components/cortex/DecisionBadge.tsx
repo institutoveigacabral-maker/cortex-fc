@@ -26,7 +26,7 @@ export function DecisionBadge({ decision, size = "md", className }: DecisionBadg
   const Icon = config.icon
 
   const sizeClasses = {
-    sm: "px-2.5 py-1 text-[10px] gap-1.5",
+    sm: "px-2.5 py-1 text-xs gap-1.5",
     md: "px-3.5 py-1.5 text-xs gap-2",
     lg: "px-5 py-2.5 text-sm gap-2.5",
   }
@@ -39,6 +39,8 @@ export function DecisionBadge({ decision, size = "md", className }: DecisionBadg
 
   return (
     <span
+      role="status"
+      aria-label={`Decisao: ${config.label}`}
       className={cn(
         "inline-flex items-center rounded-lg font-semibold tracking-wide border transition-all duration-200",
         "hover:brightness-110 hover:shadow-sm",
