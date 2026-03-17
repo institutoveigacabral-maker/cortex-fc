@@ -18,14 +18,16 @@ Producao: [https://cortex-fc.vercel.app](https://cortex-fc.vercel.app)
 | Framework | Next.js 16, React 19, TypeScript |
 | Banco de dados | Neon (PostgreSQL serverless) + Drizzle ORM |
 | IA | Anthropic Claude SDK |
-| Autenticacao | NextAuth.js v5 (beta) |
+| Autenticacao | NextAuth.js v5 (beta) + Google OAuth |
 | Background jobs | Inngest |
 | Pagamentos | Stripe |
 | Rate limiting | Upstash Redis |
 | Monitoramento | Sentry |
 | Email | Resend |
-| UI | Tailwind CSS 4, Radix UI, Recharts |
-| Testes | Vitest, Testing Library |
+| UI | Tailwind CSS 4, Radix UI, Recharts, Framer Motion |
+| i18n | next-intl (PT-BR, EN) |
+| PWA | Serwist (service worker, offline support) |
+| Testes | Vitest, Testing Library, jsdom |
 | Deploy | Vercel |
 
 ---
@@ -63,7 +65,9 @@ A plataforma conta com seis agentes especializados, todos construidos sobre um `
 - Feature gates por tier.
 - Exportacao de relatorios em PDF.
 - Audit logs.
-- Notificacoes.
+- Notificacoes push e in-app.
+- PWA com suporte offline.
+- Internacionalizacao (PT-BR e EN).
 - Cron jobs para sincronizacao de partidas, estatisticas e relatorio semanal.
 - API publica versionada (v1) com autenticacao por API key.
 
@@ -86,27 +90,32 @@ pnpm install
 
 ### Variaveis de Ambiente
 
-Crie um arquivo `.env.local` na raiz do projeto:
+Copie o arquivo de exemplo e preencha com suas credenciais:
 
-```env
-DATABASE_URL=             # Connection string Neon PostgreSQL
-AUTH_SECRET=              # Secret do NextAuth.js
-ANTHROPIC_API_KEY=        # Chave de API da Anthropic (Claude)
-STRIPE_SECRET_KEY=        # Chave secreta Stripe
-STRIPE_WEBHOOK_SECRET=    # Secret do webhook Stripe
-UPSTASH_REDIS_REST_URL=   # URL do Redis (Upstash)
-UPSTASH_REDIS_REST_TOKEN= # Token do Redis (Upstash)
-RESEND_API_KEY=           # Chave de API do Resend (email)
-SENTRY_DSN=               # DSN do Sentry (monitoramento)
-INNGEST_EVENT_KEY=        # Event key do Inngest
-INNGEST_SIGNING_KEY=      # Signing key do Inngest
+```bash
+cp .env.example .env.local
 ```
+
+Consulte o arquivo [`.env.example`](.env.example) para a lista completa de variaveis. As principais sao:
+
+| Variavel | Descricao |
+|----------|-----------|
+| `DATABASE_URL` | Connection string Neon PostgreSQL |
+| `ANTHROPIC_API_KEY` | Chave de API da Anthropic (Claude) |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Credenciais OAuth Google |
+| `STRIPE_SECRET_KEY` | Chave secreta Stripe |
+| `STRIPE_WEBHOOK_SECRET` | Secret do webhook Stripe |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Redis (Upstash) |
+| `RESEND_API_KEY` | Chave de API do Resend (email) |
+| `NEXT_PUBLIC_SENTRY_DSN` | DSN do Sentry (monitoramento) |
+| `CRON_SECRET` | Secret para autenticacao dos cron jobs |
+| `RAPIDAPI_KEY` | Chave para API-Football (dados de partidas) |
 
 ### Banco de Dados
 
 ```bash
 pnpm drizzle-kit push
-pnpm drizzle-kit seed   # opcional: dados de exemplo
+pnpm db:seed              # opcional: dados de exemplo
 ```
 
 ### Executar
@@ -119,7 +128,79 @@ Acesse [http://localhost:3000](http://localhost:3000).
 
 ---
 
+## Scripts
+
+| Comando | Descricao |
+|---------|-----------|
+| `pnpm dev` | Servidor de desenvolvimento |
+| `pnpm build` | Build de producao |
+| `pnpm start` | Iniciar servidor de producao |
+| `pnpm lint` | Executar ESLint |
+| `pnpm typecheck` | Verificacao de tipos TypeScript |
+| `pnpm test` | Executar testes |
+| `pnpm test:watch` | Testes em modo watch |
+| `pnpm test:coverage` | Testes com cobertura (v8) |
+| `pnpm format` | Formatar codigo com Prettier |
+| `pnpm format:check` | Verificar formatacao |
+| `pnpm drizzle-kit push` | Aplicar schema no banco |
+| `pnpm drizzle-kit studio` | Interface visual do Drizzle |
+
+---
+
+## Arquitetura
+
+```
+src/
+├── app/
+│   ├── (auth)/              # Paginas de login/registro
+│   ├── (dashboard)/         # Dashboard principal
+│   ├── api/                 # API routes (internal + v1)
+│   ├── docs/                # Documentacao publica
+│   ├── pricing/             # Pagina de precos
+│   ├── scouting/            # Paginas de scouting
+│   └── reports/             # Paginas de relatorios
+├── auth.ts                  # Configuracao NextAuth.js
+├── components/
+│   ├── cortex/              # Componentes do dominio (PlayerCard, NeuralRadar, etc.)
+│   └── ui/                  # Componentes base (Radix UI)
+├── db/
+│   ├── schema.ts            # Schema Drizzle (tabelas, enums, relations)
+│   ├── queries.ts           # Queries reutilizaveis
+│   ├── index.ts             # Conexao com Neon
+│   └── seed.ts              # Dados de exemplo
+├── hooks/                   # Hooks customizados (offline, auto-save, notifications)
+├── i18n/                    # Configuracao de internacionalizacao
+├── inngest/
+│   └── functions.ts         # Background jobs (cache invalidation, notificacoes)
+├── lib/
+│   ├── agents/              # Agentes de IA (oracle, analista, scout, board, cfo, coaching)
+│   ├── cortex/              # Logica de dominio (Vx, Rx, decision-matrix, neural-layers)
+│   ├── cache.ts             # Cache com Upstash Redis
+│   ├── rate-limit.ts        # Rate limiting
+│   ├── rbac.ts              # Controle de acesso
+│   ├── stripe.ts            # Integracao Stripe
+│   ├── pdf-generator.ts     # Geracao de PDF
+│   ├── rag-context.ts       # Contexto RAG para agentes
+│   ├── webhook-dispatch.ts  # Dispatch de webhooks
+│   └── ...
+├── messages/                # Arquivos de traducao (pt-BR.json, en.json)
+├── services/                # Integracao com APIs externas (API-Football, etc.)
+└── types/                   # Tipos TypeScript compartilhados
+```
+
+### Fluxo de Decisao
+
+1. Dados de jogadores sao sincronizados via cron jobs (API-Football).
+2. Agentes de IA analisam os dados usando contexto RAG.
+3. O sistema calcula indices Vx (valor) e Rx (rendimento).
+4. A matriz de decisao gera recomendacoes: CONTRATAR, BLINDAR, MONITORAR, EMPRESTIMO ou RECUSAR.
+5. Relatorios sao gerados e podem ser exportados em PDF ou compartilhados.
+
+---
+
 ## Referencia da API
+
+Para documentacao completa, consulte [API.md](API.md).
 
 ### Rotas Internas (autenticacao por sessao)
 
@@ -138,8 +219,7 @@ Acesse [http://localhost:3000](http://localhost:3000).
 | POST | `/api/board` | Consulta ao agente Board Advisor |
 | POST | `/api/chat` | Chat geral com IA |
 | POST | `/api/synergy` | Calculo de sinergia de elenco |
-| GET | `/api/scouting` | Listar relatorios de scouting |
-| POST | `/api/scouting` | Criar relatorio de scouting |
+| GET/POST | `/api/scouting` | CRUD de relatorios de scouting |
 | POST | `/api/scouting/share` | Compartilhar relatorio |
 | POST | `/api/scouting/alerts` | Configurar alertas |
 | GET | `/api/export` | Exportar relatorio em PDF |
@@ -183,54 +263,6 @@ pnpm test:coverage     # com cobertura (v8)
 ```
 
 Testes usam Vitest com jsdom. Cobertura configurada para `src/lib/**` e `src/services/**`.
-
----
-
-## Arquitetura
-
-```
-src/
-├── app/
-│   ├── (auth)/              # Paginas de login/registro
-│   ├── (dashboard)/         # Dashboard principal
-│   ├── api/                 # API routes (internal + v1)
-│   ├── docs/                # Documentacao publica
-│   ├── pricing/             # Pagina de precos
-│   ├── scouting/            # Paginas de scouting
-│   └── reports/             # Paginas de relatorios
-├── auth.ts                  # Configuracao NextAuth.js
-├── components/
-│   ├── cortex/              # Componentes do dominio (PlayerCard, NeuralRadar, etc.)
-│   └── ui/                  # Componentes base (Radix UI)
-├── db/
-│   ├── schema.ts            # Schema Drizzle (tabelas, enums, relations)
-│   ├── queries.ts           # Queries reutilizaveis
-│   ├── index.ts             # Conexao com Neon
-│   └── seed.ts              # Dados de exemplo
-├── inngest/
-│   └── functions.ts         # Background jobs (cache invalidation, notificacoes)
-├── lib/
-│   ├── agents/              # Agentes de IA (oracle, analista, scout, board, cfo, coaching)
-│   ├── cortex/              # Logica de dominio (Vx, Rx, decision-matrix, neural-layers)
-│   ├── cache.ts             # Cache com Upstash Redis
-│   ├── rate-limit.ts        # Rate limiting
-│   ├── rbac.ts              # Controle de acesso
-│   ├── stripe.ts            # Integracao Stripe
-│   ├── pdf-generator.ts     # Geracao de PDF
-│   ├── rag-context.ts       # Contexto RAG para agentes
-│   ├── webhook-dispatch.ts  # Dispatch de webhooks
-│   └── ...
-├── services/                # Integracao com APIs externas (API-Football, etc.)
-└── types/                   # Tipos TypeScript compartilhados
-```
-
-### Fluxo de Decisao
-
-1. Dados de jogadores sao sincronizados via cron jobs (API-Football).
-2. Agentes de IA analisam os dados usando contexto RAG.
-3. O sistema calcula indices Vx (valor) e Rx (rendimento).
-4. A matriz de decisao gera recomendacoes: CONTRATAR, BLINDAR, MONITORAR, EMPRESTIMO ou RECUSAR.
-5. Relatorios sao gerados e podem ser exportados em PDF ou compartilhados.
 
 ---
 
