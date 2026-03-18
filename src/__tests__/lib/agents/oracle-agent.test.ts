@@ -49,6 +49,9 @@ describe("runOracle", () => {
       data: mockOracleOutput,
       reasoning: "test",
       tokensUsed: 500,
+      inputTokens: 200,
+      outputTokens: 300,
+      costUsd: 0.006,
       durationMs: 1000,
       model: "claude-sonnet-4-20250514",
     });
@@ -69,11 +72,14 @@ describe("runOracle", () => {
     );
   });
 
-  it("returns the data from callAgent result", async () => {
+  it("returns the full AgentResult from callAgent", async () => {
     mockCallAgent.mockResolvedValueOnce({
       data: mockOracleOutput,
       reasoning: "test",
       tokensUsed: 500,
+      inputTokens: 200,
+      outputTokens: 300,
+      costUsd: 0.006,
       durationMs: 1000,
       model: "claude-sonnet-4-20250514",
     });
@@ -85,10 +91,14 @@ describe("runOracle", () => {
       rxComponents: {},
     });
 
-    expect(result.decision).toBe("CONTRATAR");
-    expect(result.vx).toBe(1.8);
-    expect(result.rx).toBe(0.7);
-    expect(result.confidence).toBe(85);
+    expect(result.data.decision).toBe("CONTRATAR");
+    expect(result.data.vx).toBe(1.8);
+    expect(result.data.rx).toBe(0.7);
+    expect(result.data.confidence).toBe(85);
+    expect(result.tokensUsed).toBe(500);
+    expect(result.inputTokens).toBe(200);
+    expect(result.outputTokens).toBe(300);
+    expect(result.costUsd).toBe(0.006);
   });
 
   it("includes player and club context in user message", async () => {
@@ -96,6 +106,9 @@ describe("runOracle", () => {
       data: mockOracleOutput,
       reasoning: "test",
       tokensUsed: 500,
+      inputTokens: 200,
+      outputTokens: 300,
+      costUsd: 0.006,
       durationMs: 1000,
       model: "claude-sonnet-4-20250514",
     });
@@ -120,6 +133,9 @@ describe("runOracle", () => {
       data: mockOracleOutput,
       reasoning: "test",
       tokensUsed: 500,
+      inputTokens: 200,
+      outputTokens: 300,
+      costUsd: 0.006,
       durationMs: 1000,
       model: "claude-sonnet-4-20250514",
     });

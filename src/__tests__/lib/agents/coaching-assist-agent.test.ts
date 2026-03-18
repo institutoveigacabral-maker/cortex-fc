@@ -50,6 +50,9 @@ describe("runCoachingAssist", () => {
       data: mockOutput,
       reasoning: "test",
       tokensUsed: 500,
+      inputTokens: 200,
+      outputTokens: 300,
+      costUsd: 0.005,
       durationMs: 1000,
       model: "claude-sonnet-4-20250514",
     });
@@ -75,6 +78,9 @@ describe("runCoachingAssist", () => {
       data: mockOutput,
       reasoning: "test",
       tokensUsed: 500,
+      inputTokens: 200,
+      outputTokens: 300,
+      costUsd: 0.005,
       durationMs: 1000,
       model: "claude-sonnet-4-20250514",
     });
@@ -109,6 +115,9 @@ describe("runCoachingAssist", () => {
       data: mockOutput,
       reasoning: "test",
       tokensUsed: 500,
+      inputTokens: 200,
+      outputTokens: 300,
+      costUsd: 0.005,
       durationMs: 1000,
       model: "claude-sonnet-4-20250514",
     });
@@ -133,6 +142,9 @@ describe("runCoachingAssist", () => {
       data: mockOutput,
       reasoning: "test",
       tokensUsed: 500,
+      inputTokens: 200,
+      outputTokens: 300,
+      costUsd: 0.005,
       durationMs: 1000,
       model: "claude-sonnet-4-20250514",
     });

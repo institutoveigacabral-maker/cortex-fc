@@ -1,10 +1,11 @@
 import { NextRequest } from "next/server"
+import { randomUUID } from "crypto"
 import { requireAuth } from "@/lib/auth-helpers"
 import { hasPermission } from "@/lib/rbac"
-import { checkRateLimit, aiRateLimit } from "@/lib/rate-limit"
+import { checkAgentRateLimits } from "@/lib/rate-limit"
 import { createAgentRun } from "@/db/queries"
 import { isValidUUID } from "@/lib/validation"
-import { canUseAgent } from "@/lib/feature-gates"
+import { canUseAgent, checkAgentQuota } from "@/lib/feature-gates"
 import { callAgentStreaming } from "@/lib/agents/base-agent"
 import { inngest } from "@/lib/inngest-client"
 import type { OracleOutput } from "@/types/cortex"
@@ -100,11 +101,27 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Rate limit
-    const { success: rateLimitOk } = await checkRateLimit(aiRateLimit, `ai:${session!.userId}`)
-    if (!rateLimitOk) {
+    // Rate limit (user + org)
+    const rateCheck = await checkAgentRateLimits(session!.userId, session!.orgId)
+    if (!rateCheck.allowed) {
+      const msg = rateCheck.limitType === "org"
+        ? "Limite de chamadas IA da organizacao atingido. Tente novamente em breve."
+        : "Limite de chamadas IA atingido. Tente novamente em 1 minuto."
       return new Response(
-        JSON.stringify({ error: "Limite de chamadas IA atingido. Tente novamente em 1 minuto." }),
+        JSON.stringify({ error: msg, retryAfter: rateCheck.retryAfter }),
+        { status: 429, headers: { "Content-Type": "application/json", ...(rateCheck.retryAfter ? { "Retry-After": String(rateCheck.retryAfter) } : {}) } }
+      )
+    }
+
+    // Quota check: agent runs per month
+    const agentQuota = await checkAgentQuota(session!.orgId, session!.tier)
+    if (!agentQuota.allowed) {
+      return new Response(
+        JSON.stringify({
+          error: "Limite de execucoes de agente atingido para este mes. Faca upgrade para continuar.",
+          usage: agentQuota.usage,
+          limit: agentQuota.limit,
+        }),
         { status: 429, headers: { "Content-Type": "application/json" } }
       )
     }
@@ -180,34 +197,71 @@ Analise todos os dados acima usando a metodologia CORTEX FC e emita o parecer OR
 
     const startTime = Date.now()
     const encoder = new TextEncoder()
+    const requestId = randomUUID()
+    const STREAM_TIMEOUT_MS = 30_000 // 30s inactivity timeout
 
     const stream = new ReadableStream({
       async start(controller) {
+        let tokenCount = 0
+        let lastTokenTime = Date.now()
+        let timeoutTimer: ReturnType<typeof setTimeout> | null = null
+        let streamAborted = false
+
+        const resetTimeout = () => {
+          if (timeoutTimer) clearTimeout(timeoutTimer)
+          lastTokenTime = Date.now()
+          timeoutTimer = setTimeout(() => {
+            streamAborted = true
+            try {
+              controller.enqueue(
+                encoder.encode(`event: error\ndata: ${JSON.stringify({ message: "[ERROR] Stream timeout: nenhum token recebido em 30s" })}\n\n`)
+              )
+              controller.close()
+            } catch {
+              // Controller already closed
+            }
+          }, STREAM_TIMEOUT_MS)
+        }
+
+        resetTimeout()
+
         try {
-          const result = await callAgentStreaming<OracleOutput>({
+          const agentResult = await callAgentStreaming<OracleOutput>({
             agentType: "ORACLE",
             systemPrompt: ORACLE_SYSTEM_PROMPT,
             userMessage,
             model: "claude-sonnet-4-20250514",
             maxTokens: 4096,
             onToken: (text) => {
-              controller.enqueue(
-                encoder.encode(`event: token\ndata: ${JSON.stringify({ text })}\n\n`)
-              )
+              if (streamAborted) return
+              tokenCount++
+              resetTimeout()
+              try {
+                controller.enqueue(
+                  encoder.encode(`event: token\ndata: ${JSON.stringify({ text })}\n\n`)
+                )
+              } catch {
+                // Connection dropped — client disconnected
+                streamAborted = true
+              }
             },
             onComplete: () => {
               // Result will be sent after parsing
             },
           })
 
+          if (timeoutTimer) clearTimeout(timeoutTimer)
+          if (streamAborted) return
+
           const durationMs = Date.now() - startTime
 
-          // Audit log
+          // Audit log with real token usage
           const agentRun = await createAgentRun({
             agentType: "ORACLE",
             inputContext,
-            outputResult: result as unknown as Record<string, unknown>,
-            modelUsed: "claude-sonnet-4-20250514",
+            outputResult: agentResult.data as unknown as Record<string, unknown>,
+            modelUsed: agentResult.model,
+            tokensUsed: agentResult.tokensUsed,
             durationMs,
             success: true,
             userId: session!.userId,
@@ -233,11 +287,27 @@ Analise todos os dados acima usando a metodologia CORTEX FC e emita o parecer OR
             console.error("Failed to send agent.completed event:", err)
           }
 
+          // Send complete event with result
           controller.enqueue(
-            encoder.encode(`event: complete\ndata: ${JSON.stringify({ result })}\n\n`)
+            encoder.encode(`event: complete\ndata: ${JSON.stringify({ result: agentResult.data })}\n\n`)
+          )
+
+          // Send [DONE] event with metadata
+          controller.enqueue(
+            encoder.encode(`event: done\ndata: ${JSON.stringify({
+              type: "[DONE]",
+              tokensUsed: agentResult.tokensUsed,
+              inputTokens: agentResult.inputTokens,
+              outputTokens: agentResult.outputTokens,
+              costUsd: agentResult.costUsd,
+              model: agentResult.model,
+              durationMs,
+              requestId,
+            })}\n\n`)
           )
           controller.close()
         } catch (error) {
+          if (timeoutTimer) clearTimeout(timeoutTimer)
           console.error("ORACLE streaming error:", error)
 
           // Log failed run
@@ -251,12 +321,16 @@ Analise todos os dados acima usando a metodologia CORTEX FC e emita o parecer OR
             orgId: session!.orgId,
           }).catch(() => {})
 
-          controller.enqueue(
-            encoder.encode(
-              `event: error\ndata: ${JSON.stringify({ message: error instanceof Error ? error.message : "Erro ao executar analise neural" })}\n\n`
+          try {
+            controller.enqueue(
+              encoder.encode(
+                `event: error\ndata: ${JSON.stringify({ message: "[ERROR] " + (error instanceof Error ? error.message : "Erro ao executar analise neural") })}\n\n`
+              )
             )
-          )
-          controller.close()
+            controller.close()
+          } catch {
+            // Controller already closed — connection dropped
+          }
         }
       },
     })
@@ -266,6 +340,7 @@ Analise todos os dados acima usando a metodologia CORTEX FC e emita o parecer OR
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",
         Connection: "keep-alive",
+        "X-Request-Id": requestId,
       },
     })
   } catch (error) {

@@ -1,6 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { Tool } from "@anthropic-ai/sdk/resources/messages";
 import type { AgentType } from "@/types/cortex";
+import { logger } from "@/lib/logger";
+import { calculateCost } from "@/lib/ai-models";
 
 const client = new Anthropic();
 
@@ -17,12 +19,16 @@ export interface AgentResult<T> {
   data: T;
   reasoning: string;
   tokensUsed: number;
+  inputTokens: number;
+  outputTokens: number;
+  costUsd: number;
   durationMs: number;
   model: string;
 }
 
 const MAX_RETRIES = 1;
 const RETRY_DELAY_MS = 2000;
+const FALLBACK_MODEL = "claude-haiku-4-5-20251001";
 
 /**
  * Base agent call pattern with retry and timeout.
@@ -83,14 +89,18 @@ export async function callAgent<T>(
         data = { raw: rawText } as T;
       }
 
-      const tokensUsed =
-        (response.usage?.input_tokens || 0) +
-        (response.usage?.output_tokens || 0);
+      const inputTokens = response.usage?.input_tokens ?? 0;
+      const outputTokens = response.usage?.output_tokens ?? 0;
+      const tokensUsed = inputTokens + outputTokens;
+      const costUsd = calculateCost(model, inputTokens, outputTokens);
 
       return {
         data,
         reasoning: rawText,
         tokensUsed,
+        inputTokens,
+        outputTokens,
+        costUsd,
         durationMs,
         model,
       };
@@ -120,7 +130,7 @@ export async function callAgent<T>(
 
 /**
  * Streaming variant of callAgent.
- * Streams tokens via callbacks and returns parsed JSON on completion.
+ * Streams tokens via callbacks and returns AgentResult with usage data on completion.
  */
 export async function callAgentStreaming<T>({
   agentType,
@@ -138,11 +148,13 @@ export async function callAgentStreaming<T>({
   maxTokens?: number
   onToken?: (text: string) => void
   onComplete?: (fullText: string) => void
-}): Promise<T> {
+}): Promise<AgentResult<T>> {
   const anthropic = new Anthropic()
+  const resolvedModel = model || "claude-sonnet-4-20250514"
+  const start = Date.now()
 
   const stream = anthropic.messages.stream({
-    model: model || "claude-sonnet-4-20250514",
+    model: resolvedModel,
     max_tokens: maxTokens || 4096,
     system: systemPrompt,
     messages: [{ role: "user", content: userMessage }],
@@ -159,13 +171,32 @@ export async function callAgentStreaming<T>({
 
   onComplete?.(fullText)
 
+  // Extract usage from the final message
+  const finalMessage = await stream.finalMessage()
+  const inputTokens = finalMessage.usage?.input_tokens ?? 0
+  const outputTokens = finalMessage.usage?.output_tokens ?? 0
+  const tokensUsed = inputTokens + outputTokens
+  const costUsd = calculateCost(resolvedModel, inputTokens, outputTokens)
+  const durationMs = Date.now() - start
+
   // Parse JSON from the accumulated text
   const jsonMatch =
     fullText.match(/```(?:json)?\s*([\s\S]*?)```/) ||
     fullText.match(/(\{[\s\S]*\})/);
   if (!jsonMatch) throw new Error("No JSON found in response");
   const jsonStr = jsonMatch[1].trim();
-  return JSON.parse(jsonStr) as T
+  const data = JSON.parse(jsonStr) as T
+
+  return {
+    data,
+    reasoning: fullText,
+    tokensUsed,
+    inputTokens,
+    outputTokens,
+    costUsd,
+    durationMs,
+    model: resolvedModel,
+  }
 }
 
 /**
@@ -201,7 +232,8 @@ export async function callAgentWithTools<T>({
   const resolvedModel = model || "claude-sonnet-4-20250514";
   const resolvedMaxTokens = maxTokens || 4096;
   const start = Date.now();
-  let totalTokens = 0;
+  let totalInputTokens = 0;
+  let totalOutputTokens = 0;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let messages: any[] = [{ role: "user", content: userMessage }];
@@ -217,9 +249,8 @@ export async function callAgentWithTools<T>({
       messages,
     });
 
-    totalTokens +=
-      (response.usage?.input_tokens || 0) +
-      (response.usage?.output_tokens || 0);
+    totalInputTokens += response.usage?.input_tokens ?? 0;
+    totalOutputTokens += response.usage?.output_tokens ?? 0;
 
     // Check if response has tool_use blocks
     const toolUseBlocks = response.content.filter((b) => b.type === "tool_use");
@@ -243,10 +274,16 @@ export async function callAgentWithTools<T>({
         data = { raw: rawText } as T;
       }
 
+      const tokensUsed = totalInputTokens + totalOutputTokens;
+      const costUsd = calculateCost(resolvedModel, totalInputTokens, totalOutputTokens);
+
       return {
         data,
         reasoning: rawText,
-        tokensUsed: totalTokens,
+        tokensUsed,
+        inputTokens: totalInputTokens,
+        outputTokens: totalOutputTokens,
+        costUsd,
         durationMs: Date.now() - start,
         model: resolvedModel,
       };
@@ -281,4 +318,40 @@ export async function callAgentWithTools<T>({
   throw new Error(
     `[${agentType}] Max tool use attempts (${maxAttempts}) reached`
   );
+}
+
+/**
+ * Retry wrapper with fallback model.
+ *
+ * On first failure: waits 1s and retries with same model.
+ * On second failure: falls back to cheapest model (Haiku) as last resort.
+ */
+export async function callAgentWithRetry<T>(
+  config: AgentCallOptions & { fallbackModel?: string },
+): Promise<AgentResult<T>> {
+  try {
+    return await callAgent<T>(config);
+  } catch (firstError) {
+    logger.warn("Agent call failed, retrying...", {
+      model: config.model,
+      error: firstError instanceof Error ? firstError.message : "Unknown",
+    } as Record<string, unknown>);
+
+    // Wait 1 second before retry
+    await new Promise((r) => setTimeout(r, 1000));
+
+    try {
+      return await callAgent<T>(config);
+    } catch (secondError) {
+      const fallbackModel = config.fallbackModel ?? FALLBACK_MODEL;
+      if (config.model !== fallbackModel) {
+        logger.warn("Falling back to cheapest model", {
+          originalModel: config.model,
+          fallbackModel,
+        } as Record<string, unknown>);
+        return await callAgent<T>({ ...config, model: fallbackModel });
+      }
+      throw secondError;
+    }
+  }
 }

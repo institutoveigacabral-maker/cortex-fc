@@ -1,4 +1,4 @@
-import { callAgent } from "./base-agent";
+import { callAgent, type AgentResult } from "./base-agent";
 import type { CoachingAssistInput, CoachingAssistOutput } from "@/types/cortex";
 
 const COACHING_SYSTEM_PROMPT = `Voce e o CORTEX_FC_COACHING_ASSIST — o sistema de simulacao tatica e desenvolvimento de jogadores do CORTEX FC, uma plataforma de analytics futebolistico baseada em arquitetura neural.
@@ -79,18 +79,16 @@ Responda EXCLUSIVAMENTE em JSON valido, sem texto adicional:
 export async function runCoachingAssist(
   input: CoachingAssistInput,
   model?: string
-): Promise<CoachingAssistOutput> {
+): Promise<AgentResult<CoachingAssistOutput>> {
   const userMessage = buildCoachingUserMessage(input);
 
-  const result = await callAgent<CoachingAssistOutput>({
+  return callAgent<CoachingAssistOutput>({
     agentType: "COACHING_ASSIST",
     systemPrompt: COACHING_SYSTEM_PROMPT,
     userMessage,
     model: model || "claude-sonnet-4-20250514",
     maxTokens: 4096,
   });
-
-  return result.data;
 }
 
 function buildCoachingUserMessage(input: CoachingAssistInput): string {

@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-helpers";
-import { canUseAgent } from "@/lib/feature-gates";
+import { canUseAgent, checkAgentQuota } from "@/lib/feature-gates";
 import { hasPermission } from "@/lib/rbac";
+import { checkAgentRateLimits } from "@/lib/rate-limit";
 import { runAnalista } from "@/lib/agents/analista-agent";
 import { createAgentRun } from "@/db/queries";
 import type { AnalistaInput } from "@/types/cortex";
 import { canUseModel, getDefaultModel } from "@/lib/ai-models";
 import { inngest } from "@/lib/inngest-client";
+import { getCachedAgentResponse, setCachedAgentResponse, TTL } from "@/lib/cache";
 
 export async function POST(request: Request) {
   try {
@@ -21,6 +23,31 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Seu plano nao inclui acesso ao agente ANALISTA. Faca upgrade para o plano Club Professional." },
         { status: 403 }
+      );
+    }
+
+    // Quota check: agent runs per month
+    const agentQuota = await checkAgentQuota(session!.orgId, session!.tier);
+    if (!agentQuota.allowed) {
+      return NextResponse.json(
+        {
+          error: "Limite de execucoes de agente atingido para este mes. Faca upgrade para continuar.",
+          usage: agentQuota.usage,
+          limit: agentQuota.limit,
+        },
+        { status: 429 }
+      );
+    }
+
+    // Rate limit (user + org)
+    const rateCheck = await checkAgentRateLimits(session!.userId, session!.orgId);
+    if (!rateCheck.allowed) {
+      const msg = rateCheck.limitType === "org"
+        ? "Limite de chamadas IA da organizacao atingido. Tente novamente em breve."
+        : "Limite de chamadas IA atingido. Tente novamente em 1 minuto.";
+      return NextResponse.json(
+        { error: msg, retryAfter: rateCheck.retryAfter },
+        { status: 429, headers: rateCheck.retryAfter ? { "Retry-After": String(rateCheck.retryAfter) } : {} }
       );
     }
 
@@ -55,21 +82,30 @@ export async function POST(request: Request) {
       additionalContext: body.additionalContext,
     };
 
-    const start = Date.now();
-    const result = await runAnalista(input, model);
-    const durationMs = Date.now() - start;
+    // Check agent response cache
+    const cacheParams = { matchId: input.matchId, homeTeam: input.homeTeam, awayTeam: input.awayTeam };
+    const cached = await getCachedAgentResponse("ANALISTA", cacheParams);
+    if (cached) {
+      return NextResponse.json({ data: cached, fromCache: true });
+    }
 
-    // Log agent run
+    const agentResult = await runAnalista(input, model);
+
+    // Log agent run with real token usage
     const agentRun = await createAgentRun({
       agentType: "ANALISTA",
       inputContext: input as unknown as Record<string, unknown>,
-      outputResult: result as unknown as Record<string, unknown>,
-      modelUsed: model,
-      durationMs,
+      outputResult: agentResult.data as unknown as Record<string, unknown>,
+      modelUsed: agentResult.model,
+      tokensUsed: agentResult.tokensUsed,
+      durationMs: agentResult.durationMs,
       success: true,
       userId: session!.userId,
       orgId: session!.orgId,
     }).catch(() => null);
+
+    // Cache the successful result
+    await setCachedAgentResponse("ANALISTA", cacheParams, agentResult.data, TTL.DAY);
 
     // Emit event for background processing (notifications, cache invalidation, webhooks)
     try {
@@ -86,7 +122,17 @@ export async function POST(request: Request) {
       console.error("Failed to send agent.completed event:", err);
     }
 
-    return NextResponse.json({ data: result });
+    return NextResponse.json({
+      data: agentResult.data,
+      meta: {
+        tokensUsed: agentResult.tokensUsed,
+        inputTokens: agentResult.inputTokens,
+        outputTokens: agentResult.outputTokens,
+        costUsd: agentResult.costUsd,
+        model: agentResult.model,
+        durationMs: agentResult.durationMs,
+      },
+    });
   } catch (error) {
     console.error("ANALISTA agent error:", error);
     return NextResponse.json(

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-helpers";
 import { hasPermission } from "@/lib/rbac";
-import { checkRateLimit, aiRateLimit } from "@/lib/rate-limit";
+import { checkAgentRateLimits } from "@/lib/rate-limit";
 import { createAgentRun } from "@/db/queries";
 import { isValidUUID } from "@/lib/validation";
 import { canUseAgent, checkAgentQuota } from "@/lib/feature-gates";
@@ -44,15 +44,15 @@ export async function POST(req: Request) {
       );
     }
 
-    // Rate limit for AI calls
-    const { success: rateLimitOk } = await checkRateLimit(
-      aiRateLimit,
-      `ai:${session!.userId}`
-    );
-    if (!rateLimitOk) {
+    // Rate limit (user + org)
+    const rateCheck = await checkAgentRateLimits(session!.userId, session!.orgId);
+    if (!rateCheck.allowed) {
+      const msg = rateCheck.limitType === "org"
+        ? "Limite de chamadas IA da organizacao atingido. Tente novamente em breve."
+        : "Limite de chamadas IA atingido. Tente novamente em 1 minuto.";
       return NextResponse.json(
-        { error: "Limite de chamadas IA atingido. Tente novamente em 1 minuto." },
-        { status: 429 }
+        { error: msg, retryAfter: rateCheck.retryAfter },
+        { status: 429, headers: rateCheck.retryAfter ? { "Retry-After": String(rateCheck.retryAfter) } : {} }
       );
     }
 
@@ -128,9 +128,9 @@ export async function POST(req: Request) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 60000);
 
-    let result;
+    let agentResult;
     try {
-      result = await runOracleWithPlayerData({
+      agentResult = await runOracleWithPlayerData({
         playerId,
         clubContextId,
         vxComponents: {},
@@ -151,12 +151,13 @@ export async function POST(req: Request) {
 
     const durationMs = Date.now() - startTime;
 
-    // Audit log
+    // Audit log with real token usage
     const agentRun = await createAgentRun({
       agentType: "ORACLE",
       inputContext,
-      outputResult: result as unknown as Record<string, unknown>,
-      modelUsed: model,
+      outputResult: agentResult.data as unknown as Record<string, unknown>,
+      modelUsed: agentResult.model,
+      tokensUsed: agentResult.tokensUsed,
       durationMs,
       success: true,
       userId: session!.userId,
@@ -168,7 +169,7 @@ export async function POST(req: Request) {
     });
 
     // Cache the successful result
-    await setCachedAgentResponse("ORACLE", cacheParams, result, TTL.DAY);
+    await setCachedAgentResponse("ORACLE", cacheParams, agentResult.data, TTL.DAY);
 
     // Emit event for background processing (notifications, cache invalidation, webhooks)
     try {
@@ -193,7 +194,17 @@ export async function POST(req: Request) {
       console.error("Failed to check usage alerts:", err);
     }
 
-    return NextResponse.json({ data: result });
+    return NextResponse.json({
+      data: agentResult.data,
+      meta: {
+        tokensUsed: agentResult.tokensUsed,
+        inputTokens: agentResult.inputTokens,
+        outputTokens: agentResult.outputTokens,
+        costUsd: agentResult.costUsd,
+        model: agentResult.model,
+        durationMs,
+      },
+    });
   } catch (error) {
     console.error("ORACLE agent error:", error);
 

@@ -34,6 +34,9 @@ describe("runScout", () => {
       data: mockScoutOutput,
       reasoning: "test",
       tokensUsed: 400,
+      inputTokens: 150,
+      outputTokens: 250,
+      costUsd: 0.004,
       durationMs: 800,
       model: "claude-sonnet-4-20250514",
     });
@@ -57,6 +60,9 @@ describe("runScout", () => {
       data: mockScoutOutput,
       reasoning: "test",
       tokensUsed: 400,
+      inputTokens: 150,
+      outputTokens: 250,
+      costUsd: 0.004,
       durationMs: 800,
       model: "claude-sonnet-4-20250514",
     });
@@ -86,6 +92,9 @@ describe("runScout", () => {
       data: mockScoutOutput,
       reasoning: "test",
       tokensUsed: 400,
+      inputTokens: 150,
+      outputTokens: 250,
+      costUsd: 0.004,
       durationMs: 800,
       model: "claude-sonnet-4-20250514",
     });
@@ -108,6 +117,9 @@ describe("runScout", () => {
       data: mockScoutOutput,
       reasoning: "test",
       tokensUsed: 400,
+      inputTokens: 150,
+      outputTokens: 250,
+      costUsd: 0.004,
       durationMs: 800,
       model: "claude-sonnet-4-20250514",
     });
@@ -119,8 +131,9 @@ describe("runScout", () => {
       style: "ball-playing CB",
     });
 
-    expect(result.candidates).toHaveLength(1);
-    expect(result.candidates[0].fitScore).toBe(88);
-    expect(result.reasoning).toContain("Based on criteria");
+    expect(result.data.candidates).toHaveLength(1);
+    expect(result.data.candidates[0].fitScore).toBe(88);
+    expect(result.data.reasoning).toContain("Based on criteria");
+    expect(result.tokensUsed).toBe(400);
   });
 });

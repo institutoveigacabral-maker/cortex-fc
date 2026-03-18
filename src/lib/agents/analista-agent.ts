@@ -1,4 +1,4 @@
-import { callAgent } from "./base-agent";
+import { callAgent, type AgentResult } from "./base-agent";
 import type { AnalistaInput, AnalistaOutput } from "@/types/cortex";
 
 const ANALISTA_SYSTEM_PROMPT = `Você é o CORTEX_FC_ANALISTA — o sistema de análise tática e de desempenho do CORTEX FC, uma plataforma de analytics futebolístico baseada em arquitetura neural.
@@ -93,18 +93,16 @@ Responda EXCLUSIVAMENTE em JSON válido, sem texto adicional:
 export async function runAnalista(
   input: AnalistaInput,
   model?: string
-): Promise<AnalistaOutput> {
+): Promise<AgentResult<AnalistaOutput>> {
   const userMessage = buildAnalistaUserMessage(input);
 
-  const result = await callAgent<AnalistaOutput>({
+  return callAgent<AnalistaOutput>({
     agentType: "ANALISTA",
     systemPrompt: ANALISTA_SYSTEM_PROMPT,
     userMessage,
     model: model || "claude-sonnet-4-20250514",
     maxTokens: 4096,
   });
-
-  return result.data;
 }
 
 function buildAnalistaUserMessage(input: AnalistaInput): string {

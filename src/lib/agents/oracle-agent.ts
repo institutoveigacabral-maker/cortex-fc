@@ -1,4 +1,4 @@
-import { callAgent } from "./base-agent";
+import { callAgent, type AgentResult } from "./base-agent";
 import type { OracleInput, OracleOutput, NeuralLayers } from "@/types/cortex";
 
 const ORACLE_SYSTEM_PROMPT = `Você é o CORTEX_FC_ORACLE — o sistema central de decisão do CORTEX FC, uma plataforma de analytics futebolístico baseada em arquitetura neural.
@@ -67,18 +67,16 @@ Responda EXCLUSIVAMENTE em JSON válido, sem texto adicional:
   "comparables": ["transferências históricas similares para referência"]
 }`;
 
-export async function runOracle(input: OracleInput, model?: string): Promise<OracleOutput> {
+export async function runOracle(input: OracleInput, model?: string): Promise<AgentResult<OracleOutput>> {
   const userMessage = buildOracleUserMessage(input);
 
-  const result = await callAgent<OracleOutput>({
+  return callAgent<OracleOutput>({
     agentType: "ORACLE",
     systemPrompt: ORACLE_SYSTEM_PROMPT,
     userMessage,
     model: model || "claude-sonnet-4-20250514",
     maxTokens: 4096,
   });
-
-  return result.data;
 }
 
 function buildOracleUserMessage(input: OracleInput): string {
@@ -129,7 +127,7 @@ export async function runOracleWithPlayerData(
     squadContext?: string;
   },
   model?: string
-): Promise<OracleOutput> {
+): Promise<AgentResult<OracleOutput>> {
   const userMessage = `## JOGADOR EM ANÁLISE
 - Nome: ${input.playerName}
 - Idade: ${input.playerAge}
@@ -156,13 +154,11 @@ ${input.additionalContext ? `## CONTEXTO ADICIONAL\n${input.additionalContext}` 
 
 Analise todos os dados acima usando a metodologia CORTEX FC e emita o parecer ORACLE completo em JSON.`;
 
-  const result = await callAgent<OracleOutput>({
+  return callAgent<OracleOutput>({
     agentType: "ORACLE",
     systemPrompt: ORACLE_SYSTEM_PROMPT,
     userMessage,
     model: model || "claude-sonnet-4-20250514",
     maxTokens: 4096,
   });
-
-  return result.data;
 }

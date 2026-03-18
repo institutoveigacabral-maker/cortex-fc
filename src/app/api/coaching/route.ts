@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-helpers";
 import { hasPermission } from "@/lib/rbac";
-import { checkRateLimit, aiRateLimit } from "@/lib/rate-limit";
+import { checkAgentRateLimits } from "@/lib/rate-limit";
 import { createAgentRun } from "@/db/queries";
-import { canUseAgent } from "@/lib/feature-gates";
+import { canUseAgent, checkAgentQuota } from "@/lib/feature-gates";
 import { canUseModel, getDefaultModel } from "@/lib/ai-models";
 import { inngest } from "@/lib/inngest-client";
 import { getCachedAgentResponse, setCachedAgentResponse, TTL } from "@/lib/cache";
@@ -29,14 +29,28 @@ export async function POST(req: Request) {
       );
     }
 
-    const { success: rateLimitOk } = await checkRateLimit(
-      aiRateLimit,
-      `ai:${session!.userId}`
-    );
-    if (!rateLimitOk) {
+    // Quota check: agent runs per month
+    const agentQuota = await checkAgentQuota(session!.orgId, session!.tier);
+    if (!agentQuota.allowed) {
       return NextResponse.json(
-        { error: "Limite de chamadas IA atingido. Tente novamente em 1 minuto." },
+        {
+          error: "Limite de execucoes de agente atingido para este mes. Faca upgrade para continuar.",
+          usage: agentQuota.usage,
+          limit: agentQuota.limit,
+        },
         { status: 429 }
+      );
+    }
+
+    // Rate limit (user + org)
+    const rateCheck = await checkAgentRateLimits(session!.userId, session!.orgId);
+    if (!rateCheck.allowed) {
+      const msg = rateCheck.limitType === "org"
+        ? "Limite de chamadas IA da organizacao atingido. Tente novamente em breve."
+        : "Limite de chamadas IA atingido. Tente novamente em 1 minuto.";
+      return NextResponse.json(
+        { error: msg, retryAfter: rateCheck.retryAfter },
+        { status: 429, headers: rateCheck.retryAfter ? { "Retry-After": String(rateCheck.retryAfter) } : {} }
       );
     }
 
@@ -101,9 +115,9 @@ export async function POST(req: Request) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 60000);
 
-    let result;
+    let agentResult;
     try {
-      result = await runCoachingAssist({
+      agentResult = await runCoachingAssist({
         playerId,
         playerName,
         position,
@@ -125,8 +139,9 @@ export async function POST(req: Request) {
     const agentRun = await createAgentRun({
       agentType: "COACHING_ASSIST",
       inputContext,
-      outputResult: result as unknown as Record<string, unknown>,
-      modelUsed: model,
+      outputResult: agentResult.data as unknown as Record<string, unknown>,
+      modelUsed: agentResult.model,
+      tokensUsed: agentResult.tokensUsed,
       durationMs,
       success: true,
       userId: session!.userId,
@@ -137,7 +152,7 @@ export async function POST(req: Request) {
     });
 
     // Cache the successful result
-    await setCachedAgentResponse("COACHING_ASSIST", cacheParams, result, TTL.DAY);
+    await setCachedAgentResponse("COACHING_ASSIST", cacheParams, agentResult.data, TTL.DAY);
 
     // Emit event for background processing (notifications, cache invalidation, webhooks)
     try {
@@ -154,7 +169,17 @@ export async function POST(req: Request) {
       console.error("Failed to send agent.completed event:", err);
     }
 
-    return NextResponse.json({ data: result });
+    return NextResponse.json({
+      data: agentResult.data,
+      meta: {
+        tokensUsed: agentResult.tokensUsed,
+        inputTokens: agentResult.inputTokens,
+        outputTokens: agentResult.outputTokens,
+        costUsd: agentResult.costUsd,
+        model: agentResult.model,
+        durationMs,
+      },
+    });
   } catch (error) {
     console.error("COACHING ASSIST agent error:", error);
 

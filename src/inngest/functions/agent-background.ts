@@ -50,7 +50,7 @@ export const runAgentBackground = inngest.createFunction(
       })
     })
 
-    // Save audit trail
+    // Save audit trail with real token usage from agent result
     await step.run("save-audit", async () => {
       const duration = Date.now() - startTime
       await createAgentRun({
@@ -58,11 +58,11 @@ export const runAgentBackground = inngest.createFunction(
         userId,
         agentType: agentType as AgentType,
         inputContext: { metadata: metadata ?? {} },
-        outputResult: result as Record<string, unknown> | undefined,
+        outputResult: result.data as Record<string, unknown> | undefined,
         success: true,
         durationMs: duration,
-        modelUsed: model || "claude-sonnet-4-20250514",
-        tokensUsed: 0, // TODO: extract from response
+        modelUsed: result.model,
+        tokensUsed: result.tokensUsed,
       })
     })
 

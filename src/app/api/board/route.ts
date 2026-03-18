@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-helpers";
 import { hasPermission } from "@/lib/rbac";
-import { checkRateLimit, aiRateLimit } from "@/lib/rate-limit";
+import { checkAgentRateLimits } from "@/lib/rate-limit";
 import { createAgentRun } from "@/db/queries";
-import { canUseAgent } from "@/lib/feature-gates";
+import { canUseAgent, checkAgentQuota } from "@/lib/feature-gates";
 import { canUseModel, getDefaultModel } from "@/lib/ai-models";
 import { inngest } from "@/lib/inngest-client";
+import { getCachedAgentResponse, setCachedAgentResponse, TTL } from "@/lib/cache";
 
 export async function POST(req: Request) {
   try {
@@ -26,14 +27,28 @@ export async function POST(req: Request) {
       );
     }
 
-    const { success: rateLimitOk } = await checkRateLimit(
-      aiRateLimit,
-      `ai:${session!.userId}`
-    );
-    if (!rateLimitOk) {
+    // Quota check: agent runs per month
+    const agentQuota = await checkAgentQuota(session!.orgId, session!.tier);
+    if (!agentQuota.allowed) {
       return NextResponse.json(
-        { error: "Limite de chamadas IA atingido. Tente novamente em 1 minuto." },
+        {
+          error: "Limite de execucoes de agente atingido para este mes. Faca upgrade para continuar.",
+          usage: agentQuota.usage,
+          limit: agentQuota.limit,
+        },
         { status: 429 }
+      );
+    }
+
+    // Rate limit (user + org)
+    const rateCheck = await checkAgentRateLimits(session!.userId, session!.orgId);
+    if (!rateCheck.allowed) {
+      const msg = rateCheck.limitType === "org"
+        ? "Limite de chamadas IA da organizacao atingido. Tente novamente em breve."
+        : "Limite de chamadas IA atingido. Tente novamente em 1 minuto.";
+      return NextResponse.json(
+        { error: msg, retryAfter: rateCheck.retryAfter },
+        { status: 429, headers: rateCheck.retryAfter ? { "Retry-After": String(rateCheck.retryAfter) } : {} }
       );
     }
 
@@ -76,6 +91,14 @@ export async function POST(req: Request) {
     }
 
     const inputContext = { clubName, currentBudget, salaryCap, windowType, leagueContext };
+
+    // Check agent response cache
+    const cacheParams = { clubName, currentBudget, salaryCap, windowType, leagueContext };
+    const cached = await getCachedAgentResponse("BOARD_ADVISOR", cacheParams);
+    if (cached) {
+      return NextResponse.json({ data: cached, fromCache: true });
+    }
+
     const startTime = Date.now();
 
     const { runBoardAdvisor } = await import("@/lib/agents/board-advisor-agent");
@@ -83,9 +106,9 @@ export async function POST(req: Request) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 60000);
 
-    let result;
+    let agentResult;
     try {
-      result = await runBoardAdvisor({
+      agentResult = await runBoardAdvisor({
         clubName,
         currentBudget,
         salaryCap,
@@ -107,8 +130,9 @@ export async function POST(req: Request) {
     const agentRun = await createAgentRun({
       agentType: "BOARD_ADVISOR",
       inputContext,
-      outputResult: result as unknown as Record<string, unknown>,
-      modelUsed: model,
+      outputResult: agentResult.data as unknown as Record<string, unknown>,
+      modelUsed: agentResult.model,
+      tokensUsed: agentResult.tokensUsed,
       durationMs,
       success: true,
       userId: session!.userId,
@@ -117,6 +141,9 @@ export async function POST(req: Request) {
       console.error("Failed to log agent run:", err);
       return null;
     });
+
+    // Cache the successful result
+    await setCachedAgentResponse("BOARD_ADVISOR", cacheParams, agentResult.data, TTL.DAY);
 
     // Emit event for background processing (notifications, cache invalidation, webhooks)
     try {
@@ -133,7 +160,17 @@ export async function POST(req: Request) {
       console.error("Failed to send agent.completed event:", err);
     }
 
-    return NextResponse.json({ data: result });
+    return NextResponse.json({
+      data: agentResult.data,
+      meta: {
+        tokensUsed: agentResult.tokensUsed,
+        inputTokens: agentResult.inputTokens,
+        outputTokens: agentResult.outputTokens,
+        costUsd: agentResult.costUsd,
+        model: agentResult.model,
+        durationMs,
+      },
+    });
   } catch (error) {
     console.error("BOARD ADVISOR agent error:", error);
 

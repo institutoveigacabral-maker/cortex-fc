@@ -35,6 +35,9 @@ describe("runBoardAdvisor", () => {
       data: mockOutput,
       reasoning: "test",
       tokensUsed: 600,
+      inputTokens: 250,
+      outputTokens: 350,
+      costUsd: 0.006,
       durationMs: 1200,
       model: "claude-sonnet-4-20250514",
     });
@@ -59,6 +62,9 @@ describe("runBoardAdvisor", () => {
       data: mockOutput,
       reasoning: "test",
       tokensUsed: 600,
+      inputTokens: 250,
+      outputTokens: 350,
+      costUsd: 0.006,
       durationMs: 1200,
       model: "claude-sonnet-4-20250514",
     });
@@ -93,6 +99,9 @@ describe("runBoardAdvisor", () => {
       data: mockOutput,
       reasoning: "test",
       tokensUsed: 600,
+      inputTokens: 250,
+      outputTokens: 350,
+      costUsd: 0.006,
       durationMs: 1200,
       model: "claude-sonnet-4-20250514",
     });

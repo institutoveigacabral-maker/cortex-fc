@@ -1,4 +1,4 @@
-import { callAgent } from "./base-agent";
+import { callAgent, type AgentResult } from "./base-agent";
 import type { CfoInput, CfoOutput } from "@/types/cortex";
 
 const CFO_SYSTEM_PROMPT = `Você é o CORTEX_FC_CFO_MODELER — o sistema de modelagem financeira do CORTEX FC, uma plataforma de analytics futebolístico baseada em arquitetura neural.
@@ -57,18 +57,16 @@ Responda EXCLUSIVAMENTE em JSON válido, sem texto adicional:
   "reasoning": "string com análise financeira detalhada em português, incluindo justificativa da recomendação, riscos financeiros, cenários de valorização/desvalorização, e impacto no FFP"
 }`;
 
-export async function runCfo(input: CfoInput, model?: string): Promise<CfoOutput> {
+export async function runCfo(input: CfoInput, model?: string): Promise<AgentResult<CfoOutput>> {
   const userMessage = buildCfoUserMessage(input);
 
-  const result = await callAgent<CfoOutput>({
+  return callAgent<CfoOutput>({
     agentType: "CFO_MODELER",
     systemPrompt: CFO_SYSTEM_PROMPT,
     userMessage,
     model: model || "claude-sonnet-4-20250514",
     maxTokens: 4096,
   });
-
-  return result.data;
 }
 
 function buildCfoUserMessage(input: CfoInput): string {

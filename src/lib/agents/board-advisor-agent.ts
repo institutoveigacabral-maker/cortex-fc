@@ -1,4 +1,4 @@
-import { callAgent } from "./base-agent";
+import { callAgent, type AgentResult } from "./base-agent";
 import type { BoardAdvisorInput, BoardAdvisorOutput } from "@/types/cortex";
 
 const BOARD_ADVISOR_SYSTEM_PROMPT = `Você é o CORTEX_FC_BOARD_ADVISOR — o sistema de aconselhamento executivo do CORTEX FC, uma plataforma de analytics futebolístico baseada em arquitetura neural.
@@ -99,18 +99,16 @@ Responda EXCLUSIVAMENTE em JSON válido, sem texto adicional:
 export async function runBoardAdvisor(
   input: BoardAdvisorInput,
   model?: string
-): Promise<BoardAdvisorOutput> {
+): Promise<AgentResult<BoardAdvisorOutput>> {
   const userMessage = buildBoardAdvisorUserMessage(input);
 
-  const result = await callAgent<BoardAdvisorOutput>({
+  return callAgent<BoardAdvisorOutput>({
     agentType: "BOARD_ADVISOR",
     systemPrompt: BOARD_ADVISOR_SYSTEM_PROMPT,
     userMessage,
     model: model || "claude-sonnet-4-20250514",
     maxTokens: 4096,
   });
-
-  return result.data;
 }
 
 function buildBoardAdvisorUserMessage(input: BoardAdvisorInput): string {

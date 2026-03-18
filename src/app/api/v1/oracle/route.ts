@@ -61,7 +61,7 @@ export async function POST(request: Request) {
   try {
     const { runOracleWithPlayerData } = await import("@/lib/agents/oracle-agent");
 
-    const result = await runOracleWithPlayerData({
+    const agentResult = await runOracleWithPlayerData({
       playerId,
       clubContextId,
       vxComponents: {},
@@ -81,14 +81,25 @@ export async function POST(request: Request) {
     await createAgentRun({
       agentType: "ORACLE",
       inputContext: { playerId, playerName, position, source: "api_v1" },
-      outputResult: result as unknown as Record<string, unknown>,
-      modelUsed: "claude-sonnet-4-20250514",
+      outputResult: agentResult.data as unknown as Record<string, unknown>,
+      modelUsed: agentResult.model,
+      tokensUsed: agentResult.tokensUsed,
       durationMs,
       success: true,
       orgId: ctx!.orgId,
     }).catch(() => {});
 
-    return NextResponse.json({ data: result });
+    return NextResponse.json({
+      data: agentResult.data,
+      meta: {
+        tokensUsed: agentResult.tokensUsed,
+        inputTokens: agentResult.inputTokens,
+        outputTokens: agentResult.outputTokens,
+        costUsd: agentResult.costUsd,
+        model: agentResult.model,
+        durationMs,
+      },
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : "ORACLE execution failed";
 

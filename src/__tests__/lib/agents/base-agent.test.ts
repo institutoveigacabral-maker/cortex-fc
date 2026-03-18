@@ -38,6 +38,9 @@ describe("callAgent", () => {
 
     expect(result.data).toEqual({ vx: 1.5, decision: "CONTRATAR" });
     expect(result.tokensUsed).toBe(300);
+    expect(result.inputTokens).toBe(100);
+    expect(result.outputTokens).toBe(200);
+    expect(result.costUsd).toBeGreaterThan(0);
     expect(result.model).toBe("claude-sonnet-4-20250514");
     expect(result.durationMs).toBeGreaterThanOrEqual(0);
   });

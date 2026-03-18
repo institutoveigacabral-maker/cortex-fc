@@ -29,6 +29,9 @@ describe("runCfo", () => {
       data: mockCfoOutput,
       reasoning: "test",
       tokensUsed: 400,
+      inputTokens: 150,
+      outputTokens: 250,
+      costUsd: 0.004,
       durationMs: 900,
       model: "claude-sonnet-4-20250514",
     });
@@ -51,6 +54,9 @@ describe("runCfo", () => {
       data: mockCfoOutput,
       reasoning: "test",
       tokensUsed: 400,
+      inputTokens: 150,
+      outputTokens: 250,
+      costUsd: 0.004,
       durationMs: 900,
       model: "claude-sonnet-4-20250514",
     });
@@ -81,6 +87,9 @@ describe("runCfo", () => {
       data: mockCfoOutput,
       reasoning: "test",
       tokensUsed: 400,
+      inputTokens: 150,
+      outputTokens: 250,
+      costUsd: 0.004,
       durationMs: 900,
       model: "claude-sonnet-4-20250514",
     });
@@ -102,6 +111,9 @@ describe("runCfo", () => {
       data: mockCfoOutput,
       reasoning: "test",
       tokensUsed: 400,
+      inputTokens: 150,
+      outputTokens: 250,
+      costUsd: 0.004,
       durationMs: 900,
       model: "claude-sonnet-4-20250514",
     });
@@ -114,7 +126,8 @@ describe("runCfo", () => {
       sellingClubAsk: 30,
     });
 
-    expect(result.recommendation).toBe("NEGOTIATE");
-    expect(result.fairValue).toBe(25);
+    expect(result.data.recommendation).toBe("NEGOTIATE");
+    expect(result.data.fairValue).toBe(25);
+    expect(result.tokensUsed).toBe(400);
   });
 });

@@ -1,4 +1,4 @@
-import { callAgent } from "./base-agent";
+import { callAgent, type AgentResult } from "./base-agent";
 import type { ScoutInput, ScoutOutput } from "@/types/cortex";
 
 const SCOUT_SYSTEM_PROMPT = `Você é o CORTEX_FC_SCOUT — o sistema de prospecção e comparação de jogadores do CORTEX FC, uma plataforma de analytics futebolístico baseada em arquitetura neural.
@@ -60,18 +60,16 @@ Responda EXCLUSIVAMENTE em JSON válido, sem texto adicional:
 
 Retorne entre 3 e 8 candidatos, ordenados por fitScore decrescente.`;
 
-export async function runScout(input: ScoutInput, model?: string): Promise<ScoutOutput> {
+export async function runScout(input: ScoutInput, model?: string): Promise<AgentResult<ScoutOutput>> {
   const userMessage = buildScoutUserMessage(input);
 
-  const result = await callAgent<ScoutOutput>({
+  return callAgent<ScoutOutput>({
     agentType: "SCOUT",
     systemPrompt: SCOUT_SYSTEM_PROMPT,
     userMessage,
     model: model || "claude-sonnet-4-20250514",
     maxTokens: 4096,
   });
-
-  return result.data;
 }
 
 function buildScoutUserMessage(input: ScoutInput): string {
