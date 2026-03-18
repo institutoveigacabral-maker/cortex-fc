@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { ScrollFade } from "@/components/ui/scroll-fade"
+import { useToast } from "@/components/ui/toast"
 
 interface Transfer {
   id: string
@@ -123,6 +124,7 @@ function calcTacticalImpact(transfers: Transfer[]) {
 }
 
 export default function SimulatorPage() {
+  const { toast } = useToast()
   const [scenarios, setScenarios] = useState<Scenario[]>([
     { id: "a", name: "Cenario A", transfers: [] },
     { id: "b", name: "Cenario B", transfers: [] },
@@ -212,11 +214,13 @@ export default function SimulatorPage() {
         }
       }
       setSaveStatus("saved")
+      toast({ type: "success", title: "Cenario salvo com sucesso" })
       setTimeout(() => setSaveStatus("idle"), 2000)
     } catch {
       setSaveStatus("idle")
+      toast({ type: "error", title: "Erro ao salvar cenario", description: "Tente novamente" })
     }
-  }, [])
+  }, [toast])
 
   const triggerAutoSave = useCallback((scenario: Scenario) => {
     if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current)
@@ -309,6 +313,7 @@ export default function SimulatorPage() {
       }
       return filtered
     })
+    toast({ type: "success", title: "Cenario excluido" })
   }
 
   // ---- Load a saved scenario from dropdown ----

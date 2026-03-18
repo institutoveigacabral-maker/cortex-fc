@@ -32,6 +32,7 @@ import { ScrollFade } from "@/components/ui/scroll-fade"
 import { ScoutingPipeline } from "@/components/scouting/ScoutingPipeline"
 import { ScoutingAlerts } from "@/components/scouting/ScoutingAlerts"
 import { ScoutingSearchPanel } from "@/components/scouting/ScoutingSearchPanel"
+import { useToast } from "@/components/ui/toast"
 
 // ============================================
 // Types
@@ -109,6 +110,7 @@ interface Props {
 }
 
 export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
+  const { toast } = useToast()
   const [search, setSearch] = useState("")
   const [positionFilter, setPositionFilter] = useState("")
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 200])
@@ -248,13 +250,17 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
         body: JSON.stringify({ playerId, priority: "medium" }),
       })
       if (res.ok) {
-        // Refresh targets
+        toast({ type: "success", title: "Alvo adicionado ao scouting" })
         await refreshTargets()
         setAddingPlayer(false)
         setAddPlayerSearch("")
         setAddSearchResults([])
+      } else {
+        toast({ type: "error", title: "Erro ao adicionar alvo" })
       }
-    } catch {}
+    } catch {
+      toast({ type: "error", title: "Erro de conexao", description: "Verifique sua rede" })
+    }
   }
 
   async function updateTarget(targetId: string, updates: Record<string, unknown>) {
@@ -277,8 +283,13 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
       const res = await fetch(`/api/scouting/${targetId}`, { method: "DELETE" })
       if (res.ok) {
         setTargets((prev) => prev.filter((t) => t.id !== targetId))
+        toast({ type: "success", title: "Alvo removido do scouting" })
+      } else {
+        toast({ type: "error", title: "Erro ao remover alvo" })
       }
-    } catch {}
+    } catch {
+      toast({ type: "error", title: "Erro de conexao", description: "Verifique sua rede" })
+    }
   }
 
   async function refreshTargets() {
@@ -320,10 +331,14 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
       })
       if (res.ok) {
         setNewComment("")
-        // Refresh comments
+        toast({ type: "success", title: "Comentario adicionado" })
         await openComments(commentTargetId)
+      } else {
+        toast({ type: "error", title: "Erro ao adicionar comentario" })
       }
-    } catch {}
+    } catch {
+      toast({ type: "error", title: "Erro de conexao" })
+    }
     setPostingComment(false)
   }
 
@@ -332,8 +347,13 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
       const res = await fetch(`/api/scouting/comments?id=${commentId}`, { method: "DELETE" })
       if (res.ok && commentTargetId) {
         setComments((prev) => prev.filter((c) => c.id !== commentId))
+        toast({ type: "success", title: "Comentario removido" })
+      } else {
+        toast({ type: "error", title: "Erro ao remover comentario" })
       }
-    } catch {}
+    } catch {
+      toast({ type: "error", title: "Erro de conexao" })
+    }
   }
 
   // ============================================
@@ -434,8 +454,13 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
       if (res.ok) {
         const data = await res.json()
         setShareUrl(data.data?.url ?? "")
+        toast({ type: "success", title: "Link de compartilhamento gerado" })
+      } else {
+        toast({ type: "error", title: "Erro ao gerar link de compartilhamento" })
       }
-    } catch {}
+    } catch {
+      toast({ type: "error", title: "Erro de conexao" })
+    }
     setSharing(false)
   }
 

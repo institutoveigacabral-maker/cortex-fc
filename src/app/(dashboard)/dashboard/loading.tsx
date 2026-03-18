@@ -1,25 +1,15 @@
-import { Skeleton, StatsSkeleton, ChartSkeleton, TableSkeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton"
 
-export default function DashboardLoading() {
+export default function Loading() {
   return (
-    <div className="space-y-6 animate-fade-in" aria-busy="true">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <Skeleton className="h-7 w-48" />
-          <Skeleton className="h-4 w-64" />
-        </div>
-        <Skeleton className="h-9 w-32 rounded-md" />
+    <div className="p-6 space-y-6 animate-in fade-in duration-300">
+      <Skeleton className="h-8 w-48" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Skeleton className="h-32" />
+        <Skeleton className="h-32" />
+        <Skeleton className="h-32" />
       </div>
-
-      {/* Stat cards */}
-      <StatsSkeleton count={4} />
-
-      {/* Chart */}
-      <ChartSkeleton />
-
-      {/* Table */}
-      <TableSkeleton rows={5} cols={5} />
+      <Skeleton className="h-64" />
     </div>
   )
 }

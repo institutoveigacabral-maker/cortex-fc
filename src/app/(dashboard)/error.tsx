@@ -1,8 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { AlertTriangle, RefreshCw, WifiOff } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { AlertTriangle, RefreshCw } from "lucide-react"
 import { friendlyError } from "@/lib/error-messages"
 
 export default function DashboardError({
@@ -17,32 +16,24 @@ export default function DashboardError({
   }, [error])
 
   const msg = friendlyError(error.message)
-  const isNetworkError = error.message?.toLowerCase().includes("fetch") ||
-    error.message?.toLowerCase().includes("network")
 
   return (
-    <div className="flex items-center justify-center min-h-[60vh] animate-fade-in">
-      <div className="text-center max-w-md">
-        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-5">
-          {isNetworkError ? (
-            <WifiOff className="h-8 w-8 text-amber-400" />
-          ) : (
-            <AlertTriangle className="h-8 w-8 text-amber-400" />
-          )}
+    <div className="flex-1 flex items-center justify-center p-8">
+      <div className="max-w-md w-full text-center">
+        <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
+          <AlertTriangle className="w-6 h-6 text-red-400" />
         </div>
-        <h2 className="text-lg font-bold text-zinc-200 mb-2">
-          Algo deu errado
-        </h2>
-        <p className="text-zinc-500 text-sm mb-6">{msg}</p>
-        <Button
+        <h2 className="text-lg font-semibold text-white mb-2">Erro ao carregar</h2>
+        <p className="text-sm text-zinc-400 mb-6">{msg}</p>
+        <button
           onClick={reset}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white"
+          className="flex items-center gap-2 px-4 py-2 mx-auto bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition-colors"
         >
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Tentar novamente
-        </Button>
+          <RefreshCw className="w-4 h-4" />
+          Tentar Novamente
+        </button>
         {error.digest && (
-          <p className="text-zinc-500 text-xs font-mono mt-4">
+          <p className="text-zinc-600 text-xs font-mono mt-4">
             Codigo: {error.digest}
           </p>
         )}

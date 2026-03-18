@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { Share2, Copy, Check, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useToast } from "@/components/ui/toast"
 
 interface ShareButtonProps {
   viewType: string
@@ -19,6 +20,7 @@ export function ShareButton({ viewType, viewConfig, title }: ShareButtonProps) {
   const [shareUrl, setShareUrl] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [expiration, setExpiration] = useState<Expiration>(30)
+  const { toast } = useToast()
   const t = useTranslations("share")
   const panelRef = useRef<HTMLDivElement>(null)
 
@@ -61,7 +63,7 @@ export function ShareButton({ viewType, viewConfig, title }: ShareButtonProps) {
         setShareUrl(data.url)
       }
     } catch {
-      // silently fail
+      toast({ type: "error", title: "Erro ao gerar link", description: "Tente novamente" })
     } finally {
       setLoading(false)
     }
@@ -69,9 +71,14 @@ export function ShareButton({ viewType, viewConfig, title }: ShareButtonProps) {
 
   async function handleCopy() {
     if (!shareUrl) return
-    await navigator.clipboard.writeText(shareUrl)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    try {
+      await navigator.clipboard.writeText(shareUrl)
+      setCopied(true)
+      toast({ type: "success", title: "Link copiado para a area de transferencia" })
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      toast({ type: "error", title: "Erro ao copiar link" })
+    }
   }
 
   const expirationOptions: { value: Expiration; label: string }[] = [
