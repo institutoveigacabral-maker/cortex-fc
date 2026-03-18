@@ -22,7 +22,12 @@ export async function GET() {
 
   try {
     const start = Date.now();
-    await db.execute(sql`SELECT 1`);
+    await Promise.race([
+      db.execute(sql`SELECT 1`),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Database timeout")), 5000)
+      ),
+    ]);
     dbLatency = Date.now() - start;
   } catch (error) {
     dbStatus = "unhealthy";
@@ -52,5 +57,6 @@ export async function GET() {
 
   return NextResponse.json(health, {
     status: overallStatus === "healthy" ? 200 : 503,
+    headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
   });
 }
