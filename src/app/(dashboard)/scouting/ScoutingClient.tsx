@@ -727,10 +727,11 @@ export function ScoutingClient({ scoutingTargets, initialTargets }: Props) {
               </ScrollFade>
               {filtered.length === 0 && (
                 <EmptyStateCTA
-                  icon={<Search className="w-6 h-6" />}
+                  icon={<Crosshair className="w-6 h-6" />}
                   title="Pipeline vazio"
-                  description="Adicione alvos de scouting para acompanhar jogadores de interesse."
-                  primaryAction={{ label: "Adicionar Alvo", href: "/scouting" }}
+                  description="Explore jogadores e adicione alvos ao seu pipeline de scouting."
+                  primaryAction={{ label: "Explorar Jogadores", href: "/players/explore" }}
+                  secondaryAction={{ label: "Nova Analise", href: "/analysis/new" }}
                 />
               )}
             </CardContent>

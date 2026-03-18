@@ -393,7 +393,7 @@ export function PlayersClient({ players }: { players: PlayerListItem[] }) {
             icon={<Users className="w-6 h-6" />}
             title="Nenhum jogador na base"
             description="Importe jogadores do banco mundial ou explore ligas e times."
-            primaryAction={{ label: "Importar Jogadores", href: "/players" }}
+            primaryAction={{ label: "Importar Jogadores", href: "/players/explore" }}
             secondaryAction={{ label: "Explorar Ligas", href: "/players/explore" }}
           />
         )}
@@ -497,7 +497,7 @@ export function PlayersClient({ players }: { players: PlayerListItem[] }) {
               icon={<Users className="w-6 h-6" />}
               title="Nenhum jogador na base"
               description="Importe jogadores do banco mundial ou explore ligas e times."
-              primaryAction={{ label: "Importar Jogadores", href: "/players" }}
+              primaryAction={{ label: "Importar Jogadores", href: "/players/explore" }}
               secondaryAction={{ label: "Explorar Ligas", href: "/players/explore" }}
             />
           )}

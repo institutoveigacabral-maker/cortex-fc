@@ -356,8 +356,9 @@ export function ReportsClient({ analyses }: Props) {
               <EmptyStateCTA
                 icon={<FileText className="w-6 h-6" />}
                 title="Nenhum relatorio gerado"
-                description="Gere pareceres neurais completos em PDF para seus jogadores."
-                primaryAction={{ label: "Gerar Relatorio", href: "/reports" }}
+                description="Execute analises neurais nos seus jogadores para gerar pareceres completos em PDF."
+                primaryAction={{ label: "Nova Analise", href: "/analysis/new" }}
+                secondaryAction={{ label: "Explorar Jogadores", href: "/players/explore" }}
               />
             ) : (
               <EmptyState
