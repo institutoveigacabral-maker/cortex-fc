@@ -1,11 +1,11 @@
 # Cortex FC
 
-Plataforma de analytics de futebol com agentes de IA.
-
 ![CI](https://github.com/institutoveigacabral-maker/cortex-fc/actions/workflows/ci.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Cortex FC** combina inteligencia artificial (Anthropic Claude) com dados estatisticos para oferecer analises taticas, scouting de jogadores e modelagem financeira para clubes de futebol. A plataforma opera com seis agentes de IA especializados que trabalham em conjunto para suportar decisoes de contratacao, blindagem e emprestimo.
+Plataforma de analytics de futebol com agentes de IA. Combina inteligencia artificial (Anthropic Claude) com dados estatisticos para oferecer analises taticas, scouting de jogadores e modelagem financeira para clubes de futebol.
+
+Seis agentes de IA especializados trabalham em conjunto para suportar decisoes de contratacao, blindagem e emprestimo, alimentados por indices proprietarios (Vx e Rx) e contexto RAG.
 
 Producao: [https://cortex-fc.vercel.app](https://cortex-fc.vercel.app)
 
@@ -26,7 +26,7 @@ Producao: [https://cortex-fc.vercel.app](https://cortex-fc.vercel.app)
 | Email | Resend |
 | UI | Tailwind CSS 4, Radix UI, Recharts, Framer Motion |
 | i18n | next-intl (PT-BR, EN) |
-| PWA | Serwist (service worker, offline support) |
+| PWA | Serwist (service worker, suporte offline) |
 | Testes | Vitest, Testing Library, jsdom |
 | Deploy | Vercel |
 
@@ -36,7 +36,7 @@ Producao: [https://cortex-fc.vercel.app](https://cortex-fc.vercel.app)
 
 ### Agentes de IA
 
-A plataforma conta com seis agentes especializados, todos construidos sobre um `base-agent` comum:
+A plataforma conta com seis agentes especializados, construidos sobre um `base-agent` comum:
 
 - **Oracle** -- Agente central de consulta. Responde perguntas sobre jogadores e tatica usando contexto RAG.
 - **Analista** -- Analise estatistica detalhada de desempenho individual e coletivo.
@@ -47,7 +47,7 @@ A plataforma conta com seis agentes especializados, todos construidos sobre um `
 
 ### Analytics
 
-- Calculo de indices proprietarios: **Vx** (valor de mercado) e **Rx** (rendimento).
+- Indices proprietarios: **Vx** (valor de mercado) e **Rx** (rendimento).
 - Scatter plot Vx vs Rx para comparacao visual de elencos.
 - Radar neural por jogador com camadas de desempenho.
 - Heatmap posicional e clusters (GK, CB, FB, MF, WG, ST).
@@ -73,7 +73,7 @@ A plataforma conta com seis agentes especializados, todos construidos sobre um `
 
 ---
 
-## Primeiros Passos
+## Setup Local
 
 ### Pre-requisitos
 
@@ -96,7 +96,7 @@ Copie o arquivo de exemplo e preencha com suas credenciais:
 cp .env.example .env.local
 ```
 
-Consulte o arquivo [`.env.example`](.env.example) para a lista completa de variaveis. As principais sao:
+Variaveis principais:
 
 | Variavel | Descricao |
 |----------|-----------|
@@ -111,6 +111,8 @@ Consulte o arquivo [`.env.example`](.env.example) para a lista completa de varia
 | `CRON_SECRET` | Secret para autenticacao dos cron jobs |
 | `RAPIDAPI_KEY` | Chave para API-Football (dados de partidas) |
 
+Consulte [`.env.example`](.env.example) para a lista completa.
+
 ### Banco de Dados
 
 ```bash
@@ -118,7 +120,7 @@ pnpm drizzle-kit push
 pnpm db:seed              # opcional: dados de exemplo
 ```
 
-### Executar
+### Servidor de Desenvolvimento
 
 ```bash
 pnpm dev
@@ -154,14 +156,24 @@ src/
 ├── app/
 │   ├── (auth)/              # Paginas de login/registro
 │   ├── (dashboard)/         # Dashboard principal
-│   ├── api/                 # API routes (internal + v1)
+│   │   ├── agent-console/   # Console dos agentes de IA
+│   │   ├── analysis/        # Analises de jogadores
+│   │   ├── analytics/       # Graficos e metricas
+│   │   ├── chat/            # Chat com agentes
+│   │   ├── players/         # Gestao de jogadores
+│   │   ├── scouting/        # Relatorios de scouting
+│   │   ├── reports/         # Relatorios exportaveis
+│   │   ├── simulator/       # Simulador de cenarios
+│   │   ├── billing/         # Assinatura e pagamentos
+│   │   ├── settings/        # Configuracoes
+│   │   ├── holding/         # Visao multi-clube
+│   │   └── audit-log/       # Logs de auditoria
+│   ├── api/                 # API routes (internal + v1 publica)
 │   ├── docs/                # Documentacao publica
 │   ├── pricing/             # Pagina de precos
-│   ├── scouting/            # Paginas de scouting
-│   └── reports/             # Paginas de relatorios
-├── auth.ts                  # Configuracao NextAuth.js
+│   └── scouting/            # Compartilhamento publico de scouting
 ├── components/
-│   ├── cortex/              # Componentes do dominio (PlayerCard, NeuralRadar, etc.)
+│   ├── cortex/              # Componentes do dominio (PlayerCard, NeuralRadar, VxRxScatter, etc.)
 │   └── ui/                  # Componentes base (Radix UI)
 ├── db/
 │   ├── schema.ts            # Schema Drizzle (tabelas, enums, relations)
@@ -181,10 +193,9 @@ src/
 │   ├── stripe.ts            # Integracao Stripe
 │   ├── pdf-generator.ts     # Geracao de PDF
 │   ├── rag-context.ts       # Contexto RAG para agentes
-│   ├── webhook-dispatch.ts  # Dispatch de webhooks
-│   └── ...
+│   └── webhook-dispatch.ts  # Dispatch de webhooks
 ├── messages/                # Arquivos de traducao (pt-BR.json, en.json)
-├── services/                # Integracao com APIs externas (API-Football, etc.)
+├── services/                # Integracao com APIs externas (API-Football)
 └── types/                   # Tipos TypeScript compartilhados
 ```
 
@@ -195,74 +206,6 @@ src/
 3. O sistema calcula indices Vx (valor) e Rx (rendimento).
 4. A matriz de decisao gera recomendacoes: CONTRATAR, BLINDAR, MONITORAR, EMPRESTIMO ou RECUSAR.
 5. Relatorios sao gerados e podem ser exportados em PDF ou compartilhados.
-
----
-
-## Referencia da API
-
-Para documentacao completa, consulte [API.md](API.md).
-
-### Rotas Internas (autenticacao por sessao)
-
-| Metodo | Rota | Descricao |
-|--------|------|-----------|
-| GET/POST | `/api/players` | CRUD de jogadores |
-| GET/PUT/DELETE | `/api/players/[id]` | Jogador por ID |
-| GET/POST | `/api/team` | CRUD de equipes |
-| POST | `/api/analyses` | Criar analise de jogador |
-| GET/DELETE | `/api/analyses/[id]` | Analise por ID |
-| POST | `/api/oracle` | Consulta ao agente Oracle |
-| POST | `/api/analista` | Consulta ao agente Analista |
-| POST | `/api/scout` | Consulta ao agente Scout |
-| POST | `/api/cfo` | Consulta ao agente CFO |
-| POST | `/api/coaching` | Consulta ao agente Coaching |
-| POST | `/api/board` | Consulta ao agente Board Advisor |
-| POST | `/api/chat` | Chat geral com IA |
-| POST | `/api/synergy` | Calculo de sinergia de elenco |
-| GET/POST | `/api/scouting` | CRUD de relatorios de scouting |
-| POST | `/api/scouting/share` | Compartilhar relatorio |
-| POST | `/api/scouting/alerts` | Configurar alertas |
-| GET | `/api/export` | Exportar relatorio em PDF |
-| GET | `/api/agent-runs` | Historico de execucoes de agentes |
-| GET | `/api/audit-logs` | Logs de auditoria |
-| GET | `/api/notifications` | Notificacoes do usuario |
-| POST | `/api/invites` | Enviar convite por email |
-| POST | `/api/orgs` | Criar organizacao |
-| POST | `/api/orgs/switch` | Trocar organizacao ativa |
-| POST | `/api/org/branding` | Configurar branding da org |
-| POST | `/api/org/sso` | Configurar SSO |
-| GET | `/api/health` | Health check |
-
-### API Publica (v1) -- autenticacao por API key
-
-| Metodo | Rota | Descricao |
-|--------|------|-----------|
-| GET | `/api/v1/players` | Listar jogadores |
-| POST | `/api/v1/analyses` | Criar analise |
-| POST | `/api/v1/oracle` | Consulta ao Oracle |
-| GET | `/api/v1/reports` | Listar relatorios |
-| POST | `/api/v1/keys` | Gerenciar API keys |
-| POST | `/api/v1/webhooks` | Gerenciar webhooks |
-
-### Cron Jobs (Vercel Cron)
-
-| Schedule | Rota | Descricao |
-|----------|------|-----------|
-| `0 6 * * *` | `/api/cron/sync-matches` | Sincronizar partidas |
-| `0 7 * * *` | `/api/cron/sync-stats` | Sincronizar estatisticas |
-| `0 9 * * 1` | `/api/cron/weekly-report` | Relatorio semanal |
-
----
-
-## Testes
-
-```bash
-pnpm test              # executar testes
-pnpm test:watch        # modo watch
-pnpm test:coverage     # com cobertura (v8)
-```
-
-Testes usam Vitest com jsdom. Cobertura configurada para `src/lib/**` e `src/services/**`.
 
 ---
 
@@ -295,12 +238,6 @@ pnpm drizzle-kit push
 - **Resend** -- Envio de emails transacionais
 - **Sentry** -- Monitoramento de erros
 - **Anthropic** -- API de IA (Claude)
-
----
-
-## Contribuindo
-
-Consulte [CONTRIBUTING.md](CONTRIBUTING.md) para instrucoes sobre branch naming, commits e pull requests.
 
 ---
 
