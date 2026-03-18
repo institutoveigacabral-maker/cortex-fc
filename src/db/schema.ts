@@ -649,6 +649,34 @@ export const transferScenarios = pgTable("transfer_scenarios", {
 ]);
 
 // ============================================
+// SHARED VIEWS
+// ============================================
+
+export const sharedViews = pgTable(
+  "shared_views",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    orgId: uuid("org_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
+    token: text("token").notNull().unique(),
+    viewType: text("view_type").notNull(), // "dashboard", "player", "analysis", "scouting"
+    viewConfig: jsonb("view_config").notNull(), // filters, sort, etc
+    title: text("title"),
+    expiresAt: timestamp("expires_at"),
+    viewCount: integer("view_count").default(0),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (table) => [
+    index("idx_sv_token").on(table.token),
+    index("idx_sv_org").on(table.orgId),
+  ]
+);
+
+// ============================================
 // RELATIONS
 // ============================================
 

@@ -6,6 +6,7 @@ import {
   createScoutingComment,
   deleteScoutingComment,
 } from "@/db/queries";
+import { notifyMentions } from "@/lib/notifications";
 
 // GET — list comments for a scouting target
 export async function GET(request: NextRequest) {
@@ -48,6 +49,15 @@ export async function POST(request: NextRequest) {
       orgId: session!.orgId,
       content: content.trim(),
     });
+
+    // Notify @mentioned users (fire-and-forget)
+    notifyMentions({
+      text: content.trim(),
+      orgId: session!.orgId,
+      fromUserName: session!.name || session!.email,
+      entityType: "scouting_target",
+      entityId: targetId,
+    }).catch((err) => console.error("Failed to notify mentions:", err));
 
     return NextResponse.json({ data: comment }, { status: 201 });
   } catch (err) {

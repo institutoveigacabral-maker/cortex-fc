@@ -73,6 +73,8 @@
     "auditLogDesc": "Historico de acoes",
     "billingDesc": "Planos e pagamento",
     "settingsDesc": "IA, API, notificacoes",
+    "notifications": "Notificacoes",
+    "notificationsDesc": "Central de notificacoes",
     "analytics": "Analytics",
     "analyticsDesc": "Insights consolidados",
     "analyses": "Analises",
@@ -182,6 +184,11 @@
   },
   "notifications": {
     "title": "Notificacoes",
+    "all": "Todas",
+    "unread": "Nao lidas",
+    "mentions": "Mencoes",
+    "alerts": "Alertas",
+    "unreadCount": "nao lidas",
     "markAllRead": "Marcar todas como lidas",
     "noNotifications": "Nenhuma notificacao",
     "analysisComplete": "Analise concluida",
@@ -380,5 +387,24 @@
     "hasAccount": "Ja tem conta?",
     "loginWithGoogle": "Entrar com Google",
     "orContinueWith": "ou continue com"
+  },
+  "activity": {
+    "timeline": "Historico",
+    "createdAnalysis": "criou uma analise",
+    "deletedAnalysis": "removeu uma analise",
+    "addedToScouting": "adicionou ao scouting",
+    "movedPipeline": "moveu no pipeline",
+    "generatedReport": "gerou um relatorio",
+    "importedPlayer": "importou jogador",
+    "commented": "comentou",
+    "executedAgent": "executou agente"
+  },
+  "share": {
+    "shareView": "Compartilhar",
+    "copyLink": "Copiar link",
+    "linkCopied": "Link copiado",
+    "expiresIn": "Expira em",
+    "days": "dias",
+    "never": "Nunca"
   }
 }

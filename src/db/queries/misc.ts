@@ -11,6 +11,7 @@ import {
   auditLogs,
   webhookEndpoints,
   transferScenarios,
+  sharedViews,
   users,
 } from "@/db/schema";
 
@@ -125,13 +126,15 @@ export async function getAuditLogs(orgId: string, options?: {
   action?: string;
   userId?: string;
   entityType?: string;
+  entityId?: string;
 }) {
-  const { limit = 50, offset = 0, action, userId, entityType } = options ?? {};
+  const { limit = 50, offset = 0, action, userId, entityType, entityId } = options ?? {};
 
   const conditions = [eq(auditLogs.orgId, orgId)];
   if (action) conditions.push(eq(auditLogs.action, action));
   if (userId) conditions.push(eq(auditLogs.userId, userId));
   if (entityType) conditions.push(eq(auditLogs.entityType, entityType));
+  if (entityId) conditions.push(eq(auditLogs.entityId, entityId));
 
   return db
     .select({
@@ -252,4 +255,29 @@ export async function deleteScenario(id: string, userId: string) {
   await db
     .delete(transferScenarios)
     .where(and(eq(transferScenarios.id, id), eq(transferScenarios.userId, userId)));
+}
+
+// ============================================
+// SHARED VIEWS
+// ============================================
+
+export async function createSharedView(data: typeof sharedViews.$inferInsert) {
+  const [view] = await db.insert(sharedViews).values(data).returning();
+  return view;
+}
+
+export async function getSharedView(token: string) {
+  const [view] = await db
+    .select()
+    .from(sharedViews)
+    .where(eq(sharedViews.token, token))
+    .limit(1);
+  return view || null;
+}
+
+export async function incrementViewCount(token: string) {
+  await db
+    .update(sharedViews)
+    .set({ viewCount: sql`${sharedViews.viewCount} + 1` })
+    .where(eq(sharedViews.token, token));
 }

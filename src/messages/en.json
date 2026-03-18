@@ -73,6 +73,8 @@
     "auditLogDesc": "Action history",
     "billingDesc": "Plans and billing",
     "settingsDesc": "AI, API, notifications",
+    "notifications": "Notifications",
+    "notificationsDesc": "Notification center",
     "analytics": "Analytics",
     "analyticsDesc": "Consolidated insights",
     "analyses": "Analyses",
@@ -182,6 +184,11 @@
   },
   "notifications": {
     "title": "Notifications",
+    "all": "All",
+    "unread": "Unread",
+    "mentions": "Mentions",
+    "alerts": "Alerts",
+    "unreadCount": "unread",
     "markAllRead": "Mark all as read",
     "noNotifications": "No notifications",
     "analysisComplete": "Analysis complete",
@@ -380,5 +387,24 @@
     "hasAccount": "Already have an account?",
     "loginWithGoogle": "Sign in with Google",
     "orContinueWith": "or continue with"
+  },
+  "activity": {
+    "timeline": "History",
+    "createdAnalysis": "created an analysis",
+    "deletedAnalysis": "deleted an analysis",
+    "addedToScouting": "added to scouting",
+    "movedPipeline": "moved in pipeline",
+    "generatedReport": "generated a report",
+    "importedPlayer": "imported player",
+    "commented": "commented",
+    "executedAgent": "executed agent"
+  },
+  "share": {
+    "shareView": "Share",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied",
+    "expiresIn": "Expires in",
+    "days": "days",
+    "never": "Never"
   }
 }
