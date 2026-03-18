@@ -6,3 +6,4 @@ export * from "./org";
 export * from "./reports";
 export * from "./chat";
 export * from "./misc";
+export * from "./analytics";

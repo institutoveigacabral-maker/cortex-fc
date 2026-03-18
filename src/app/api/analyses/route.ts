@@ -5,6 +5,8 @@ import { hasPermission } from "@/lib/rbac";
 import { isValidUUID, isNumberInRange, stripHtmlTags } from "@/lib/validation";
 import { inngest } from "@/lib/inngest-client";
 import { invalidateOnMutation } from "@/lib/cache";
+import { checkAnalysisQuota } from "@/lib/feature-gates";
+import { checkAndAlertUsage } from "@/lib/cost-alerts";
 
 const VALID_DECISIONS = [
   "CONTRATAR",
@@ -45,6 +47,19 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Sem permissao para criar analises" },
         { status: 403 }
+      );
+    }
+
+    // Quota check: analyses per month
+    const analysisQuota = await checkAnalysisQuota(session!.orgId, session!.tier);
+    if (!analysisQuota.allowed) {
+      return NextResponse.json(
+        {
+          error: "Limite de analises atingido para este mes. Faca upgrade para continuar.",
+          usage: analysisQuota.usage,
+          limit: analysisQuota.limit,
+        },
+        { status: 429 }
       );
     }
 
@@ -185,6 +200,13 @@ export async function POST(request: Request) {
 
     // Invalidate related caches
     await invalidateOnMutation("analysis.created", session!.orgId);
+
+    // Check usage alerts after successful creation
+    try {
+      await checkAndAlertUsage(session!.orgId, session!.tier, session!.userId);
+    } catch (err) {
+      console.error("Failed to check usage alerts:", err);
+    }
 
     return NextResponse.json({ data: analysis }, { status: 201 });
   } catch (error) {

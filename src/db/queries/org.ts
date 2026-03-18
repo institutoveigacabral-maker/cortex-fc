@@ -6,6 +6,9 @@ import {
   avg,
   and,
   sum,
+  sql,
+  gte,
+  isNull,
 } from "drizzle-orm";
 import {
   neuralAnalyses,
@@ -365,3 +368,35 @@ export async function upsertUserPreferences(
     .returning();
   return inserted;
 }
+
+// ============================================
+// BILLING & STRIPE
+// ============================================
+
+/**
+ * Find org by Stripe customer ID
+ */
+export async function getOrgByStripeCustomerId(customerId: string) {
+  const [org] = await db
+    .select()
+    .from(organizations)
+    .where(eq(organizations.stripeCustomerId, customerId))
+    .limit(1);
+  return org || null;
+}
+
+/**
+ * Update org subscription tier
+ */
+export async function updateOrgTier(
+  orgId: string,
+  tier: "free" | "scout_individual" | "club_professional" | "holding_multiclub"
+) {
+  await db
+    .update(organizations)
+    .set({ tier, updatedAt: new Date() })
+    .where(eq(organizations.id, orgId));
+}
+
+// Usage metering is in analytics.ts — see getOrgUsageThisMonth
+

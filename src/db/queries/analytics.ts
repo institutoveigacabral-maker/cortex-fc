@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { neuralAnalyses, agentRuns, scoutingTargets } from "@/db/schema";
-import { eq, and, gte, sql, count } from "drizzle-orm";
+import { eq, and, gte, sql, count, sum, isNull } from "drizzle-orm";
 
 /**
  * Analyses created per day for the last N days.
@@ -81,6 +81,48 @@ export async function getScnTrend(playerId: string, months: number = 12) {
     .orderBy(neuralAnalyses.createdAt);
 
   return result;
+}
+
+/**
+ * Get org usage for the current calendar month.
+ * Used by feature gates, cost alerts, and billing to enforce quotas.
+ */
+export async function getOrgUsageThisMonth(orgId: string) {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  // Analyses: neuralAnalyses has no orgId, so filter via analystId -> users.org_id
+  const [analysisResult] = await db
+    .select({ value: count() })
+    .from(neuralAnalyses)
+    .where(
+      and(
+        sql`${neuralAnalyses.analystId} IN (SELECT id FROM users WHERE org_id = ${orgId})`,
+        gte(neuralAnalyses.createdAt, startOfMonth),
+        isNull(neuralAnalyses.deletedAt)
+      )
+    );
+
+  // Agent runs: has orgId directly
+  const [agentResult] = await db
+    .select({
+      runs: count(),
+      tokens: sum(agentRuns.tokensUsed),
+    })
+    .from(agentRuns)
+    .where(
+      and(
+        eq(agentRuns.orgId, orgId),
+        gte(agentRuns.createdAt, startOfMonth),
+        eq(agentRuns.success, true)
+      )
+    );
+
+  return {
+    analyses: analysisResult?.value ?? 0,
+    agentRuns: agentResult?.runs ?? 0,
+    tokensUsed: Number(agentResult?.tokens ?? 0),
+  };
 }
 
 /**

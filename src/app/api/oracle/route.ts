@@ -4,8 +4,9 @@ import { hasPermission } from "@/lib/rbac";
 import { checkRateLimit, aiRateLimit } from "@/lib/rate-limit";
 import { createAgentRun } from "@/db/queries";
 import { isValidUUID } from "@/lib/validation";
-import { canUseAgent } from "@/lib/feature-gates";
+import { canUseAgent, checkAgentQuota } from "@/lib/feature-gates";
 import { canUseModel, getDefaultModel } from "@/lib/ai-models";
+import { checkAndAlertUsage } from "@/lib/cost-alerts";
 import { inngest } from "@/lib/inngest-client";
 import { getCachedAgentResponse, setCachedAgentResponse, TTL } from "@/lib/cache";
 
@@ -27,6 +28,19 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: "Seu plano nao inclui acesso ao agente ORACLE. Faca upgrade para continuar." },
         { status: 403 }
+      );
+    }
+
+    // Quota check: agent runs per month
+    const agentQuota = await checkAgentQuota(session!.orgId, session!.tier);
+    if (!agentQuota.allowed) {
+      return NextResponse.json(
+        {
+          error: "Limite de execucoes de agente atingido para este mes. Faca upgrade para continuar.",
+          usage: agentQuota.usage,
+          limit: agentQuota.limit,
+        },
+        { status: 429 }
       );
     }
 
@@ -170,6 +184,13 @@ export async function POST(req: Request) {
       });
     } catch (err) {
       console.error("Failed to send agent.completed event:", err);
+    }
+
+    // Check usage alerts after successful run
+    try {
+      await checkAndAlertUsage(session!.orgId, session!.tier, session!.userId);
+    } catch (err) {
+      console.error("Failed to check usage alerts:", err);
     }
 
     return NextResponse.json({ data: result });

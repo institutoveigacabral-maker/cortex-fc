@@ -5,6 +5,8 @@
  * Check with `canUseFeature()` or `getLimit()` in API routes.
  */
 
+import { getOrgUsageThisMonth } from "@/db/queries";
+
 type Tier = "free" | "scout_individual" | "club_professional" | "holding_multiclub";
 
 interface TierLimits {
@@ -70,6 +72,123 @@ const TIER_LIMITS: Record<Tier, TierLimits> = {
     exportFormats: ["csv", "pdf", "xlsx"],
   },
 };
+
+// ============================================
+// USAGE QUOTA LIMITS (extended tier config)
+// ============================================
+
+export interface UsageQuotaLimits {
+  analysesPerMonth: number;
+  agentRunsPerMonth: number;
+  tokensPerMonth: number;
+  maxPlayers: number;
+  maxTeamMembers: number;
+  canUseChat: boolean;
+  canExportPDF: boolean;
+  canUseSimulator: boolean;
+  canAccessHolding: boolean;
+  canAccessAPI: boolean;
+}
+
+export const USAGE_QUOTA_LIMITS: Record<string, UsageQuotaLimits> = {
+  free: {
+    analysesPerMonth: 10,
+    agentRunsPerMonth: 0,
+    tokensPerMonth: 0,
+    maxPlayers: 50,
+    maxTeamMembers: 1,
+    canUseChat: false,
+    canExportPDF: false,
+    canUseSimulator: true,
+    canAccessHolding: false,
+    canAccessAPI: false,
+  },
+  scout_individual: {
+    analysesPerMonth: 50,
+    agentRunsPerMonth: 20,
+    tokensPerMonth: 100000,
+    maxPlayers: 200,
+    maxTeamMembers: 3,
+    canUseChat: true,
+    canExportPDF: true,
+    canUseSimulator: true,
+    canAccessHolding: false,
+    canAccessAPI: false,
+  },
+  club_professional: {
+    analysesPerMonth: -1, // unlimited
+    agentRunsPerMonth: -1,
+    tokensPerMonth: -1,
+    maxPlayers: -1,
+    maxTeamMembers: 20,
+    canUseChat: true,
+    canExportPDF: true,
+    canUseSimulator: true,
+    canAccessHolding: false,
+    canAccessAPI: true,
+  },
+  holding_multiclub: {
+    analysesPerMonth: -1,
+    agentRunsPerMonth: -1,
+    tokensPerMonth: -1,
+    maxPlayers: -1,
+    maxTeamMembers: -1, // unlimited
+    canUseChat: true,
+    canExportPDF: true,
+    canUseSimulator: true,
+    canAccessHolding: true,
+    canAccessAPI: true,
+  },
+};
+
+export function getUsageQuotaLimits(tier: string): UsageQuotaLimits {
+  return USAGE_QUOTA_LIMITS[tier] || USAGE_QUOTA_LIMITS.free;
+}
+
+// Check if a specific usage is within limits (-1 means unlimited)
+export function isWithinLimit(current: number, limit: number): boolean {
+  if (limit === -1) return true;
+  return current < limit;
+}
+
+// Get usage percentage (0-100, capped at 100)
+export function getUsagePercent(current: number, limit: number): number {
+  if (limit === -1) return 0;
+  if (limit === 0) return current > 0 ? 100 : 0;
+  return Math.min(Math.round((current / limit) * 100), 100);
+}
+
+// ============================================
+// QUOTA CHECK HELPERS (async, hit DB)
+// ============================================
+
+export async function checkAnalysisQuota(orgId: string, tier: string): Promise<{ allowed: boolean; usage: number; limit: number }> {
+  const limits = getUsageQuotaLimits(tier);
+  if (limits.analysesPerMonth === -1) return { allowed: true, usage: 0, limit: -1 };
+
+  const usage = await getOrgUsageThisMonth(orgId);
+  return {
+    allowed: isWithinLimit(usage.analyses, limits.analysesPerMonth),
+    usage: usage.analyses,
+    limit: limits.analysesPerMonth,
+  };
+}
+
+export async function checkAgentQuota(orgId: string, tier: string): Promise<{ allowed: boolean; usage: number; limit: number }> {
+  const limits = getUsageQuotaLimits(tier);
+  if (limits.agentRunsPerMonth === -1) return { allowed: true, usage: 0, limit: -1 };
+
+  const usage = await getOrgUsageThisMonth(orgId);
+  return {
+    allowed: isWithinLimit(usage.agentRuns, limits.agentRunsPerMonth),
+    usage: usage.agentRuns,
+    limit: limits.agentRunsPerMonth,
+  };
+}
+
+// ============================================
+// ORIGINAL FEATURE GATE FUNCTIONS
+// ============================================
 
 /**
  * Get limits for a tier
