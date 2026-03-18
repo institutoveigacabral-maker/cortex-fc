@@ -454,6 +454,61 @@ export async function sendInviteEmail(
   });
 }
 
+export async function sendScheduledReportEmail(
+  to: string,
+  reportTitle: string,
+  reportType: string,
+  viewUrl: string,
+  orgName: string,
+): Promise<boolean> {
+  const typeLabels: Record<string, { label: string; color: string }> = {
+    player_report: { label: "Parecer de Jogador", color: "#10b981" },
+    squad_analysis: { label: "Analise de Elenco", color: "#3b82f6" },
+    scouting_report: { label: "Relatorio de Scouting", color: "#8b5cf6" },
+    weekly_newsletter: { label: "Newsletter Semanal", color: "#eab308" },
+  };
+
+  const badge = typeLabels[reportType] ?? { label: reportType, color: "#a1a1aa" };
+
+  return sendEmail({
+    to,
+    subject: `Relatorio Agendado: ${reportTitle} — ${orgName}`,
+    html: wrap(`
+      <h1 style="margin:0 0 4px;color:#e4e4e7;font-size:22px;font-weight:700;">
+        Relatorio Agendado Disponivel
+      </h1>
+      <p style="margin:0 0 24px;color:#a1a1aa;font-size:14px;">
+        Um relatorio agendado de <strong style="color:#e4e4e7;">${orgName}</strong> foi gerado automaticamente.
+      </p>
+
+      <!-- Report Card -->
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#09090b;border:1px solid #27272a;border-radius:12px;">
+        <tr>
+          <td style="padding:20px 24px;">
+            <p style="margin:0 0 4px;color:#71717a;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Titulo</p>
+            <p style="margin:0 0 16px;color:#e4e4e7;font-size:18px;font-weight:600;">${reportTitle}</p>
+            <p style="margin:0 0 8px;color:#71717a;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Tipo</p>
+            <table cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="background-color:${badge.color};border-radius:6px;padding:6px 16px;">
+                  <span style="color:#ffffff;font-size:13px;font-weight:700;letter-spacing:0.5px;">${badge.label}</span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+
+      ${ctaButton("Ver Relatorio", viewUrl)}
+
+      <p style="margin:0;color:#52525b;font-size:12px;">
+        Este relatorio foi gerado automaticamente com base nos seus agendamentos.
+        Gerencie seus agendamentos nas configuracoes de relatorios.
+      </p>
+    `),
+  });
+}
+
 export async function sendTrialReminderEmail(
   to: string,
   name: string,

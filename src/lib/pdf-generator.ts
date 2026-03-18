@@ -10,6 +10,30 @@ import {
 import type { AnalysisUI } from "@/lib/db-transforms";
 
 // ============================================
+// Branding options
+// ============================================
+
+export interface PdfBranding {
+  orgName: string;
+  logoUrl?: string;
+  accentColor?: string;
+}
+
+// ============================================
+// Timestamp helper
+// ============================================
+
+function formatTimestamp(): string {
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2, "0");
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const yyyy = now.getFullYear();
+  const hh = String(now.getHours()).padStart(2, "0");
+  const min = String(now.getMinutes()).padStart(2, "0");
+  return `Gerado em ${dd}/${mm}/${yyyy} as ${hh}:${min}`;
+}
+
+// ============================================
 // Shared styles
 // ============================================
 
@@ -150,11 +174,15 @@ function decisionStyle(decision: string) {
 function PlayerReportPDF({
   analysis,
   orgName,
+  branding,
 }: {
   analysis: AnalysisUI;
   orgName?: string;
+  branding?: PdfBranding;
 }) {
   const ds = decisionStyle(analysis.decision);
+  const resolvedOrgName = branding?.orgName ?? orgName ?? "CORTEX FC";
+  const accent = branding?.accentColor ?? colors.emerald;
 
   return React.createElement(
     Document,
@@ -166,7 +194,7 @@ function PlayerReportPDF({
       // Header
       React.createElement(View, { style: s.header },
         React.createElement(View, {},
-          React.createElement(Text, { style: s.title }, orgName ?? "CORTEX FC"),
+          React.createElement(Text, { style: { ...s.title, color: accent } }, resolvedOrgName),
           React.createElement(Text, { style: s.subtitle }, "Parecer ORACLE — Relatorio Neural de Jogador"),
         ),
         React.createElement(Text, { style: { fontSize: 8, color: colors.textDim } },
@@ -291,8 +319,9 @@ function PlayerReportPDF({
 
       // Footer
       React.createElement(View, { style: s.footer },
-        React.createElement(Text, {}, `${orgName ?? "CORTEX FC"} — Analytics Futebolístico Neural`),
-        React.createElement(Text, {}, `Gerado em ${new Date().toLocaleDateString("pt-BR")}`),
+        React.createElement(Text, {}, `${resolvedOrgName} — Analytics Futebolistico Neural`),
+        React.createElement(Text, {}, formatTimestamp()),
+        React.createElement(Text, { render: ({ pageNumber, totalPages }: { pageNumber: number; totalPages: number }) => `Pagina ${pageNumber} de ${totalPages}` }, ""),
       ),
     ),
   );
@@ -306,11 +335,16 @@ function SquadAnalysisPDF({
   analyses,
   orgName,
   title,
+  branding,
 }: {
   analyses: AnalysisUI[];
   orgName?: string;
   title?: string;
+  branding?: PdfBranding;
 }) {
+  const resolvedOrgName = branding?.orgName ?? orgName ?? "CORTEX FC";
+  const accent = branding?.accentColor ?? colors.emerald;
+
   return React.createElement(
     Document,
     {},
@@ -320,7 +354,7 @@ function SquadAnalysisPDF({
 
       React.createElement(View, { style: s.header },
         React.createElement(View, {},
-          React.createElement(Text, { style: s.title }, orgName ?? "CORTEX FC"),
+          React.createElement(Text, { style: { ...s.title, color: accent } }, resolvedOrgName),
           React.createElement(Text, { style: s.subtitle }, title ?? "Analise de Elenco"),
         ),
         React.createElement(Text, { style: { fontSize: 8, color: colors.textDim } },
@@ -361,8 +395,9 @@ function SquadAnalysisPDF({
       ),
 
       React.createElement(View, { style: s.footer },
-        React.createElement(Text, {}, `${orgName ?? "CORTEX FC"} — Analytics Futebolístico Neural`),
-        React.createElement(Text, {}, `Gerado em ${new Date().toLocaleDateString("pt-BR")}`),
+        React.createElement(Text, {}, `${resolvedOrgName} — Analytics Futebolistico Neural`),
+        React.createElement(Text, {}, formatTimestamp()),
+        React.createElement(Text, { render: ({ pageNumber, totalPages }: { pageNumber: number; totalPages: number }) => `Pagina ${pageNumber} de ${totalPages}` }, ""),
       ),
     ),
   );
@@ -376,9 +411,10 @@ export type ReportTemplate = "player_report" | "squad_analysis" | "scouting_repo
 
 export async function generatePlayerReportPDF(
   analysis: AnalysisUI,
-  orgName?: string
+  orgName?: string,
+  branding?: PdfBranding
 ): Promise<Buffer> {
-  const doc = PlayerReportPDF({ analysis, orgName });
+  const doc = PlayerReportPDF({ analysis, orgName, branding });
   return renderToBuffer(// eslint-disable-next-line @typescript-eslint/no-explicit-any
   doc as any);
 }
@@ -386,21 +422,24 @@ export async function generatePlayerReportPDF(
 export async function generateSquadAnalysisPDF(
   analyses: AnalysisUI[],
   orgName?: string,
-  title?: string
+  title?: string,
+  branding?: PdfBranding
 ): Promise<Buffer> {
-  const doc = SquadAnalysisPDF({ analyses, orgName, title });
+  const doc = SquadAnalysisPDF({ analyses, orgName, title, branding });
   return renderToBuffer(// eslint-disable-next-line @typescript-eslint/no-explicit-any
   doc as any);
 }
 
 export async function generateScoutingReportPDF(
   analyses: AnalysisUI[],
-  orgName?: string
+  orgName?: string,
+  branding?: PdfBranding
 ): Promise<Buffer> {
   const doc = SquadAnalysisPDF({
     analyses,
     orgName,
     title: "Relatorio de Scouting — Alvos de Mercado",
+    branding,
   });
   return renderToBuffer(// eslint-disable-next-line @typescript-eslint/no-explicit-any
   doc as any);
@@ -408,12 +447,14 @@ export async function generateScoutingReportPDF(
 
 export async function generateWeeklyNewsletterPDF(
   analyses: AnalysisUI[],
-  orgName?: string
+  orgName?: string,
+  branding?: PdfBranding
 ): Promise<Buffer> {
   const doc = SquadAnalysisPDF({
     analyses,
     orgName,
     title: "Newsletter Semanal — Resumo de Analises",
+    branding,
   });
   return renderToBuffer(// eslint-disable-next-line @typescript-eslint/no-explicit-any
   doc as any);

@@ -13,6 +13,8 @@ import {
   Share2,
   Bot,
   Sparkles,
+  CheckCircle,
+  Clock,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -21,6 +23,8 @@ import { DecisionBadge } from "@/components/cortex/DecisionBadge"
 import { UpgradePrompt } from "@/components/cortex/UpgradePrompt"
 import { EmptyState } from "@/components/ui/empty-state"
 import { EmptyStateCTA } from "@/components/cortex/EmptyStateCTA"
+import { ExportMenu } from "@/components/cortex/ExportMenu"
+import { REPORT_TEMPLATES } from "@/lib/report-templates"
 import { getDecisionColor } from "@/lib/db-transforms"
 import type { AnalysisUI } from "@/lib/db-transforms"
 import type { CortexDecision } from "@/types/cortex"
@@ -35,11 +39,20 @@ const decisionFilters: { label: string; value: CortexDecision | "ALL" }[] = [
   { label: "Alerta Cinza", value: "ALERTA_CINZA" },
 ]
 
-interface Props {
-  analyses: AnalysisUI[]
+interface GeneratedReport {
+  id: string
+  title: string
+  type: string
+  pdfUrl: string | null
+  createdAt: Date
 }
 
-export function ReportsClient({ analyses }: Props) {
+interface Props {
+  analyses: AnalysisUI[]
+  generatedReports?: GeneratedReport[]
+}
+
+export function ReportsClient({ analyses, generatedReports = [] }: Props) {
   const [decisionFilter, setDecisionFilter] = useState<CortexDecision | "ALL">("ALL")
   const [dateFrom, setDateFrom] = useState("")
   const [dateTo, setDateTo] = useState("")
@@ -151,8 +164,8 @@ export function ReportsClient({ analyses }: Props) {
         })}
       </div>
 
-      {/* Generate Report Buttons */}
-      <div className="flex flex-wrap gap-3 animate-slide-up stagger-2">
+      {/* Generate Report Buttons + Export */}
+      <div className="flex flex-wrap items-center gap-3 animate-slide-up stagger-2">
         <Button
           variant="outline"
           className="bg-zinc-800/40 border-zinc-700/40 text-zinc-300 hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-400 gap-2"
@@ -209,6 +222,9 @@ export function ReportsClient({ analyses }: Props) {
           <FileText className="w-4 h-4" />
           {generating === "newsletter" ? "Gerando..." : "PDF — Newsletter Semanal"}
         </Button>
+        <div className="ml-auto">
+          <ExportMenu analyses={filteredReports} />
+        </div>
       </div>
 
       {/* Filters - Glassmorphism */}
@@ -369,6 +385,85 @@ export function ReportsClient({ analyses }: Props) {
             )}
           </CardContent>
         </Card>
+      )}
+
+      {/* Historico de Geracoes */}
+      {generatedReports.length > 0 && (
+        <div className="space-y-4 animate-slide-up">
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4 text-emerald-500/70" />
+            <h2 className="text-lg font-semibold text-zinc-100">
+              Historico de Geracoes
+            </h2>
+            <span className="text-xs text-zinc-500 ml-1">
+              ({generatedReports.length})
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            {generatedReports.map((report) => {
+              const template = REPORT_TEMPLATES[report.type]
+              const templateName = template?.name ?? report.type
+              const createdDate = new Date(report.createdAt).toLocaleDateString("pt-BR", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+
+              return (
+                <div
+                  key={report.id}
+                  className="flex items-center gap-4 p-4 bg-zinc-900/80 border border-zinc-800/80 rounded-xl hover:border-zinc-700 transition-colors group"
+                >
+                  {/* Status icon */}
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                    <CheckCircle className="w-4 h-4 text-emerald-400" />
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-zinc-200 truncate">
+                      {report.title}
+                    </p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-400">
+                        {templateName}
+                      </span>
+                      <span className="text-xs text-zinc-500">{createdDate}</span>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {report.pdfUrl && (
+                      <a
+                        href={report.pdfUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg hover:bg-emerald-500/20 transition-colors"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        PDF
+                      </a>
+                    )}
+                    <button
+                      onClick={() => {
+                        const shareUrl = `${window.location.origin}/reports/${report.id}`
+                        navigator.clipboard.writeText(shareUrl)
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-zinc-800 text-zinc-400 border border-zinc-700 rounded-lg hover:bg-zinc-700 hover:text-zinc-300 transition-colors"
+                    >
+                      <Share2 className="w-3.5 h-3.5" />
+                      Compartilhar
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
       )}
     </div>
   )
