@@ -7,6 +7,7 @@ import {
   deleteScoutingComment,
 } from "@/db/queries";
 import { notifyMentions } from "@/lib/notifications";
+import { analyzeInput } from "@/lib/request-sanitizer";
 
 // GET — list comments for a scouting target
 export async function GET(request: NextRequest) {
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "targetId invalido" }, { status: 400 });
     }
 
-    const comments = await getScoutingComments(targetId);
+    const comments = await getScoutingComments(targetId, session!.orgId);
     return NextResponse.json({ data: comments });
   } catch (err) {
     console.error("Failed to fetch scouting comments:", err);
@@ -41,6 +42,11 @@ export async function POST(request: NextRequest) {
     }
     if (!content || typeof content !== "string" || content.trim().length === 0) {
       return NextResponse.json({ error: "content obrigatorio" }, { status: 400 });
+    }
+
+    const contentCheck = analyzeInput(content);
+    if (!contentCheck.clean) {
+      return NextResponse.json({ error: "Entrada invalida detectada" }, { status: 400 });
     }
 
     const comment = await createScoutingComment({

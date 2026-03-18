@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import { isValidEmail, isStrongPassword } from "@/lib/validation";
 import { checkRateLimit, authRateLimit } from "@/lib/rate-limit";
 import { sendWelcomeEmail } from "@/lib/email";
+import { analyzeInput } from "@/lib/request-sanitizer";
 
 export async function POST(req: Request) {
   try {
@@ -37,6 +38,16 @@ export async function POST(req: Request) {
         { error: "Nome deve ter entre 2 e 100 caracteres" },
         { status: 400 }
       );
+    }
+
+    // Input sanitization
+    const nameCheck = analyzeInput(name);
+    if (!nameCheck.clean) {
+      return NextResponse.json({ error: "Entrada invalida detectada no campo nome" }, { status: 400 });
+    }
+    const clubNameCheck = analyzeInput(clubName);
+    if (!clubNameCheck.clean) {
+      return NextResponse.json({ error: "Entrada invalida detectada no campo nome do clube" }, { status: 400 });
     }
 
     // Validate email format

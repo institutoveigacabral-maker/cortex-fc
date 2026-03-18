@@ -55,7 +55,7 @@ export async function PATCH(request: Request) {
     if (body.all) {
       await markAllNotificationsRead(session!.userId);
     } else if (body.id) {
-      await markNotificationRead(body.id);
+      await markNotificationRead(body.id, session!.userId);
     } else {
       return NextResponse.json({ error: "id or all is required" }, { status: 400 });
     }

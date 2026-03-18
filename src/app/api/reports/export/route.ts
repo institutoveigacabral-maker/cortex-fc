@@ -3,13 +3,31 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { getAnalyses } from "@/db/queries"
 import { toAnalysisUI } from "@/lib/db-transforms"
 import { analysesToCSV, analysesToJSON, analysesToXLSX } from "@/lib/export"
+import { isTierAtLeast, getTierLimits } from "@/lib/feature-gates"
 
 export async function GET(req: NextRequest) {
   const { session, error } = await requireAuth()
   if (error) return error
 
+  if (!isTierAtLeast(session!.tier, "scout_individual")) {
+    return NextResponse.json(
+      { error: "Exportacao disponivel a partir do plano Scout Individual. Faca upgrade." },
+      { status: 403 }
+    )
+  }
+
   const { searchParams } = new URL(req.url)
   const format = searchParams.get("format") ?? "csv"
+
+  // Validate format is allowed for the tier
+  const tierLimits = getTierLimits(session!.tier)
+  if (!tierLimits.exportFormats.includes(format) && format !== "json") {
+    return NextResponse.json(
+      { error: `Formato "${format}" nao disponivel no seu plano. Formatos permitidos: ${tierLimits.exportFormats.join(", ") || "nenhum"}` },
+      { status: 403 }
+    )
+  }
+
   const ids = searchParams.get("ids")?.split(",").filter(Boolean)
 
   const rawAnalyses = await getAnalyses(session!.orgId)

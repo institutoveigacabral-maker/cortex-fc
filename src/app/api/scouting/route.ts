@@ -7,6 +7,8 @@ import { isValidUUID } from "@/lib/validation";
 import { hasPermission } from "@/lib/rbac";
 import { inngest } from "@/lib/inngest-client";
 import { invalidateOnMutation } from "@/lib/cache";
+import { checkUsageLimit } from "@/lib/feature-gates";
+import { analyzeInput } from "@/lib/request-sanitizer";
 
 // GET — list scouting targets for the org
 export async function GET() {
@@ -89,6 +91,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Sem permissao" }, { status: 403 });
     }
 
+    // Scouting quota check
+    const currentTargets = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(scoutingTargets)
+      .where(eq(scoutingTargets.orgId, session!.orgId));
+    const currentCount = Number(currentTargets[0]?.count ?? 0);
+    const scoutingQuota = checkUsageLimit(session!.tier, "scoutingTargets", currentCount);
+    if (!scoutingQuota.allowed) {
+      return NextResponse.json(
+        { error: "Limite de alvos de scouting atingido. Faca upgrade para continuar.", usage: currentCount, limit: scoutingQuota.limit },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { playerId, priority, notes, targetPrice } = body;
 
@@ -103,6 +119,14 @@ export async function POST(request: Request) {
     });
     if (!player) {
       return NextResponse.json({ error: "Jogador nao encontrado" }, { status: 404 });
+    }
+
+    // Sanitize notes if provided
+    if (notes && typeof notes === "string") {
+      const notesCheck = analyzeInput(notes);
+      if (!notesCheck.clean) {
+        return NextResponse.json({ error: "Entrada invalida detectada" }, { status: 400 });
+      }
     }
 
     // Check if already tracked

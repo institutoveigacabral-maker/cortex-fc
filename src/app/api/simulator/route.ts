@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-helpers";
+import { isTierAtLeast } from "@/lib/feature-gates";
 import {
   getScenarios,
   createScenario,
@@ -14,6 +15,13 @@ export async function GET() {
   try {
     const { session, error } = await requireAuth();
     if (error) return error;
+
+    if (!isTierAtLeast(session!.tier, "scout_individual")) {
+      return NextResponse.json(
+        { error: "Simulador disponivel a partir do plano Scout Individual. Faca upgrade." },
+        { status: 403 }
+      );
+    }
 
     const scenarios = await getScenarios(session!.orgId, session!.userId);
     return NextResponse.json({
@@ -37,6 +45,13 @@ export async function POST(request: Request) {
   try {
     const { session, error } = await requireAuth();
     if (error) return error;
+
+    if (!isTierAtLeast(session!.tier, "scout_individual")) {
+      return NextResponse.json(
+        { error: "Simulador disponivel a partir do plano Scout Individual. Faca upgrade." },
+        { status: 403 }
+      );
+    }
 
     const body = await request.json();
     if (!body.name || !body.data) {

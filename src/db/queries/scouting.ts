@@ -95,7 +95,20 @@ export async function restoreScoutingTarget(id: string, orgId: string) {
 // SCOUTING COMMENTS
 // ============================================
 
-export async function getScoutingComments(targetId: string) {
+/**
+ * Get comments for a scouting target.
+ * orgId ensures the target belongs to the requesting org (multi-tenancy).
+ */
+export async function getScoutingComments(targetId: string, orgId?: string) {
+  // If orgId provided, verify the target belongs to this org
+  if (orgId) {
+    const target = await db.query.scoutingTargets.findFirst({
+      where: and(eq(scoutingTargets.id, targetId), eq(scoutingTargets.orgId, orgId)),
+      columns: { id: true },
+    });
+    if (!target) return [];
+  }
+
   return db
     .select({
       id: scoutingComments.id,

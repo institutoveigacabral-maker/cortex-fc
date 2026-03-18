@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireApiAuth } from "@/lib/api-auth";
+import { requireApiAuth, requireScope } from "@/lib/api-auth";
 import { db } from "@/db/index";
 import { reports } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
@@ -15,6 +15,10 @@ import { eq, desc } from "drizzle-orm";
 export async function GET(request: Request) {
   const { ctx, error } = await requireApiAuth(request);
   if (error) return error;
+
+  if (!requireScope(ctx!, "read")) {
+    return NextResponse.json({ error: "Insufficient scope. Required: read" }, { status: 403 });
+  }
 
   const url = new URL(request.url);
   const id = url.searchParams.get("id");

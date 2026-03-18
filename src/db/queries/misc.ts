@@ -62,11 +62,17 @@ export async function getUserNotifications(userId: string, options?: {
     .limit(limit);
 }
 
-export async function markNotificationRead(id: string) {
+/**
+ * Mark a notification as read. userId ensures only the owner can mark it.
+ */
+export async function markNotificationRead(id: string, userId?: string) {
+  const conditions = [eq(notifications.id, id)];
+  if (userId) conditions.push(eq(notifications.userId, userId));
+
   await db
     .update(notifications)
     .set({ readAt: new Date() })
-    .where(eq(notifications.id, id));
+    .where(and(...conditions));
 }
 
 export async function markAllNotificationsRead(userId: string) {

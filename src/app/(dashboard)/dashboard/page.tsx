@@ -18,19 +18,22 @@ import { DashboardTour } from "@/components/cortex/DashboardTour"
 import { WelcomeModal } from "@/components/cortex/WelcomeModal"
 import { getTranslations } from "next-intl/server"
 import { ScrollFade } from "@/components/ui/scroll-fade"
-import { auth } from "@/auth"
+import { getAuthSession } from "@/lib/auth-helpers"
+import { redirect } from "next/navigation"
 
 export default async function DashboardPage() {
   const t = await getTranslations("dashboard")
   const tc = await getTranslations("common")
   const tn = await getTranslations("nav")
 
-  const session = await auth()
-  const orgName = session?.user?.orgName ?? "Cortex FC"
+  const session = await getAuthSession()
+  if (!session) redirect("/login")
+
+  const orgName = session.name ?? "Cortex FC"
 
   const [stats, analyses, allPlayers] = await Promise.all([
-    getDashboardStats(),
-    getAnalyses(),
+    getDashboardStats(session.orgId),
+    getAnalyses(session.orgId),
     getPlayers(),
   ])
 

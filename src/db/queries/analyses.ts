@@ -138,9 +138,10 @@ export async function restoreAnalysis(id: string, orgId: string) {
 }
 
 /**
- * Get data needed to generate alerts
+ * Get data needed to generate alerts.
+ * orgId scopes recent decisions to the requesting org.
  */
-export async function getAlertData() {
+export async function getAlertData(orgId?: string) {
   const sixMonthsFromNow = new Date();
   sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
 
@@ -153,10 +154,18 @@ export async function getAlertData() {
     limit: 5,
   });
 
+  const recentDecisionsWhere = orgId
+    ? and(
+        sql`${neuralAnalyses.analystId} IN (SELECT id FROM users WHERE org_id = ${orgId})`,
+        isNull(neuralAnalyses.deletedAt)
+      )
+    : isNull(neuralAnalyses.deletedAt);
+
   const recentDecisions = await db.query.neuralAnalyses.findMany({
     with: {
       player: true,
     },
+    where: recentDecisionsWhere,
     orderBy: [desc(neuralAnalyses.createdAt)],
     limit: 5,
   });
@@ -166,8 +175,16 @@ export async function getAlertData() {
 
 /**
  * Get aggregate stats for the dashboard
+ * orgId is REQUIRED for multi-tenancy isolation
  */
 export async function getDashboardStats(orgId?: string) {
+  const orgAnalysisFilter = orgId
+    ? and(
+        sql`${neuralAnalyses.analystId} IN (SELECT id FROM users WHERE org_id = ${orgId})`,
+        isNull(neuralAnalyses.deletedAt)
+      )
+    : isNull(neuralAnalyses.deletedAt);
+
   const [playerCount] = await db
     .select({ value: count() })
     .from(players);
@@ -175,7 +192,7 @@ export async function getDashboardStats(orgId?: string) {
   const [analysisCount] = await db
     .select({ value: count() })
     .from(neuralAnalyses)
-    .where(isNull(neuralAnalyses.deletedAt));
+    .where(orgAnalysisFilter);
 
   const [targetCount] = await db
     .select({ value: count() })
@@ -188,7 +205,7 @@ export async function getDashboardStats(orgId?: string) {
   const [avgScn] = await db
     .select({ value: avg(neuralAnalyses.scnPlus) })
     .from(neuralAnalyses)
-    .where(isNull(neuralAnalyses.deletedAt));
+    .where(orgAnalysisFilter);
 
   const decisionDistribution = await db
     .select({
@@ -196,7 +213,7 @@ export async function getDashboardStats(orgId?: string) {
       count: count(),
     })
     .from(neuralAnalyses)
-    .where(isNull(neuralAnalyses.deletedAt))
+    .where(orgAnalysisFilter)
     .groupBy(neuralAnalyses.decision);
 
   const recentAnalyses = await db.query.neuralAnalyses.findMany({
@@ -204,7 +221,7 @@ export async function getDashboardStats(orgId?: string) {
       player: true,
       clubContext: true,
     },
-    where: isNull(neuralAnalyses.deletedAt),
+    where: orgAnalysisFilter,
     orderBy: [desc(neuralAnalyses.createdAt)],
     limit: 5,
   });

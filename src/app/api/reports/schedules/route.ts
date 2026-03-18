@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-helpers";
 import { hasPermission } from "@/lib/rbac";
+import { isTierAtLeast } from "@/lib/feature-gates";
 import {
   getReportSchedules,
   createReportSchedule,
@@ -12,6 +13,13 @@ export async function GET(_req: NextRequest) {
   const { session, error } = await requireAuth();
   if (!session) return error;
 
+  if (!isTierAtLeast(session.tier, "club_professional")) {
+    return NextResponse.json(
+      { error: "Relatorios agendados disponiveis a partir do plano Club Professional. Faca upgrade." },
+      { status: 403 }
+    );
+  }
+
   const schedules = await getReportSchedules(session.orgId);
   return NextResponse.json({ schedules });
 }
@@ -19,6 +27,13 @@ export async function GET(_req: NextRequest) {
 export async function POST(req: NextRequest) {
   const { session, error } = await requireAuth();
   if (!session) return error;
+
+  if (!isTierAtLeast(session.tier, "club_professional")) {
+    return NextResponse.json(
+      { error: "Relatorios agendados disponiveis a partir do plano Club Professional. Faca upgrade." },
+      { status: 403 }
+    );
+  }
 
   if (!hasPermission(session.role, "create_analysis")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });

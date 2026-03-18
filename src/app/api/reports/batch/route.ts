@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/auth-helpers"
 import { hasPermission } from "@/lib/rbac"
 import { inngest } from "@/lib/inngest-client"
+import { checkUsageLimit } from "@/lib/feature-gates"
+import { db } from "@/db/index"
+import { reports } from "@/db/schema"
+import { eq, and, gte, sql } from "drizzle-orm"
 
 export async function POST(req: NextRequest) {
   const { session, error } = await requireAuth()
@@ -9,6 +13,21 @@ export async function POST(req: NextRequest) {
 
   if (!hasPermission(session!.role, "create_analysis")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+  }
+
+  // Report quota check
+  const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+  const [reportCountResult] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(reports)
+    .where(and(eq(reports.orgId, session!.orgId), gte(reports.createdAt, startOfMonth)))
+  const reportCount = Number(reportCountResult?.count ?? 0)
+  const reportQuota = checkUsageLimit(session!.tier, "reportsPerMonth", reportCount)
+  if (!reportQuota.allowed) {
+    return NextResponse.json(
+      { error: "Limite de relatorios atingido para este mes. Faca upgrade para continuar.", usage: reportCount, limit: reportQuota.limit },
+      { status: 429 }
+    )
   }
 
   const body = await req.json()

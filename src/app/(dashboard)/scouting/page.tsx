@@ -11,7 +11,7 @@ export default async function ScoutingPage() {
 
   const [dbPlayers, dbAnalyses] = await Promise.all([
     getPlayers(),
-    getAnalyses(),
+    getAnalyses(session?.orgId),
   ])
 
   // Transform players for UI

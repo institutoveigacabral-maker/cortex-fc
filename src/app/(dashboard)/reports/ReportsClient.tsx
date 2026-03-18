@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DecisionBadge } from "@/components/cortex/DecisionBadge"
 import { UpgradePrompt } from "@/components/cortex/UpgradePrompt"
+import { FeatureGate } from "@/components/cortex/FeatureGate"
 import { EmptyState } from "@/components/ui/empty-state"
 import { EmptyStateCTA } from "@/components/cortex/EmptyStateCTA"
 import { ExportMenu } from "@/components/cortex/ExportMenu"
@@ -50,9 +51,10 @@ interface GeneratedReport {
 interface Props {
   analyses: AnalysisUI[]
   generatedReports?: GeneratedReport[]
+  tier?: string
 }
 
-export function ReportsClient({ analyses, generatedReports = [] }: Props) {
+export function ReportsClient({ analyses, generatedReports = [], tier = "free" }: Props) {
   const [decisionFilter, setDecisionFilter] = useState<CortexDecision | "ALL">("ALL")
   const [dateFrom, setDateFrom] = useState("")
   const [dateTo, setDateTo] = useState("")
@@ -166,62 +168,70 @@ export function ReportsClient({ analyses, generatedReports = [] }: Props) {
 
       {/* Generate Report Buttons + Export */}
       <div className="flex flex-wrap items-center gap-3 animate-slide-up stagger-2">
-        <Button
-          variant="outline"
-          className="bg-zinc-800/40 border-zinc-700/40 text-zinc-300 hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-400 gap-2"
-          disabled={generating !== null}
-          onClick={async () => {
-            setGenerating("squad")
-            try {
-              const res = await fetch("/api/reports/generate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ template: "squad_analysis" }),
-              })
-              if (res.ok) {
-                const blob = await res.blob()
-                const url = URL.createObjectURL(blob)
-                const a = document.createElement("a")
-                a.href = url
-                a.download = "analise-elenco.pdf"
-                a.click()
-                URL.revokeObjectURL(url)
-              }
-            } catch {}
-            setGenerating(null)
-          }}
+        <FeatureGate
+          allowed={tier !== "free"}
+          requiredTier="Scout"
+          featureName="Geracao de PDF"
         >
-          <Download className="w-4 h-4" />
-          {generating === "squad" ? "Gerando..." : "PDF — Analise de Elenco"}
-        </Button>
-        <Button
-          variant="outline"
-          className="bg-zinc-800/40 border-zinc-700/40 text-zinc-300 hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-400 gap-2"
-          disabled={generating !== null}
-          onClick={async () => {
-            setGenerating("newsletter")
-            try {
-              const res = await fetch("/api/reports/generate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ template: "weekly_newsletter" }),
-              })
-              if (res.ok) {
-                const blob = await res.blob()
-                const url = URL.createObjectURL(blob)
-                const a = document.createElement("a")
-                a.href = url
-                a.download = "newsletter-semanal.pdf"
-                a.click()
-                URL.revokeObjectURL(url)
-              }
-            } catch {}
-            setGenerating(null)
-          }}
-        >
-          <FileText className="w-4 h-4" />
-          {generating === "newsletter" ? "Gerando..." : "PDF — Newsletter Semanal"}
-        </Button>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              variant="outline"
+              className="bg-zinc-800/40 border-zinc-700/40 text-zinc-300 hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-400 gap-2"
+              disabled={generating !== null}
+              onClick={async () => {
+                setGenerating("squad")
+                try {
+                  const res = await fetch("/api/reports/generate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ template: "squad_analysis" }),
+                  })
+                  if (res.ok) {
+                    const blob = await res.blob()
+                    const url = URL.createObjectURL(blob)
+                    const a = document.createElement("a")
+                    a.href = url
+                    a.download = "analise-elenco.pdf"
+                    a.click()
+                    URL.revokeObjectURL(url)
+                  }
+                } catch {}
+                setGenerating(null)
+              }}
+            >
+              <Download className="w-4 h-4" />
+              {generating === "squad" ? "Gerando..." : "PDF — Analise de Elenco"}
+            </Button>
+            <Button
+              variant="outline"
+              className="bg-zinc-800/40 border-zinc-700/40 text-zinc-300 hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-400 gap-2"
+              disabled={generating !== null}
+              onClick={async () => {
+                setGenerating("newsletter")
+                try {
+                  const res = await fetch("/api/reports/generate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ template: "weekly_newsletter" }),
+                  })
+                  if (res.ok) {
+                    const blob = await res.blob()
+                    const url = URL.createObjectURL(blob)
+                    const a = document.createElement("a")
+                    a.href = url
+                    a.download = "newsletter-semanal.pdf"
+                    a.click()
+                    URL.revokeObjectURL(url)
+                  }
+                } catch {}
+                setGenerating(null)
+              }}
+            >
+              <FileText className="w-4 h-4" />
+              {generating === "newsletter" ? "Gerando..." : "PDF — Newsletter Semanal"}
+            </Button>
+          </div>
+        </FeatureGate>
         <div className="ml-auto">
           <ExportMenu analyses={filteredReports} />
         </div>

@@ -8,6 +8,7 @@ import {
   updateConversationTitle,
   deleteConversation,
 } from "@/db/queries";
+import { analyzeInput } from "@/lib/request-sanitizer";
 
 /**
  * GET /api/chat — List conversations or get messages
@@ -85,6 +86,12 @@ export async function POST(request: Request) {
         { error: "conversationId and message are required" },
         { status: 400 }
       );
+    }
+
+    // Input sanitization
+    const messageCheck = analyzeInput(message);
+    if (!messageCheck.clean) {
+      return NextResponse.json({ error: "Entrada invalida detectada" }, { status: 400 });
     }
 
     if (!process.env.ANTHROPIC_API_KEY) {

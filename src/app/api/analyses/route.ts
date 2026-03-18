@@ -3,6 +3,7 @@ import { getAnalyses, createAnalysis, playerExists, clubExists, getPlayerById } 
 import { requireAuth } from "@/lib/auth-helpers";
 import { hasPermission } from "@/lib/rbac";
 import { isValidUUID, isNumberInRange, stripHtmlTags } from "@/lib/validation";
+import { analyzeInput } from "@/lib/request-sanitizer";
 import { inngest } from "@/lib/inngest-client";
 import { invalidateOnMutation } from "@/lib/cache";
 import { checkAnalysisQuota } from "@/lib/feature-gates";
@@ -139,6 +140,10 @@ export async function POST(request: Request) {
     // Sanitize reasoning
     if (typeof body.reasoning !== "string") {
       return NextResponse.json({ error: "reasoning must be a string" }, { status: 400 });
+    }
+    const reasoningCheck = analyzeInput(body.reasoning);
+    if (!reasoningCheck.clean) {
+      return NextResponse.json({ error: "Entrada invalida detectada no campo reasoning" }, { status: 400 });
     }
     const sanitizedReasoning = stripHtmlTags(body.reasoning);
     if (sanitizedReasoning.length === 0 || sanitizedReasoning.length > 5000) {

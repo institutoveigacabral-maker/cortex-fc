@@ -6,6 +6,8 @@ import {
   getScoutingFunnel,
 } from "@/db/queries"
 import { getTranslations } from "next-intl/server"
+import { getAuthSession } from "@/lib/auth-helpers"
+import { redirect } from "next/navigation"
 import { DecisionDonut } from "@/components/cortex/DecisionDonut"
 import { MonthlyTrendChart } from "@/components/cortex/MonthlyTrendChart"
 import { PositionRadialBar } from "@/components/cortex/PositionRadialBar"
@@ -16,11 +18,13 @@ import { AnalyticsKPIRow } from "@/components/cortex/AnalyticsKPIRow"
 
 export default async function AnalyticsPage() {
   const t = await getTranslations("analytics")
+  const session = await getAuthSession()
+  if (!session) redirect("/login")
 
   const [overview, contractTimeline, scoutingFunnel] = await Promise.all([
-    getAnalyticsOverview(),
-    getContractTimeline(),
-    getScoutingFunnel(),
+    getAnalyticsOverview(session.orgId),
+    getContractTimeline(session.orgId),
+    getScoutingFunnel(session.orgId),
   ])
 
   const hasData = overview.totalAnalyses > 0

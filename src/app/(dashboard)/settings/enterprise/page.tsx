@@ -17,8 +17,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { FeatureGate } from "@/components/cortex/FeatureGate"
+import { useTier, isTierAtLeast } from "@/hooks/useTier"
 
 export default function EnterpriseSettingsPage() {
+  const { tier } = useTier()
+  const isHolding = isTierAtLeast(tier, "holding_multiclub")
   // Branding state
   const [branding, setBranding] = useState({
     logoUrl: "",
@@ -137,6 +141,11 @@ export default function EnterpriseSettingsPage() {
         </div>
       )}
 
+      <FeatureGate
+        allowed={isHolding}
+        requiredTier="Holding Multi-Club"
+        featureName="White-label e SSO"
+      >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* White-Label / Branding */}
         <Card className="glass rounded-xl overflow-hidden relative">
@@ -411,6 +420,7 @@ export default function EnterpriseSettingsPage() {
           </CardContent>
         </Card>
       </div>
+      </FeatureGate>
     </div>
   )
 }
