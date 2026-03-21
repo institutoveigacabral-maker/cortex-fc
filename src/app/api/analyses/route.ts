@@ -171,6 +171,7 @@ export async function POST(request: Request) {
       confidence: body.confidence,
       reasoning: sanitizedReasoning,
       analystId: session!.userId,
+      orgId: session!.orgId,
       // Optional algorithm scores
       ...(isNumberInRange(body.ast, 0, 100) ? { ast: body.ast } : {}),
       ...(isNumberInRange(body.clf, 0, 100) ? { clf: body.clf } : {}),

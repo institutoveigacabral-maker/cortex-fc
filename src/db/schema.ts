@@ -374,6 +374,7 @@ export const neuralAnalyses = pgTable(
 
     // Meta
     analystId: uuid("analyst_id").references(() => users.id),
+    orgId: uuid("org_id").references(() => organizations.id),
     isPublished: boolean("is_published").default(false),
     deletedAt: timestamp("deleted_at"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -383,6 +384,7 @@ export const neuralAnalyses = pgTable(
     index("idx_na_player").on(table.playerId),
     index("idx_na_club").on(table.clubContextId),
     index("idx_na_decision").on(table.decision),
+    index("idx_na_org").on(table.orgId),
   ]
 );
 

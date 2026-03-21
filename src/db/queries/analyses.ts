@@ -63,9 +63,7 @@ export async function getAnalyses(orgId?: string, options?: {
     offset,
     where: orgId
       ? and(
-          sql`${neuralAnalyses.analystId} IN (
-            SELECT id FROM users WHERE org_id = ${orgId}
-          )`,
+          eq(neuralAnalyses.orgId, orgId),
           isNull(neuralAnalyses.deletedAt)
         )
       : isNull(neuralAnalyses.deletedAt),
@@ -93,14 +91,8 @@ export async function getAnalysisById(id: string, orgId?: string) {
 
   if (!analysis) return null;
 
-  // Enforce org isolation: check analyst belongs to requesting org
-  if (orgId && analysis.analyst) {
-    const analystUser = await db.query.users.findFirst({
-      where: eq(users.id, analysis.analyst.id),
-      columns: { orgId: true },
-    });
-    if (analystUser?.orgId !== orgId) return null;
-  }
+  // Enforce org isolation via orgId column
+  if (orgId && analysis.orgId && analysis.orgId !== orgId) return null;
 
   return { ...analysis, analyst: sanitizeAnalyst(analysis.analyst) };
 }
@@ -121,7 +113,7 @@ export async function softDeleteAnalysis(id: string, orgId: string) {
     .set({ deletedAt: new Date() })
     .where(and(
       eq(neuralAnalyses.id, id),
-      sql`${neuralAnalyses.analystId} IN (SELECT id FROM users WHERE org_id = ${orgId})`
+      eq(neuralAnalyses.orgId, orgId)
     ));
 }
 
@@ -133,7 +125,7 @@ export async function restoreAnalysis(id: string, orgId: string) {
     .set({ deletedAt: null })
     .where(and(
       eq(neuralAnalyses.id, id),
-      sql`${neuralAnalyses.analystId} IN (SELECT id FROM users WHERE org_id = ${orgId})`
+      eq(neuralAnalyses.orgId, orgId)
     ));
 }
 
@@ -156,7 +148,7 @@ export async function getAlertData(orgId?: string) {
 
   const recentDecisionsWhere = orgId
     ? and(
-        sql`${neuralAnalyses.analystId} IN (SELECT id FROM users WHERE org_id = ${orgId})`,
+        eq(neuralAnalyses.orgId, orgId),
         isNull(neuralAnalyses.deletedAt)
       )
     : isNull(neuralAnalyses.deletedAt);
@@ -180,7 +172,7 @@ export async function getAlertData(orgId?: string) {
 export async function getDashboardStats(orgId?: string) {
   const orgAnalysisFilter = orgId
     ? and(
-        sql`${neuralAnalyses.analystId} IN (SELECT id FROM users WHERE org_id = ${orgId})`,
+        eq(neuralAnalyses.orgId, orgId),
         isNull(neuralAnalyses.deletedAt)
       )
     : isNull(neuralAnalyses.deletedAt);
@@ -342,7 +334,7 @@ export async function getPlayerTransfers(playerId: string) {
  */
 export async function getAnalyticsOverview(orgId?: string) {
   const orgFilter = orgId
-    ? sql`${neuralAnalyses.analystId} IN (SELECT id FROM users WHERE org_id = ${orgId})`
+    ? eq(neuralAnalyses.orgId, orgId)
     : undefined;
 
   // Total players and analyses

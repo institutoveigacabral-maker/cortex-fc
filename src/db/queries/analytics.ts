@@ -4,7 +4,7 @@ import { eq, and, gte, sql, count, sum, avg, isNull, desc } from "drizzle-orm";
 
 /**
  * Analyses created per day for the last N days.
- * Note: neuralAnalyses has no orgId — filters by clubContextId instead.
+ * Note: neuralAnalyses now has orgId column for direct filtering.
  */
 export async function getAnalysesPerDay(clubContextId: string, days: number = 30) {
   const since = new Date();
@@ -91,13 +91,13 @@ export async function getOrgUsageThisMonth(orgId: string) {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-  // Analyses: neuralAnalyses has no orgId, so filter via analystId -> users.org_id
+  // Analyses: filter by orgId directly
   const [analysisResult] = await db
     .select({ value: count() })
     .from(neuralAnalyses)
     .where(
       and(
-        sql`${neuralAnalyses.analystId} IN (SELECT id FROM users WHERE org_id = ${orgId})`,
+        eq(neuralAnalyses.orgId, orgId),
         gte(neuralAnalyses.createdAt, startOfMonth),
         isNull(neuralAnalyses.deletedAt)
       )
@@ -164,7 +164,7 @@ export async function getAnalysesPerDayByOrg(orgId: string, days: number = 30) {
     .from(neuralAnalyses)
     .where(
       and(
-        sql`${neuralAnalyses.analystId} IN (SELECT id FROM users WHERE org_id = ${orgId})`,
+        eq(neuralAnalyses.orgId, orgId),
         gte(neuralAnalyses.createdAt, since),
         isNull(neuralAnalyses.deletedAt),
       ),
@@ -193,7 +193,7 @@ export async function getOrgScnTrend(orgId: string, months: number = 6) {
     .from(neuralAnalyses)
     .where(
       and(
-        sql`${neuralAnalyses.analystId} IN (SELECT id FROM users WHERE org_id = ${orgId})`,
+        eq(neuralAnalyses.orgId, orgId),
         gte(neuralAnalyses.createdAt, since),
         isNull(neuralAnalyses.deletedAt),
       ),
