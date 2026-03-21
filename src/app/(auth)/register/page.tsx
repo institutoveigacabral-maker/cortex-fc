@@ -68,8 +68,26 @@ export default function RegisterPage() {
       return
     }
 
-    if (password.length < 6) {
-      setError("Senha deve ter no mínimo 6 caracteres")
+    if (password.length < 8) {
+      setError("Senha deve ter no mínimo 8 caracteres")
+      setLoading(false)
+      return
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      setError("Senha deve conter pelo menos uma letra maiúscula")
+      setLoading(false)
+      return
+    }
+
+    if (!/[a-z]/.test(password)) {
+      setError("Senha deve conter pelo menos uma letra minúscula")
+      setLoading(false)
+      return
+    }
+
+    if (!/[0-9]/.test(password)) {
+      setError("Senha deve conter pelo menos um número")
       setLoading(false)
       return
     }
@@ -330,11 +348,11 @@ export default function RegisterPage() {
           {/* Terms */}
           <p className="mt-4 text-center text-xs text-zinc-500 leading-relaxed">
             Ao criar uma conta, você concorda com nossos{" "}
-            <Link href="#" className="text-zinc-500 hover:text-zinc-400 underline transition-colors">
+            <Link href="/termos" target="_blank" className="text-zinc-500 hover:text-zinc-400 underline transition-colors">
               Termos de Uso
             </Link>{" "}
             e{" "}
-            <Link href="#" className="text-zinc-500 hover:text-zinc-400 underline transition-colors">
+            <Link href="/privacidade" target="_blank" className="text-zinc-500 hover:text-zinc-400 underline transition-colors">
               Política de Privacidade
             </Link>
             .

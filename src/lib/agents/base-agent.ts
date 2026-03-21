@@ -4,7 +4,17 @@ import type { AgentType } from "@/types/cortex";
 import { logger } from "@/lib/logger";
 import { calculateCost } from "@/lib/ai-models";
 
-const client = new Anthropic();
+let _client: Anthropic | null = null;
+
+function getClient(): Anthropic {
+  if (!_client) {
+    if (!process.env.ANTHROPIC_API_KEY) {
+      throw new Error("ANTHROPIC_API_KEY not configured — add it to Vercel environment variables");
+    }
+    _client = new Anthropic();
+  }
+  return _client;
+}
 
 export interface AgentCallOptions {
   agentType: AgentType;
@@ -54,7 +64,7 @@ export async function callAgent<T>(
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
-      const response = await client.messages.create(
+      const response = await getClient().messages.create(
         {
           model,
           max_tokens: maxTokens,

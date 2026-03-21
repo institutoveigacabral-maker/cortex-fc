@@ -55,7 +55,7 @@ export function KeyboardShortcutsOverlay({ open, onClose }: KeyboardShortcutsOve
     {
       title: t("shortcutActions"),
       shortcuts: [
-        { keys: ["\u2318", "N"], desc: "Nova analise (TODO)" },
+        { keys: ["\u2318", "N"], desc: "Nova analise" },
         { keys: ["\u2318", ","], desc: "Settings" },
         { keys: ["Esc"], desc: "Fechar modal/overlay" },
       ],
