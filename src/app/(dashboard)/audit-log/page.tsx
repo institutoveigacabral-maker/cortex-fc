@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
+import { useToast } from "@/components/ui/toast"
 import {
   Shield,
   ChevronDown,
@@ -56,6 +57,7 @@ const ENTITY_FILTERS = [
 ]
 
 export default function AuditLogPage() {
+  const { toast } = useToast()
   const [logs, setLogs] = useState<AuditEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedId, setExpandedId] = useState<string | null>(null)
@@ -111,6 +113,7 @@ export default function AuditLogPage() {
     a.download = "cortex-audit-log.csv"
     a.click()
     URL.revokeObjectURL(url)
+    toast({ type: "success", title: "Audit log exportado", description: `${logs.length} registros` })
   }
 
   return (

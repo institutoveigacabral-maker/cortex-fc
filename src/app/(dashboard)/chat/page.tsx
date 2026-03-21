@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
+import { useToast } from "@/components/ui/toast"
 import {
   MessageSquare,
   Send,
@@ -39,6 +40,7 @@ const SUGGESTIONS = [
 ]
 
 export default function ChatPage() {
+  const { toast } = useToast()
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [activeConvId, setActiveConvId] = useState<string | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
@@ -152,11 +154,16 @@ export default function ChatPage() {
   }
 
   async function deleteConv(id: string) {
-    await fetch(`/api/chat?conversationId=${id}`, { method: "DELETE" })
-    setConversations((prev) => prev.filter((c) => c.id !== id))
-    if (activeConvId === id) {
-      setActiveConvId(null)
-      setMessages([])
+    try {
+      await fetch(`/api/chat?conversationId=${id}`, { method: "DELETE" })
+      setConversations((prev) => prev.filter((c) => c.id !== id))
+      if (activeConvId === id) {
+        setActiveConvId(null)
+        setMessages([])
+      }
+      toast({ type: "success", title: "Conversa removida" })
+    } catch {
+      toast({ type: "error", title: "Erro ao remover conversa" })
     }
   }
 

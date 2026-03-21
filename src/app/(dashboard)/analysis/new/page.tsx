@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useToast } from "@/components/ui/toast"
 import {
   ArrowLeft,
   ArrowRight,
@@ -73,6 +74,7 @@ function computeDecision(vx: number, rx: number): CortexDecision {
 
 export default function NewAnalysisPage() {
   const router = useRouter()
+  const { toast } = useToast()
   const [step, setStep] = useState(1)
   const [playerSearch, setPlayerSearch] = useState("")
   const [selectedPlayerId, setSelectedPlayerId] = useState("")
@@ -316,11 +318,14 @@ export default function NewAnalysisPage() {
       if (!res.ok) {
         const err = await res.json()
         console.error("Failed to save analysis:", err)
+        toast({ type: "error", title: "Erro ao salvar analise", description: err.error ?? "Tente novamente" })
       } else {
         clearDraft()
+        toast({ type: "success", title: "Analise salva", description: "Redirecionando..." })
       }
     } catch (err) {
       console.error("Failed to save analysis:", err)
+      toast({ type: "error", title: "Erro ao salvar analise" })
     } finally {
       setIsSaving(false)
     }

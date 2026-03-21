@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, useRef, useCallback } from "react"
+import { useToast } from "@/components/ui/toast"
 import { useFocusTrap } from "@/hooks/useFocusTrap"
 import {
   Monitor,
@@ -111,6 +112,7 @@ const AGENT_LABELS: Record<string, string> = {
 const COST_PER_TOKEN = 0.000015 // ~$15/1M tokens average
 
 export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costTrackerData, agentPerformanceData }: Props) {
+  const { toast } = useToast()
   const [runs] = useState(initialRuns)
   const [agentFilter, setAgentFilter] = useState<string>("ALL")
   const [statusFilter, setStatusFilter] = useState<"ALL" | "success" | "error">("ALL")
@@ -157,6 +159,7 @@ export function AgentConsoleClient({ initialRuns, metrics, usageChartData, costT
     a.download = `agent-runs-${new Date().toISOString().split("T")[0]}.csv`
     a.click()
     URL.revokeObjectURL(url)
+    toast({ type: "success", title: "CSV exportado", description: `${filteredRuns.length} registros` })
   }
 
   const formatDate = (d: string) => {
