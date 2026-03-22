@@ -14,6 +14,7 @@ vi.mock("drizzle-orm", () => ({
 // Mock auth
 vi.mock("@/lib/api-auth", () => ({
   requireApiAuth: vi.fn(),
+  requireScope: vi.fn(() => true),
 }));
 
 // Mock DB queries
