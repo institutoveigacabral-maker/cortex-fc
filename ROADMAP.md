@@ -83,7 +83,7 @@ Plataforma SaaS de analytics neural para futebol profissional. 6 agentes IA (Cla
 
 | # | Task | Detalhe | Status |
 |---|------|---------|--------|
-| 1 | Configurar env vars na Vercel | 27 variaveis (DB, Auth, Stripe, Anthropic, Redis, Sentry, API-Football) | ✅ FEITO |
+| 1 | Configurar env vars na Vercel | 27/32 configuradas. Faltam: RESEND_API_KEY, SENTRY_ORG, SENTRY_PROJECT, INNGEST_EVENT_KEY, INNGEST_SIGNING_KEY | ✅ Parcial |
 | 2 | Fix build Vercel (pnpm detection) | packageManager field adicionado ao package.json | ✅ FEITO |
 | 3 | Fix validacao de senha frontend | Alinhado com backend (8 chars + maiuscula + minuscula + numero) | ✅ FEITO |
 | 4 | Fix links Termos/Privacidade | Apontavam para # — agora apontam para /termos e /privacidade | ✅ FEITO |
@@ -204,16 +204,19 @@ Plataforma SaaS de analytics neural para futebol profissional. 6 agentes IA (Cla
 | SHARE_SECRET | ✅ Configurada | Links compartilhaveis |
 | CRON_SECRET | ✅ Configurada | Proteger cron jobs |
 | NEXT_PUBLIC_APP_URL | ✅ Configurada | URLs em emails/shares |
-| ANTHROPIC_API_KEY | ❌ Falta | 6 agentes IA + Chat |
-| UPSTASH_REDIS_REST_URL | ❌ Falta | Rate limiting + cache |
-| UPSTASH_REDIS_REST_TOKEN | ❌ Falta | Rate limiting + cache |
-| STRIPE_SECRET_KEY | ❌ Falta | Pagamentos |
-| STRIPE_WEBHOOK_SECRET | ❌ Falta | Webhook Stripe |
-| NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY | ❌ Falta | Checkout client |
-| API_FOOTBALL_KEY | ❌ Falta | Sync dados reais |
-| RESEND_API_KEY | ❌ Falta | Emails transacionais |
-| SENTRY_ORG / SENTRY_PROJECT / NEXT_PUBLIC_SENTRY_DSN | ❌ Falta | Monitoring |
-| INNGEST_EVENT_KEY / INNGEST_SIGNING_KEY | ❌ Falta | Background jobs |
+| ANTHROPIC_API_KEY | ✅ Configurada | 6 agentes IA + Chat |
+| UPSTASH_REDIS_REST_URL | ✅ Configurada | Rate limiting + cache |
+| UPSTASH_REDIS_REST_TOKEN | ✅ Configurada | Rate limiting + cache |
+| STRIPE_SECRET_KEY | ✅ Configurada | Pagamentos |
+| STRIPE_WEBHOOK_SECRET | ✅ Configurada | Webhook Stripe |
+| NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY | ✅ Configurada | Checkout client |
+| STRIPE_PRICE_* (6 vars) | ✅ Configurada | Tiers de assinatura |
+| API_FOOTBALL_KEY | ✅ Configurada | Sync dados reais |
+| NEXT_PUBLIC_SENTRY_DSN | ✅ Configurada | Monitoring (client) |
+| KV_* / REDIS_URL (5 vars) | ✅ Configurada | Vercel KV / Redis |
+| RESEND_API_KEY | ❌ Falta | Emails transacionais (password reset, verificacao) |
+| SENTRY_ORG / SENTRY_PROJECT | ❌ Falta | Sentry source maps upload |
+| INNGEST_EVENT_KEY / INNGEST_SIGNING_KEY | ❌ Falta | Background jobs (Inngest) |
 
 ---
 
@@ -233,8 +236,10 @@ Plataforma SaaS de analytics neural para futebol profissional. 6 agentes IA (Cla
 
 ## Proxima Acao Imediata
 
-1. Adicionar ANTHROPIC_API_KEY na Vercel
-2. Criar Redis no Upstash e adicionar URL + Token na Vercel
-3. Rodar seed no banco de producao
-4. Testar fluxo E2E completo
+1. ~~Adicionar ANTHROPIC_API_KEY na Vercel~~ ✅ (27 vars configuradas)
+2. ~~Criar Redis no Upstash e adicionar URL + Token na Vercel~~ ✅
+3. Adicionar RESEND_API_KEY na Vercel (emails de password reset e verificacao)
+4. Testar fluxo E2E completo em producao
 5. Registrar dominio cortexfc.com
+6. Configurar Inngest keys (background jobs)
+7. Configurar Sentry org/project (source maps)
