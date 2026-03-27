@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 
 type HapticPattern = "light" | "medium" | "heavy" | "success" | "error" | "selection"
 
@@ -16,19 +16,16 @@ const HAPTIC_PATTERNS: Record<HapticPattern, number | number[]> = {
 const STORAGE_KEY = "cortex-haptics-enabled"
 
 export function useHaptics() {
-  const [isEnabled, setIsEnabled] = useState(true)
+  const [isEnabled, setIsEnabled] = useState(() => {
+    if (typeof window === "undefined") return true
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY)
+      return stored !== null ? stored === "true" : true
+    } catch { return true }
+  })
 
   const isSupported =
     typeof navigator !== "undefined" && "vibrate" in navigator
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      if (stored !== null) setIsEnabled(stored === "true")
-    } catch {
-      // SSR or storage unavailable
-    }
-  }, [])
 
   const setEnabled = useCallback((v: boolean) => {
     setIsEnabled(v)

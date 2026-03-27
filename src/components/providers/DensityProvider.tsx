@@ -35,14 +35,12 @@ interface DensityProviderProps {
 }
 
 export function DensityProvider({ children, defaultDensity }: DensityProviderProps) {
-  const [density, setDensityState] = useState<Density>(defaultDensity ?? "normal")
+  const [density, setDensityState] = useState<Density>(() => getCookieDensity() || defaultDensity || "normal")
 
-  // On mount, sync from cookie (client truth) and apply class
+  // On mount, apply the density class to the DOM
   useEffect(() => {
-    const cookieValue = getCookieDensity()
-    setDensityState(cookieValue)
-    applyDensityClass(cookieValue)
-  }, [])
+    applyDensityClass(density)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const setDensity = useCallback((d: Density) => {
     setDensityState(d)

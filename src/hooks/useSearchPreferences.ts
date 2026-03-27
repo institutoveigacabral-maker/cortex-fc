@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 
 interface SearchPreferences {
   sortField: string
@@ -19,22 +19,15 @@ function getStorageKey(pageKey: string) {
 }
 
 export function useSearchPreferences(pageKey: string) {
-  const [prefs, setPrefs] = useState<SearchPreferences>(DEFAULT_PREFS)
-  const [loaded, setLoaded] = useState(false)
-
-  // Load from localStorage on mount (in useEffect to avoid hydration mismatch)
-  useEffect(() => {
+  const [prefs, setPrefs] = useState<SearchPreferences>(() => {
+    if (typeof window === "undefined") return DEFAULT_PREFS
     try {
       const raw = localStorage.getItem(getStorageKey(pageKey))
-      if (raw) {
-        const parsed = JSON.parse(raw) as SearchPreferences
-        setPrefs(parsed)
-      }
-    } catch {
-      // Ignore parse errors
-    }
-    setLoaded(true)
-  }, [pageKey])
+      if (raw) return JSON.parse(raw) as SearchPreferences
+    } catch { /* Ignore parse errors */ }
+    return DEFAULT_PREFS
+  })
+  const [loaded, setLoaded] = useState(() => typeof window !== "undefined")
 
   // Save to localStorage whenever prefs change (skip initial load)
   useEffect(() => {

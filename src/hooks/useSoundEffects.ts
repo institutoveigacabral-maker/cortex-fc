@@ -1,27 +1,27 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 
 type SoundName = "click" | "success" | "error" | "notification" | "toggle"
 
 const STORAGE_KEY = "cortex-sounds-enabled"
 const VOLUME_KEY = "cortex-sounds-volume"
 
-export function useSoundEffects() {
-  const [isEnabled, setIsEnabledState] = useState(false)
-  const [volume, setVolumeState] = useState(0.3)
-  const ctxRef = useRef<AudioContext | null>(null)
+function readStorage(key: string): string | null {
+  if (typeof window === "undefined") return null
+  try { return localStorage.getItem(key) } catch { return null }
+}
 
-  useEffect(() => {
-    try {
-      const storedEnabled = localStorage.getItem(STORAGE_KEY)
-      if (storedEnabled !== null) setIsEnabledState(storedEnabled === "true")
-      const storedVolume = localStorage.getItem(VOLUME_KEY)
-      if (storedVolume !== null) setVolumeState(Number(storedVolume))
-    } catch {
-      // SSR or storage unavailable
-    }
-  }, [])
+export function useSoundEffects() {
+  const [isEnabled, setIsEnabledState] = useState(() => {
+    const v = readStorage(STORAGE_KEY)
+    return v !== null ? v === "true" : false
+  })
+  const [volume, setVolumeState] = useState(() => {
+    const v = readStorage(VOLUME_KEY)
+    return v !== null ? Number(v) : 0.3
+  })
+  const ctxRef = useRef<AudioContext | null>(null)
 
   const setEnabled = useCallback((v: boolean) => {
     setIsEnabledState(v)

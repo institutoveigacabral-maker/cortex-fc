@@ -23,12 +23,13 @@ export function Crossfade({
 
   useEffect(() => {
     if (transitionKey === prevKeyRef.current) {
-      setDisplayChildren(children)
+      // Same key — sync children without animation
+      requestAnimationFrame(() => setDisplayChildren(children))
       return
     }
 
     prevKeyRef.current = transitionKey
-    setPhase("out")
+    requestAnimationFrame(() => setPhase("out"))
 
     const outTimer = setTimeout(() => {
       setDisplayChildren(children)

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo } from "react"
 import Link from "next/link"
 import { Activity, Filter, ArrowUpDown, ChevronUp, ChevronDown, Sparkles } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -22,36 +22,19 @@ interface Props {
 }
 
 export function AnalysisClient({ analyses }: Props) {
-  const { prefs, loaded: prefsLoaded, setSortField: saveSortField, setSortDir: saveSortDir, setFilter: saveFilter, clearFilters: clearSavedFilters } = useSearchPreferences("analysis")
-  const [clubFilter, setClubFilter] = useState("")
-  const [positionFilter, setPositionFilter] = useState("")
-  const [decisionFilter, setDecisionFilter] = useState("")
-  const [sortField, setSortField] = useState<SortField>("date")
-  const [sortDir, setSortDir] = useState<SortDir>("desc")
+  const { prefs, setSortField: saveSortField, setSortDir: saveSortDir, setFilter: saveFilter, clearFilters: clearSavedFilters } = useSearchPreferences("analysis")
+  const [clubFilter, setClubFilterState] = useState(prefs.filters.club ?? "")
+  const [positionFilter, setPositionFilterState] = useState(prefs.filters.position ?? "")
+  const [decisionFilter, setDecisionFilterState] = useState(prefs.filters.decision ?? "")
+  const [sortField, setSortFieldState] = useState<SortField>((prefs.sortField as SortField) || "date")
+  const [sortDir, setSortDirState] = useState<SortDir>(prefs.sortDir || "desc")
 
-  // Restore preferences from localStorage after mount
-  useEffect(() => {
-    if (!prefsLoaded) return
-    if (prefs.sortField && ["date", "vx", "rx", "scn", "name"].includes(prefs.sortField)) {
-      setSortField(prefs.sortField as SortField)
-    }
-    if (prefs.sortDir) {
-      setSortDir(prefs.sortDir)
-    }
-    if (prefs.filters.club) setClubFilter(prefs.filters.club)
-    if (prefs.filters.position) setPositionFilter(prefs.filters.position)
-    if (prefs.filters.decision) setDecisionFilter(prefs.filters.decision)
-  }, [prefsLoaded]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Save preferences on change
-  useEffect(() => {
-    if (!prefsLoaded) return
-    saveSortField(sortField)
-    saveSortDir(sortDir)
-    saveFilter("club", clubFilter)
-    saveFilter("position", positionFilter)
-    saveFilter("decision", decisionFilter)
-  }, [sortField, sortDir, clubFilter, positionFilter, decisionFilter, prefsLoaded]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Wrap setters to also persist to localStorage
+  const setSortField = (f: SortField) => { setSortFieldState(f); saveSortField(f) }
+  const setSortDir = (d: SortDir) => { setSortDirState(d); saveSortDir(d) }
+  const setClubFilter = (v: string) => { setClubFilterState(v); saveFilter("club", v) }
+  const setPositionFilter = (v: string) => { setPositionFilterState(v); saveFilter("position", v) }
+  const setDecisionFilter = (v: string) => { setDecisionFilterState(v); saveFilter("decision", v) }
 
   const clubs = useMemo(
     () => [...new Set(analyses.map((a) => a.player?.club).filter(Boolean))].sort() as string[],
@@ -102,7 +85,7 @@ export function AnalysisClient({ analyses }: Props) {
     }
   }
 
-  function SortHeader({ field, children }: { field: SortField; children: React.ReactNode }) {
+  const renderSortHeader = (field: SortField, children: React.ReactNode) => {
     const isActive = sortField === field
     return (
       <button
@@ -245,7 +228,7 @@ export function AnalysisClient({ analyses }: Props) {
               <thead>
                 <tr className="border-b border-zinc-800 bg-zinc-900/50">
                   <th scope="col" className="text-left py-3.5 px-4" aria-sort={sortField === "name" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
-                    <SortHeader field="name">Jogador</SortHeader>
+                    {renderSortHeader("name", "Jogador")}
                   </th>
                   <th scope="col" className="text-left py-3.5 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     Posicao
@@ -254,13 +237,13 @@ export function AnalysisClient({ analyses }: Props) {
                     Clube
                   </th>
                   <th scope="col" className="text-center py-3.5 px-3" aria-sort={sortField === "vx" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
-                    <SortHeader field="vx">Vx</SortHeader>
+                    {renderSortHeader("vx", "Vx")}
                   </th>
                   <th scope="col" className="text-center py-3.5 px-3" aria-sort={sortField === "rx" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
-                    <SortHeader field="rx">Rx</SortHeader>
+                    {renderSortHeader("rx", "Rx")}
                   </th>
                   <th scope="col" className="text-center py-3.5 px-3" aria-sort={sortField === "scn" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
-                    <SortHeader field="scn">SCN+</SortHeader>
+                    {renderSortHeader("scn", "SCN+")}
                   </th>
                   <th scope="col" className="text-center py-3.5 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     Decisao
@@ -269,7 +252,7 @@ export function AnalysisClient({ analyses }: Props) {
                     Confianca
                   </th>
                   <th scope="col" className="text-right py-3.5 px-4" aria-sort={sortField === "date" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
-                    <SortHeader field="date">Data</SortHeader>
+                    {renderSortHeader("date", "Data")}
                   </th>
                 </tr>
               </thead>

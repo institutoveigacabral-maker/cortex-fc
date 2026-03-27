@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
-import { readFileSync } from "fs"
-import { join } from "path"
+import fs, { readFileSync } from "fs"
+import path, { join } from "path"
 
 describe("Security Configuration", () => {
   it("next.config has security headers", () => {
@@ -11,9 +11,6 @@ describe("Security Configuration", () => {
   })
 
   it("no hardcoded secrets in source", () => {
-    const fs = require("fs")
-    const path = require("path")
-
     function scanDir(dir: string): string[] {
       const issues: string[] = []
       const entries = fs.readdirSync(dir, { withFileTypes: true })

@@ -6,8 +6,8 @@ try {
   const output = execSync("npx drizzle-kit generate --check", { encoding: "utf-8" })
   console.log("Schema is up to date with migrations")
   console.log(output)
-} catch (error: any) {
-  if (error.stdout?.includes("No schema changes")) {
+} catch (error: unknown) {
+  if (error instanceof Error && "stdout" in error && typeof (error as Record<string, unknown>).stdout === "string" && ((error as Record<string, unknown>).stdout as string).includes("No schema changes")) {
     console.log("Schema is up to date")
     process.exit(0)
   }

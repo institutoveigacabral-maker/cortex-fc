@@ -34,16 +34,18 @@ export function PerformanceIndicator() {
       observer.observe({ entryTypes: ["paint", "largest-contentful-paint", "layout-shift"] })
     } catch {}
 
-    // Navigation timing for TTFB
-    const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming
-    if (nav) {
-      const ttfb = Math.round(nav.responseStart - nav.requestStart)
-      setVitals(prev => [...prev.filter(v => v.name !== "TTFB"), {
-        name: "TTFB",
-        value: ttfb,
-        rating: ttfb <= 800 ? "good" : ttfb <= 1800 ? "needs-improvement" : "poor"
-      }])
-    }
+    // Navigation timing for TTFB (deferred to avoid sync setState in effect)
+    requestAnimationFrame(() => {
+      const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming
+      if (nav) {
+        const ttfb = Math.round(nav.responseStart - nav.requestStart)
+        setVitals(prev => [...prev.filter(v => v.name !== "TTFB"), {
+          name: "TTFB",
+          value: ttfb,
+          rating: ttfb <= 800 ? "good" : ttfb <= 1800 ? "needs-improvement" : "poor"
+        }])
+      }
+    })
 
     return () => observer.disconnect()
   }, [])

@@ -68,17 +68,8 @@ function DecisionDot({ decision }: { decision: string }) {
   )
 }
 
-export function SimilarPlayers({ players, currentPlayerId }: SimilarPlayersProps) {
+export function SimilarPlayers({ players }: SimilarPlayersProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
-
-  if (players.length === 0) {
-    return (
-      <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 text-center">
-        <Users className="w-6 h-6 text-zinc-500 mx-auto mb-2" />
-        <p className="text-sm text-zinc-500">Nenhum jogador similar encontrado</p>
-      </div>
-    )
-  }
 
   const scroll = (direction: "left" | "right") => {
     if (!scrollRef.current) return
@@ -99,6 +90,15 @@ export function SimilarPlayers({ players, currentPlayerId }: SimilarPlayersProps
       scrollRef.current.scrollBy({ left: cardWidth, behavior: "smooth" })
     }
   }, [])
+
+  if (players.length === 0) {
+    return (
+      <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 text-center">
+        <Users className="w-6 h-6 text-zinc-500 mx-auto mb-2" />
+        <p className="text-sm text-zinc-500">Nenhum jogador similar encontrado</p>
+      </div>
+    )
+  }
 
   return (
     <div className="relative group">

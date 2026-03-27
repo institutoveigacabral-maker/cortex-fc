@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo } from "react"
 import Link from "next/link"
 import { Search, ArrowUpDown, ArrowUp, ArrowDown, Filter, Users, X, Globe, ChevronDown } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
@@ -36,35 +36,19 @@ type SortField = "name" | "age" | "marketValue" | "scn" | "position" | "club"
 type SortDir = "asc" | "desc"
 
 export function PlayersClient({ players }: { players: PlayerListItem[] }) {
-  const { prefs, loaded: prefsLoaded, setSortField: saveSortField, setSortDir: saveSortDir, setFilter: saveFilter, clearFilters: clearSavedFilters } = useSearchPreferences("players")
+  const { prefs, setSortField: saveSortField, setSortDir: saveSortDir, setFilter: saveFilter, clearFilters: clearSavedFilters } = useSearchPreferences("players")
   const [search, setSearch] = useState("")
-  const [positionFilter, setPositionFilter] = useState("")
-  const [clubFilter, setClubFilter] = useState("")
-  const [sortField, setSortField] = useState<SortField>("name")
-  const [sortDir, setSortDir] = useState<SortDir>("asc")
+  const [positionFilter, setPositionFilterState] = useState(prefs.filters.position ?? "")
+  const [clubFilter, setClubFilterState] = useState(prefs.filters.club ?? "")
+  const [sortField, setSortFieldState] = useState<SortField>((prefs.sortField as SortField) || "name")
+  const [sortDir, setSortDirState] = useState<SortDir>(prefs.sortDir || "asc")
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
-  // Restore preferences from localStorage after mount
-  useEffect(() => {
-    if (!prefsLoaded) return
-    if (prefs.sortField && ["name", "age", "marketValue", "scn", "position", "club"].includes(prefs.sortField)) {
-      setSortField(prefs.sortField as SortField)
-    }
-    if (prefs.sortDir) {
-      setSortDir(prefs.sortDir)
-    }
-    if (prefs.filters.position) setPositionFilter(prefs.filters.position)
-    if (prefs.filters.club) setClubFilter(prefs.filters.club)
-  }, [prefsLoaded]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Save preferences on change
-  useEffect(() => {
-    if (!prefsLoaded) return
-    saveSortField(sortField)
-    saveSortDir(sortDir)
-    saveFilter("position", positionFilter)
-    saveFilter("club", clubFilter)
-  }, [sortField, sortDir, positionFilter, clubFilter, prefsLoaded]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Wrap setters to also persist to localStorage
+  const setSortField = (f: SortField) => { setSortFieldState(f); saveSortField(f) }
+  const setSortDir = (d: SortDir) => { setSortDirState(d); saveSortDir(d) }
+  const setPositionFilter = (v: string) => { setPositionFilterState(v); saveFilter("position", v) }
+  const setClubFilter = (v: string) => { setClubFilterState(v); saveFilter("club", v) }
 
   const positions = useMemo(
     () => [...new Set(players.map((p) => p.positionCluster))].sort(),
@@ -131,7 +115,7 @@ export function PlayersClient({ players }: { players: PlayerListItem[] }) {
     { field: "position", label: "Posicao" },
   ]
 
-  function SortHeader({ field, children }: { field: SortField; children: React.ReactNode }) {
+  const renderSortHeader = (field: SortField, children: React.ReactNode) => {
     const isActive = sortField === field
     return (
       <button
@@ -417,22 +401,22 @@ export function PlayersClient({ players }: { players: PlayerListItem[] }) {
                 <tr className="border-b border-zinc-800 bg-zinc-900/50">
                   <th scope="col" className="text-left py-3 px-4 w-8"></th>
                   <th scope="col" className="text-left py-3 px-3" aria-sort={sortField === "name" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
-                    <SortHeader field="name">Jogador</SortHeader>
+                    {renderSortHeader("name", "Jogador")}
                   </th>
                   <th scope="col" className="text-left py-3 px-3" aria-sort={sortField === "position" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
-                    <SortHeader field="position">Posicao</SortHeader>
+                    {renderSortHeader("position", "Posicao")}
                   </th>
                   <th scope="col" className="text-left py-3 px-3" aria-sort={sortField === "club" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
-                    <SortHeader field="club">Clube</SortHeader>
+                    {renderSortHeader("club", "Clube")}
                   </th>
                   <th scope="col" className="text-center py-3 px-3" aria-sort={sortField === "age" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
-                    <SortHeader field="age">Idade</SortHeader>
+                    {renderSortHeader("age", "Idade")}
                   </th>
                   <th scope="col" className="text-right py-3 px-3" aria-sort={sortField === "marketValue" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
-                    <SortHeader field="marketValue">Valor (M&euro;)</SortHeader>
+                    {renderSortHeader("marketValue", <>Valor (M&euro;)</>)}
                   </th>
                   <th scope="col" className="text-center py-3 px-3" aria-sort={sortField === "scn" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}>
-                    <SortHeader field="scn">SCN+</SortHeader>
+                    {renderSortHeader("scn", "SCN+")}
                   </th>
                   <th scope="col" className="text-center py-3 px-3">
                     <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">

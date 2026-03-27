@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
-import { readFileSync } from "fs"
-import { join } from "path"
+import fs, { readFileSync } from "fs"
+import path, { join } from "path"
 
 describe("Authentication Security", () => {
   it("auth config uses secure session strategy", () => {
@@ -10,9 +10,6 @@ describe("Authentication Security", () => {
   })
 
   it("API routes check authentication", () => {
-    const fs = require("fs")
-    const path = require("path")
-
     // Check that key API routes have auth checks
     const routesToCheck = [
       "src/app/api/oracle/route.ts",

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 interface UseSheetDragOptions {
   onDismiss: () => void
@@ -96,22 +96,26 @@ export function useSheetDrag({
     return () => clearTimeout(timer)
   }, [isDragging, dragOffset, threshold, velocityThreshold, onDismiss])
 
-  // Mouse drag support
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    handleMove(e.clientY)
-  }, [handleMove])
+  // Mouse drag support — use refs to avoid circular dependency
+  const handleMouseMoveRef = useRef<(e: MouseEvent) => void>(() => {})
+  const handleMouseUpRef = useRef<() => void>(() => {})
 
-  const handleMouseUp = useCallback(() => {
-    handleEnd()
-    document.removeEventListener("mousemove", handleMouseMove)
-    document.removeEventListener("mouseup", handleMouseUp)
-  }, [handleEnd, handleMouseMove])
+  useEffect(() => {
+    handleMouseMoveRef.current = (e: MouseEvent) => {
+      handleMove(e.clientY)
+    }
+    handleMouseUpRef.current = () => {
+      handleEnd()
+      document.removeEventListener("mousemove", handleMouseMoveRef.current)
+      document.removeEventListener("mouseup", handleMouseUpRef.current)
+    }
+  }, [handleMove, handleEnd])
 
   const onMouseDown = useCallback((e: React.MouseEvent) => {
     handleStart(e.clientY, e.target)
-    document.addEventListener("mousemove", handleMouseMove)
-    document.addEventListener("mouseup", handleMouseUp)
-  }, [handleStart, handleMouseMove, handleMouseUp])
+    document.addEventListener("mousemove", handleMouseMoveRef.current)
+    document.addEventListener("mouseup", handleMouseUpRef.current)
+  }, [handleStart]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const onTouchStart = useCallback((e: React.TouchEvent) => {
     handleStart(e.touches[0].clientY, e.target)

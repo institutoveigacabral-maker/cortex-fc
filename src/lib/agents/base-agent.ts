@@ -246,7 +246,7 @@ export async function callAgentWithTools<T>({
   let totalOutputTokens = 0;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let messages: any[] = [{ role: "user", content: userMessage }];
+  const messages: any[] = [{ role: "user", content: userMessage }];
   let attempts = 0;
   const maxAttempts = 5;
 

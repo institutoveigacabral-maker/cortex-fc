@@ -77,8 +77,9 @@ function formatDateTime(dateStr: string | null): string {
   })
 }
 
-function getTemplateIcon(iconName: string) {
-  return ICON_MAP[iconName] ?? CalendarDays
+function renderScheduleIcon(iconName: string) {
+  const Icon = ICON_MAP[iconName] ?? CalendarDays
+  return <Icon className="w-5 h-5 text-emerald-400" />
 }
 
 // ============================================
@@ -96,8 +97,8 @@ function ScheduleCard({
 }) {
   const [confirmDelete, setConfirmDelete] = useState(false)
   const template = REPORT_TEMPLATES[schedule.template]
-  const Icon = template ? getTemplateIcon(template.icon) : CalendarDays
   const templateName = template?.name ?? schedule.template
+  const iconName = template?.icon ?? ""
 
   return (
     <div
@@ -108,7 +109,7 @@ function ScheduleCard({
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-            <Icon className="w-5 h-5 text-emerald-400" />
+            {renderScheduleIcon(iconName)}
           </div>
           <div>
             <p className="text-sm font-semibold text-zinc-100">
